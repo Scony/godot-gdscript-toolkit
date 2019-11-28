@@ -6,3 +6,5 @@ const bar = 123
 const baz   =    123
 export var e1 = 234
 export(int) var e2
+onready var orv
+onready var orv2 = 123
