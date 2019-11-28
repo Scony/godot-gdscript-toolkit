@@ -15,6 +15,7 @@ simple_stmt: tool_stmt
 | onready_stmt
 compound_stmt: class_def
 | enum_def
+| func_def
 
 tool_stmt: "tool"
 signal_stmt: "signal " NAME
@@ -30,6 +31,12 @@ var_empty: "var " NAME
 var_assigned: "var " NAME SP* "=" SP* expr
 const_stmt: "const " NAME SP* "=" SP* expr
 onready_stmt: "onready " var_stmt
+
+func_def: "func " NAME "():" _NL func_body
+func_body: _INDENT (func_stmt _NL)+ _DEDENT
+func_stmt: pass_stmt
+| var_stmt
+pass_stmt: "pass"
 
 enum_def: enum_regular
 | enum_named
