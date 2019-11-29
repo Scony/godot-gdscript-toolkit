@@ -29,11 +29,15 @@ const_stmt: "const" NAME "=" expr
 onready_stmt: "onready" var_stmt
 
 func_def: "func" NAME "():" func_body
-func_body: _NL _INDENT func_stmt _DEDENT
-| _NL _INDENT (func_stmt _NL)+ _DEDENT
-func_stmt: pass_stmt
+func_body: _NL _INDENT func_stmt+ _DEDENT
+func_stmt: simple_func_stmt _NL
+| compound_func_stmt
+simple_func_stmt: pass_stmt
 | var_stmt
+| expr
+compound_func_stmt: if_stmt
 pass_stmt: "pass"
+if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
 
 enum_def: enum_regular
 | enum_named
