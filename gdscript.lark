@@ -14,7 +14,7 @@ compound_class_stmt: class_def
                    | func_def
 
 tool_stmt: "tool"
-signal_stmt: "signal" NAME
+signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
 extends_stmt: "extends" NAME
 classname_stmt: "class_name" NAME
 export_stmt: export_inf | export_typed
