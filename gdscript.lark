@@ -36,8 +36,13 @@ simple_func_stmt: pass_stmt
                 | var_stmt
                 | expr
 compound_func_stmt: if_stmt
+                  | while_stmt
+                  | for_stmt
+                  // TODO: match
 pass_stmt: "pass"
 if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
+while_stmt: "while" expr ":" func_body
+for_stmt: "for" NAME "in" expr ":" func_body
 
 enum_def: enum_regular | enum_named
 enum_regular: "enum" enum_body

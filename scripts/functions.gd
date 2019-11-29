@@ -20,3 +20,8 @@ func bar():
 	elif false:
 		pass
 	pass
+	while true:
+		pass
+	var arr
+	for i in arr:
+		pass
