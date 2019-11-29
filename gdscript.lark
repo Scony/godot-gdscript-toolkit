@@ -15,8 +15,8 @@ compound_class_stmt: class_def
 
 tool_stmt: "tool"
 signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
-extends_stmt: "extends" NAME
-classname_stmt: "class_name" NAME
+extends_stmt: "extends" (NAME | STRING ("." NAME)*)
+classname_stmt: "class_name" NAME [ "," STRING ]
 export_stmt: export_inf | export_typed
 export_inf: "export" var_assigned
 export_typed: "export(" TYPE ")" var_stmt
@@ -64,3 +64,4 @@ _WS: WS
 %import common.WS
 %import common.WS_INLINE
 %import common.CNAME -> NAME
+%import common.ESCAPED_STRING -> STRING
