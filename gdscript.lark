@@ -28,8 +28,9 @@ var_assigned: "var" NAME "=" expr
 const_stmt: "const" NAME "=" expr
 onready_stmt: "onready" var_stmt
 
-func_def: "func" NAME "():" _NL func_body
-func_body: _INDENT (func_stmt _NL)+ _DEDENT
+func_def: "func" NAME "():" func_body
+func_body: _NL _INDENT func_stmt _DEDENT
+| _NL _INDENT (func_stmt _NL)+ _DEDENT
 func_stmt: pass_stmt
 | var_stmt
 pass_stmt: "pass"
