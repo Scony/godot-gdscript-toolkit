@@ -28,8 +28,8 @@ export_typed: "export(" type ") " var_stmt
 var_stmt: var_empty
 | var_assigned
 var_empty: "var " NAME
-var_assigned: "var " NAME SP* "=" SP* expr
-const_stmt: "const " NAME SP* "=" SP* expr
+var_assigned: "var " NAME "=" expr
+const_stmt: "const " NAME "=" expr
 onready_stmt: "onready " var_stmt
 
 func_def: "func " NAME "():" _NL func_body
@@ -41,8 +41,8 @@ pass_stmt: "pass"
 enum_def: enum_regular
 | enum_named
 enum_regular: "enum" enum_body
-enum_named: "enum" SP* NAME enum_body
-enum_body: SP* "{" WS* [ (enum_entry [ "," ] WS*)* ] "}"
+enum_named: "enum" NAME enum_body
+enum_body: "{" WS* [ (enum_entry [ "," ] WS*)* ] "}"
 enum_entry: WORD                // (?)
 
 class_def: "class " WORD ":" suite
@@ -51,15 +51,17 @@ suite: _NL _INDENT stmt+ _DEDENT
 expr: WORD | NUMBER
 
 type: WORD
-NAME: /[a-zA-Z_][0-9a-zA-Z_]*/
+_NL: /(\r?\n[\t ]*)+/
 
-SP: " "
+%declare _INDENT _DEDENT
+
+%ignore WS_INLINE
 
 %import common.WORD
 %import common.NUMBER
 %import common.WS
-%declare _INDENT _DEDENT
-_NL: /(\r?\n[\t ]*)+/
+%import common.WS_INLINE
+%import common.CNAME -> NAME
 """
 
 class Indenter(lark.indenter.Indenter):
