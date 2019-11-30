@@ -1,3 +1,5 @@
+func bar():
+	pass
 func foo():
 	var x
 	1 if true else 2
@@ -17,3 +19,17 @@ func foo():
 	3 | 3
 	6 ^ 5
 	8 & 7
+	5 >> 7
+	7 << 5
+	5 - 6
+	6 + 7
+	7 * 7
+	7 / 8
+	6 % 3
+	-8
+	~8
+	x is int
+	x.attr
+	x[10]
+	bar()
+	(2+2)

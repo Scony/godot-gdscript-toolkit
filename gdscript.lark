@@ -60,8 +60,20 @@ comparison: bitw_or (comp_op bitw_or)*
 comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
 bitw_or: bitw_xor ("|" bitw_xor)*
 bitw_xor: bitw_and ("^" bitw_and)*
-bitw_and: atom ("&" atom)*
-atom: NAME | literal
+bitw_and: shift_expr ("&" shift_expr)*
+shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
+subtr_expr: addn_expr ("-" addn_expr)*
+addn_expr: mdr_expr ("+" mdr_expr)*
+mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
+neg_expr: "-" neg_expr | bitw_not
+bitw_not: "~" bitw_not | type_test
+type_test: attr_expr ("is" atom)*
+attr_expr: subscr_expr ("." NAME)*
+subscr_expr: call_expr ["[" atom "]"] // TODO: expr inside []
+call_expr: atom ["(" ")"]             // TODO: expr(s,) inside ()
+atom: "(" expr ")"
+    | NAME
+    | literal
 literal: NUMBER
 
 TYPE: NAME
