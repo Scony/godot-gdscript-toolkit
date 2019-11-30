@@ -87,10 +87,12 @@ _WS: WS
 STRING: /'[^']*'/
       | /"""[^"]*"""/           // TODO: fix & extend
       | ESCAPED_STRING
+COMMENT: /#[^\n]*/
 
 %declare _INDENT _DEDENT
 
 %ignore WS_INLINE
+%ignore COMMENT
 
 %import common.NUMBER
 %import common.WS
