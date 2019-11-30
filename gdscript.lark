@@ -73,6 +73,7 @@ subscr_expr: call_expr ["[" atom "]"] // TODO: expr inside []
 call_expr: atom ["(" ")"]             // TODO: expr(s,) inside ()
 atom: "(" expr ")"
     | array
+    | dict
     | NAME
     | literal
 literal: NUMBER
@@ -82,6 +83,7 @@ literal: NUMBER
 node_path: "@" STRING                // TODO: check if 'x' or """x""" applies
 get_node: "$" (NAME | STRING)        // TODO: same
 array: "[" _f* [expr _f* ("," _f* expr _f*)* ["," _f*]] "]" // TODO: fix dat hacks?
+dict: "{" _f* [expr ":" expr _f* ("," _f* expr ":" expr _f*)* ["," _f*]] "}"
 _f: _NL | _INDENT | _DEDENT
 
 TYPE: NAME
