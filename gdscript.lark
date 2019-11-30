@@ -75,10 +75,18 @@ atom: "(" expr ")"
     | NAME
     | literal
 literal: NUMBER
+       | STRING
+       | node_path
+       | get_node
+node_path: "@" STRING                // TODO: check if 'x' or """x""" applies
+get_node: "$" (NAME | STRING)        // TODO: same
 
 TYPE: NAME
 _NL: /(\r?\n[\t ]*)+/
 _WS: WS
+STRING: /'[^']*'/
+      | /"""[^"]*"""/           // TODO: fix & extend
+      | ESCAPED_STRING
 
 %declare _INDENT _DEDENT
 
@@ -88,4 +96,4 @@ _WS: WS
 %import common.WS
 %import common.WS_INLINE
 %import common.CNAME -> NAME
-%import common.ESCAPED_STRING -> STRING
+%import common.ESCAPED_STRING
