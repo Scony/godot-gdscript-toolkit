@@ -11,6 +11,7 @@ simple_class_stmt: tool_stmt
                  | onready_stmt
 compound_class_stmt: class_def
                    | enum_def
+                   | "static" func_def -> static_func_def
                    | func_def
 
 tool_stmt: "tool"
@@ -29,10 +30,13 @@ onready_stmt: "onready" var_stmt
 class_def: "class" NAME ":" suite
 suite: _NL _INDENT class_stmt+ _DEDENT
 
-func_def: "func" NAME "():" func_body
+func_def: "func" NAME "(" [func_args] "):" func_body
+func_args: func_arg ("," func_arg)*
+func_arg: ["var"] NAME
 func_body: _NL _INDENT func_stmt+ _DEDENT
 func_stmt: simple_func_stmt _NL | compound_func_stmt
 simple_func_stmt: pass_stmt
+                | return_stmt
                 | var_stmt
                 | expr
 compound_func_stmt: if_stmt
@@ -40,6 +44,7 @@ compound_func_stmt: if_stmt
                   | for_stmt
                   // TODO: match
 pass_stmt: "pass"
+return_stmt: "return" [expr]
 if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
@@ -51,6 +56,8 @@ enum_body: "{" _WS* [ (enum_entry [ "," ] _WS*)* ] "}"
 enum_entry: NAME
 
 expr: test_expr
+    | assnmtn_expr
+assnmtn_expr: NAME "=" expr
 test_expr: or_test ["if" or_test "else" test_expr]
 or_test: and_test (("or" | "||") and_test)*
 and_test: not_test (("and" | "&&") not_test)*
@@ -70,7 +77,7 @@ bitw_not: "~" bitw_not | type_test
 type_test: attr_expr ("is" atom)*
 attr_expr: subscr_expr ("." NAME)*
 subscr_expr: call_expr ["[" atom "]"] // TODO: expr inside []
-call_expr: atom ["(" ")"]             // TODO: expr(s,) inside ()
+call_expr: atom ["(" [expr ("," expr)*] ")"]
 atom: "(" expr ")"
     | array
     | dict

@@ -3,6 +3,8 @@ func foo():
 
 enum { xxx }
 
+var glob
+
 func bar():
 	var x
 	var y = 5
@@ -25,3 +27,15 @@ func bar():
 	var arr
 	for i in arr:
 		pass
+
+static func asd():
+	pass
+
+func ret():
+	return
+
+func ret2():
+	return 1
+
+func set_glob(g):
+	glob = g
