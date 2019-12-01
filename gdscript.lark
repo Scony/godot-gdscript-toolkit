@@ -121,7 +121,7 @@ dict: "{" [attr_expr ":" expr ("," attr_expr ":" expr)* [","]] "}"
     | "{" [attr_expr "=" expr ("," attr_expr "=" expr)* [","]] "}"
 
 TYPE: NAME
-_NL: /(\r?\n[\t ]*)+/
+_NL: ( /\r?\n[\t ]*/ | COMMENT )+
 _WS: WS
 string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
