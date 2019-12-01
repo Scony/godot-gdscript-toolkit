@@ -5,7 +5,7 @@ simple_class_stmt: tool_stmt
                  | signal_stmt
                  | extends_stmt
                  | classname_stmt
-                 | var_stmt
+                 | class_var_stmt
                  | const_stmt
                  | export_stmt
                  | onready_stmt
@@ -19,13 +19,14 @@ signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
 extends_stmt: "extends" (NAME | STRING ("." NAME)*)
 classname_stmt: "class_name" NAME [ "," STRING ]
 export_stmt: export_inf | export_typed
-export_inf: "export" var_assigned
-export_typed: "export(" TYPE ")" var_stmt
-var_stmt: var_empty | var_assigned
+export_inf: "export" var_assigned [setget]
+export_typed: "export" "(" TYPE ")" class_var_stmt
+class_var_stmt: (var_empty | var_assigned) [setget]
 var_empty: "var" NAME
 var_assigned: "var" NAME "=" expr
+setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME "=" expr
-onready_stmt: "onready" var_stmt
+onready_stmt: "onready" class_var_stmt
 
 class_def: "class" NAME ":" suite
 suite: _NL _INDENT class_stmt+ _DEDENT
@@ -37,7 +38,7 @@ func_body: _NL _INDENT func_stmt+ _DEDENT
 func_stmt: simple_func_stmt _NL | compound_func_stmt | _NL
 simple_func_stmt: pass_stmt
                 | return_stmt
-                | var_stmt
+                | func_var_stmt
                 | expr
 compound_func_stmt: if_stmt
                   | while_stmt
@@ -45,6 +46,7 @@ compound_func_stmt: if_stmt
                   | match_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
+func_var_stmt: var_empty | var_assigned
 if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
