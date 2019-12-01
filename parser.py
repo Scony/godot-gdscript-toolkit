@@ -17,4 +17,4 @@ if __name__ == '__main__':
     for arg in sys.argv[1:]:
         with open(arg, 'r') as fh:
             content = fh.read()
-            print(parser.parse(content).pretty())
+            parser.parse(content)

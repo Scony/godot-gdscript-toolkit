@@ -34,7 +34,7 @@ func_def: "func" NAME "(" [func_args] "):" func_body
 func_args: func_arg ("," func_arg)*
 func_arg: ["var"] NAME
 func_body: _NL _INDENT func_stmt+ _DEDENT
-func_stmt: simple_func_stmt _NL | compound_func_stmt
+func_stmt: simple_func_stmt _NL | compound_func_stmt | _NL
 simple_func_stmt: pass_stmt
                 | return_stmt
                 | var_stmt
@@ -42,12 +42,15 @@ simple_func_stmt: pass_stmt
 compound_func_stmt: if_stmt
                   | while_stmt
                   | for_stmt
-                  // TODO: match
+                  | match_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
 if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
+match_stmt: "match" expr ":" match_body
+match_body: _NL _INDENT match_branch+ _DEDENT
+match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT
 
 enum_def: enum_regular | enum_named
 enum_regular: "enum" enum_body

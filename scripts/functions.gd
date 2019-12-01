@@ -42,3 +42,12 @@ func set_glob(g):
 
 func fun(a,b):
 	pass
+
+func long():
+	pass
+	
+	pass
+	pass
+
+	pass
+	
