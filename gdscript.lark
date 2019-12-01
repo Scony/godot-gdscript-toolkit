@@ -83,7 +83,7 @@ type_test: attr_expr ("is" atom)*
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
-call_expr: NAME "(" [expr ("," expr)*] ")"
+call_expr: NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
 atom: "(" expr ")"
     | array
     | dict
@@ -106,11 +106,13 @@ STRING: /'[^']*'/
       | /"""[^"]*"""/           // TODO: fix & extend
       | ESCAPED_STRING
 COMMENT: /#[^\n]*/
+LINE_CONT: /\\[\t \f]*\r?\n/
 
 %declare _INDENT _DEDENT
 
 %ignore WS_INLINE
 %ignore COMMENT
+%ignore LINE_CONT
 
 %import common.NUMBER
 %import common.WS
