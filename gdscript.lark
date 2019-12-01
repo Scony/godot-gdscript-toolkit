@@ -21,7 +21,8 @@ extends_stmt: "extends" (NAME | string ("." NAME)*)
 classname_stmt: "class_name" NAME ["," string]
 export_stmt: export_inf | export_typed
 export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
-export_typed: "export" "(" TYPE ")" class_var_stmt
+export_typed: "export" "(" export_hint ")" class_var_stmt
+export_hint: TYPE ("," expr)*
 class_var_stmt: var_stmt [setget]
 var_stmt: var_empty
         | var_assigned
