@@ -54,7 +54,7 @@ match_stmt: "match" expr ":" match_body
 match_body: _NL _INDENT match_branch+ _DEDENT
 match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT
 
-enum_def: enum_regular | enum_named
+enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" enum_body
 enum_named: "enum" NAME enum_body
 enum_body: "{" _WS* [ (enum_entry [ "," ] _WS*)* ] "}"
@@ -85,7 +85,7 @@ type_test: attr_expr ("is" atom)*
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
-call_expr: NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
+call_expr: ["."] NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
 atom: "(" expr ")"
     | array
     | dict

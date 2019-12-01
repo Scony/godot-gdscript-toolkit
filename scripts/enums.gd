@@ -17,3 +17,6 @@ enum _dddd{
 	X,Y,
 Z
 }
+
+class Household:
+	enum LevelingDirection { POSITIVE, NEGATIVE, NEGATIVE_FAST }
