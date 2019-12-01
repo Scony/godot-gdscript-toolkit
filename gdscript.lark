@@ -75,7 +75,7 @@ enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" enum_body
 enum_named: "enum" NAME enum_body
 enum_body: "{" (enum_entry [","])* "}"
-enum_entry: NAME
+enum_entry: NAME ["=" NUMBER]
 
 expr: test_expr
     | assnmtn_expr

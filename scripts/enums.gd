@@ -20,3 +20,7 @@ Z
 
 class Household:
 	enum LevelingDirection { POSITIVE, NEGATIVE, NEGATIVE_FAST }
+
+enum {TILE_BRICK, TILE_FLOOR, TILE_SPIKE, TILE_TELEPORT}
+
+enum State {STATE_IDLE, STATE_JUMP = 5, STATE_SHOOT}
