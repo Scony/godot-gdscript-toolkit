@@ -57,7 +57,9 @@ enum_entry: NAME
 
 expr: test_expr
     | assnmtn_expr
-assnmtn_expr: NAME "=" expr
+assnmtn_expr: lvalue assnmtn_op expr
+assnmtn_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
+lvalue: attr_expr             // TODO: shirnk, it's too wide
 test_expr: or_test ["if" or_test "else" test_expr]
 or_test: and_test (("or" | "||") and_test)*
 and_test: not_test (("and" | "&&") not_test)*
@@ -75,8 +77,9 @@ mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
 type_test: attr_expr ("is" atom)*
-attr_expr: subscr_expr ("." (NAME | call_expr))*
-subscr_expr: (call_expr | atom) ["[" atom "]"] // TODO: expr inside []
+attr_expr: subscr_expr ("." subscr_expr)*
+subscr_expr: subscr_expr "[" expr "]"
+           | (call_expr | atom)
 call_expr: NAME "(" [expr ("," expr)*] ")"
 atom: "(" expr ")"
     | array

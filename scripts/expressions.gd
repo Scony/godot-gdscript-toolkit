@@ -36,3 +36,7 @@ func foo():
 	(2+2)
 	var xxxx = XXXX.new()
 	xxxx.fun(1, 2)
+	x[1][2][3]['xxx'][1+2]
+	x[1] += 2
+	x.bar()[1]
+	x.attr = 34
