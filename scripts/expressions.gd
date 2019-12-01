@@ -31,6 +31,7 @@ func foo():
 	-8
 	~8
 	x is int
+	x is x.Type
 	x.attr
 	x[10]
 	bar()

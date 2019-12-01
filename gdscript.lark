@@ -1,6 +1,6 @@
-start: (_NL | class_stmt)*
+start: class_stmt*
 
-class_stmt: (simple_class_stmt _NL) | compound_class_stmt
+class_stmt: (simple_class_stmt _NL) | compound_class_stmt | _NL | empty_block
 simple_class_stmt: tool_stmt
                  | signal_stmt
                  | extends_stmt
@@ -13,6 +13,7 @@ compound_class_stmt: class_def
                    | enum_def
                    | "static" func_def -> static_func_def
                    | func_def
+empty_block: _INDENT _NL* _DEDENT
 
 tool_stmt: "tool"
 signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
@@ -63,7 +64,7 @@ compound_func_stmt: if_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
 func_var_stmt: var_stmt
-if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
+if_stmt: "if" expr ":" func_body (_NL* "elif" expr ":" func_body)* [ _NL* "else" ":" func_body ]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
 match_stmt: "match" expr ":" match_body
@@ -97,7 +98,7 @@ addn_expr: mdr_expr ("+" mdr_expr)*
 mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
-type_test: type_cast ("is" atom)*
+type_test: type_cast ("is" attr_expr)*
 type_cast: attr_expr ("as" TYPE)* // TODO: check precedence
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
