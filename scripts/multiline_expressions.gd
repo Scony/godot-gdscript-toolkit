@@ -1,3 +1,6 @@
+func bar(s):
+	pass
+
 func foo():
 	1 == \
 	2
@@ -8,3 +11,6 @@ func foo():
 		1,
 		2
 	)
+	pass
+	# bar(('x' +
+	# 	 'y'))

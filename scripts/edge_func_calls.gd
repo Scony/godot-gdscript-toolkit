@@ -64,7 +64,7 @@ func foo():
 # 	_update_camera_rect(Rect2(
 # 		camera.get_camera_position() + camera.offset \
 # 		- Vector2(_viewport.size.x/2.0, _viewport.size.y/2.0), _viewport.size))
-func _on_camera_update(camera):
+func _on_camera_update2(camera):
 	_update_camera_rect(Rect2(
 		camera.get_camera_position() + camera.offset \
 		- Vector2(_viewport.size.x/2.0, _viewport.size.y/2.0), _viewport.size)

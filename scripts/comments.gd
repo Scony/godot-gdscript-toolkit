@@ -11,3 +11,9 @@ func foo():						# asd
 # asd
 # asd
 	# asd
+
+# func bar():
+# 	if true:
+# 		pass
+# 	#
+# 	pass

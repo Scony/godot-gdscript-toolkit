@@ -17,8 +17,8 @@ empty_block: _INDENT _NL* _DEDENT
 
 tool_stmt: "tool"
 signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
-extends_stmt: "extends" (NAME | STRING ("." NAME)*)
-classname_stmt: "class_name" NAME [ "," STRING ]
+extends_stmt: "extends" (NAME | string ("." NAME)*)
+classname_stmt: "class_name" NAME [ "," string ]
 export_stmt: export_inf | export_typed
 export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
 export_typed: "export" "(" TYPE ")" class_var_stmt
@@ -94,7 +94,7 @@ bitw_xor: bitw_and ("^" bitw_and)*
 bitw_and: shift_expr ("&" shift_expr)*
 shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
 subtr_expr: addn_expr ("-" addn_expr)*
-addn_expr: mdr_expr ("+" mdr_expr)*
+addn_expr: mdr_expr ("+" _f* mdr_expr)*
 mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
@@ -118,11 +118,11 @@ atom: "(" expr ")"
     | NAME
     | literal
 literal: NUMBER
-       | STRING
+       | string
        | node_path
        | get_node
-node_path: "@" STRING
-get_node: "$" (path | STRING)
+node_path: "@" string
+get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" _f* [expr _f* ("," _f* expr _f*)* ["," _f*]] "]" // TODO: fix dat hacks?
 dict: "{" _f* [attr_expr ":" _f* expr _f* ("," _f* attr_expr ":" _f* expr _f*)* ["," _f*]] "}"
@@ -132,9 +132,9 @@ _f: _NL | _INDENT | _DEDENT
 TYPE: NAME
 _NL: /(\r?\n[\t ]*)+/
 _WS: WS
-STRING: "'" _STRING_ESC_INNER "'"
-      | /"""[^"]*"""/           // TODO: fix & extend
-      | ESCAPED_STRING
+string: REGULAR_STRING | LONG_STRING
+REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
+LONG_STRING.2: /""".*?(?<!\\)(\\\\)*?"""/is
 COMMENT: /#[^\n]*/
 LINE_CONT: /\\[\t \f]*\r?\n/
 
