@@ -1,7 +1,8 @@
 start: class_stmt*
 
 class_stmt: (simple_class_stmt _NL) | compound_class_stmt | _NL | empty_block
-simple_class_stmt: tool_stmt
+simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
+single_class_stmt: tool_stmt
                  | signal_stmt
                  | extends_stmt
                  | classname_stmt
@@ -53,7 +54,8 @@ func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
 func_body: _NL _INDENT func_stmt_chain _DEDENT
 func_stmt_chain: func_stmt* [simple_func_stmt]
 func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
-simple_func_stmt: pass_stmt
+simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
+single_func_stmt: pass_stmt
                 | return_stmt
                 | func_var_stmt
                 | expr
@@ -99,11 +101,11 @@ mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
 type_test: type_cast ("is" attr_expr)*
-type_cast: attr_expr ("as" TYPE)* // TODO: check precedence
+type_cast: attr_expr ("as" TYPE)* // TODO: fix precedence (same as "is" probably(!))
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
-call_expr: ["."] call // TODO: check precedence
+call_expr: ["."] call // TODO: fix precedence (it has lower precedence than . and [])
 call: NAME "(" [expr ("," expr)*] ")"
 atom: "(" expr ")"
     | array
