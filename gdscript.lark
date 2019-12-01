@@ -101,7 +101,15 @@ type_cast: attr_expr ("as" TYPE)* // TODO: check precedence
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
-call_expr: ["."] NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")" // TODO: check precedence
+call_expr: ["."] call // TODO: check precedence
+call: generic_call
+    | indented_call
+    | indented_call2
+    | indented_call3
+generic_call: NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
+indented_call: NAME "(" expr _NL _INDENT ")" _NL* _DEDENT
+indented_call2: NAME "(" _NL _INDENT expr ("," _NL* expr)* ")" _NL* _DEDENT
+indented_call3: NAME "(" _NL _INDENT expr ("," _NL* expr)* _NL* _DEDENT ")"
 atom: "(" expr ")"
     | array
     | dict
