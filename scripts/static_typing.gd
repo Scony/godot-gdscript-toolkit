@@ -15,3 +15,7 @@ func baz():
 
 func expr():
 	5 as int
+
+export var icon_32 : Texture
+export(Texture) var asdf : Texture
+export var qwe := 5

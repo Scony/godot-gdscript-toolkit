@@ -19,7 +19,7 @@ signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
 extends_stmt: "extends" (NAME | STRING ("." NAME)*)
 classname_stmt: "class_name" NAME [ "," STRING ]
 export_stmt: export_inf | export_typed
-export_inf: "export" var_assigned [setget]
+export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
 export_typed: "export" "(" TYPE ")" class_var_stmt
 class_var_stmt: var_stmt [setget]
 var_stmt: var_empty
