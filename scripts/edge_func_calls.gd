@@ -46,6 +46,15 @@ func yyyyy():
 		1,2,3
 	)
 
+# func z():
+# 	ta(
+# 		1, 2, 3)
+# 	pass
+
+func zz():
+	ta(1,2,3)
+	pass
+
 var _viewport
 func _update_camera_rect(x):
 	pass
