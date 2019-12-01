@@ -12,5 +12,5 @@ func foo():
 		2
 	)
 	pass
-	# bar(('x' +
-	# 	 'y'))
+	bar(('x' +
+		 'y'))

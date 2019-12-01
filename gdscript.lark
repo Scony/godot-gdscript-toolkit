@@ -16,9 +16,9 @@ compound_class_stmt: class_def
 empty_block: _INDENT _NL* _DEDENT
 
 tool_stmt: "tool"
-signal_stmt: "signal" NAME [ "(" NAME ("," NAME)* ")" ]
+signal_stmt: "signal" NAME ["(" NAME ("," NAME)* ")"]
 extends_stmt: "extends" (NAME | string ("." NAME)*)
-classname_stmt: "class_name" NAME [ "," string ]
+classname_stmt: "class_name" NAME ["," string]
 export_stmt: export_inf | export_typed
 export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
 export_typed: "export" "(" TYPE ")" class_var_stmt
@@ -43,7 +43,6 @@ class_stmt_chain: class_stmt* [simple_class_stmt]
 
 func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" func_body
 func_args: func_arg ("," func_arg)*
-         | _NL _INDENT func_arg ("," _NL* func_arg)* _NL _DEDENT
 func_arg: func_arg_regular
         | func_arg_inf
         | func_arg_typed
@@ -64,7 +63,7 @@ compound_func_stmt: if_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
 func_var_stmt: var_stmt
-if_stmt: "if" expr ":" func_body (_NL* "elif" expr ":" func_body)* [ _NL* "else" ":" func_body ]
+if_stmt: "if" expr ":" func_body (_NL* "elif" expr ":" func_body)* [_NL* "else" ":" func_body]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
 match_stmt: "match" expr ":" match_body
@@ -74,7 +73,7 @@ match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT
 enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" enum_body
 enum_named: "enum" NAME enum_body
-enum_body: "{" _WS* [ (enum_entry [ "," ] _WS*)* ] "}"
+enum_body: "{" (enum_entry [","])* "}"
 enum_entry: NAME
 
 expr: test_expr
@@ -94,7 +93,7 @@ bitw_xor: bitw_and ("^" bitw_and)*
 bitw_and: shift_expr ("&" shift_expr)*
 shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
 subtr_expr: addn_expr ("-" addn_expr)*
-addn_expr: mdr_expr ("+" _f* mdr_expr)*
+addn_expr: mdr_expr ("+" mdr_expr)*
 mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
@@ -104,14 +103,7 @@ attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
 call_expr: ["."] call // TODO: check precedence
-call: generic_call
-    | indented_call
-    | indented_call2
-    | indented_call3
-generic_call: NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
-indented_call: NAME "(" expr _NL _INDENT ")" _NL* _DEDENT
-indented_call2: NAME "(" _NL _INDENT expr ("," _NL* expr)* ")" _NL* _DEDENT
-indented_call3: NAME "(" _NL _INDENT expr ("," _NL* expr)* _NL* _DEDENT ")"
+call: NAME "(" [expr ("," expr)*] ")"
 atom: "(" expr ")"
     | array
     | dict
@@ -124,17 +116,16 @@ literal: NUMBER
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
-array: "[" _f* [expr _f* ("," _f* expr _f*)* ["," _f*]] "]" // TODO: fix dat hacks?
-dict: "{" _f* [attr_expr ":" _f* expr _f* ("," _f* attr_expr ":" _f* expr _f*)* ["," _f*]] "}"
-    | "{" _f* [attr_expr "=" _f* expr _f* ("," _f* attr_expr "=" _f* expr _f*)* ["," _f*]] "}"
-_f: _NL | _INDENT | _DEDENT
+array: "[" [expr ("," expr)* [","]] "]"
+dict: "{" [attr_expr ":" expr ("," attr_expr ":" expr)* [","]] "}"
+    | "{" [attr_expr "=" expr ("," attr_expr "=" expr)* [","]] "}"
 
 TYPE: NAME
 _NL: /(\r?\n[\t ]*)+/
 _WS: WS
-string: REGULAR_STRING | LONG_STRING
+string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
-LONG_STRING.2: /""".*?(?<!\\)(\\\\)*?"""/is
+LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is
 COMMENT: /#[^\n]*/
 LINE_CONT: /\\[\t \f]*\r?\n/
 

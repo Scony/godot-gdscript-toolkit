@@ -1,7 +1,7 @@
-# func foo(aaa,
-# 		 bbb,
-# 		 ccc,ddd):
-# 	pass
+func foo(aaa,
+		 bbb,
+		 ccc,ddd):
+	pass
 
 func bar(
 	xxx,
@@ -9,7 +9,7 @@ func bar(
 ):
 	pass
 
-# func baz(
-# 	xxx,
-# 	yyy, zzz):
-# 	pass
+func baz(
+	xxx,
+	yyy, zzz):
+	pass
