@@ -36,8 +36,9 @@ setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME "=" expr
 onready_stmt: "onready" class_var_stmt
 
-class_def: "class" NAME ":" suite
-suite: _NL _INDENT class_stmt+ _DEDENT
+class_def: "class" NAME ":" class_body
+class_body: _NL _INDENT class_stmt_chain _DEDENT
+class_stmt_chain: class_stmt* [simple_class_stmt]
 
 func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" func_body
 func_args: func_arg ("," func_arg)*
@@ -47,7 +48,8 @@ func_arg: func_arg_regular
 func_arg_regular: ["var"] NAME ["=" atom]
 func_arg_inf: ["var"] NAME ":=" atom
 func_arg_typed: ["var"] NAME ":" TYPE ["=" atom]
-func_body: _NL _INDENT func_stmt+ _DEDENT
+func_body: _NL _INDENT func_stmt_chain _DEDENT
+func_stmt_chain: func_stmt* [simple_func_stmt]
 func_stmt: simple_func_stmt _NL | compound_func_stmt | _NL
 simple_func_stmt: pass_stmt
                 | return_stmt
