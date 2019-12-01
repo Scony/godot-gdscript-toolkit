@@ -1,3 +1,5 @@
+import sys
+
 from lark import Lark
 import lark.indenter
 
@@ -11,6 +13,8 @@ class Indenter(lark.indenter.Indenter):
 
 parser = Lark.open('gdscript.lark', postlex=Indenter(), parser='lalr')
 
-with open('scripts/recursive_tool.gd', 'r') as fh:
-    content = fh.read()
-    print(parser.parse(content).pretty())
+if __name__ == '__main__':
+    for arg in sys.argv[1:]:
+        with open(arg, 'r') as fh:
+            content = fh.read()
+            print(parser.parse(content).pretty())

@@ -39,3 +39,6 @@ func ret2():
 
 func set_glob(g):
 	glob = g
+
+func fun(a,b):
+	pass

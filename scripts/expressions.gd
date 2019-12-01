@@ -1,3 +1,4 @@
+const XXXX = preload('functions.gd')
 func bar():
 	pass
 func foo():
@@ -33,3 +34,5 @@ func foo():
 	x[10]
 	bar()
 	(2+2)
+	var xxxx = XXXX.new()
+	xxxx.fun(1, 2)
