@@ -77,7 +77,7 @@ expr: test_expr
     | assnmtn_expr
 assnmtn_expr: lvalue assnmtn_op expr
 assnmtn_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
-lvalue: attr_expr             // TODO: shirnk, it's too wide
+lvalue: attr_expr             // TODO: shrink, it's too wide probably
 test_expr: or_test ["if" or_test "else" test_expr]
 or_test: and_test (("or" | "||") and_test)*
 and_test: not_test (("and" | "&&") not_test)*
@@ -109,8 +109,9 @@ literal: NUMBER
        | STRING
        | node_path
        | get_node
-node_path: "@" STRING                // TODO: check if 'x' or """x""" applies
-get_node: "$" (NAME | STRING)        // TODO: same
+node_path: "@" STRING
+get_node: "$" (path | STRING)
+path: NAME ("/" NAME)*
 array: "[" _f* [expr _f* ("," _f* expr _f*)* ["," _f*]] "]" // TODO: fix dat hacks?
 dict: "{" _f* [expr ":" _f* expr _f* ("," _f* expr ":" _f* expr _f*)* ["," _f*]] "}"
 _f: _NL | _INDENT | _DEDENT

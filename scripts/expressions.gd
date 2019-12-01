@@ -1,3 +1,4 @@
+extends Node
 const XXXX = preload('functions.gd')
 func bar():
 	pass
