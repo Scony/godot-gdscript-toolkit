@@ -21,9 +21,17 @@ classname_stmt: "class_name" NAME [ "," STRING ]
 export_stmt: export_inf | export_typed
 export_inf: "export" var_assigned [setget]
 export_typed: "export" "(" TYPE ")" class_var_stmt
-class_var_stmt: (var_empty | var_assigned) [setget]
+class_var_stmt: var_stmt [setget]
+var_stmt: var_empty
+        | var_assigned
+        | var_typed
+        | var_typed_assgnd
+        | var_inf
 var_empty: "var" NAME
 var_assigned: "var" NAME "=" expr
+var_typed: "var" NAME ":" TYPE
+var_typed_assgnd: var_typed "=" expr
+var_inf: "var" NAME ":=" expr
 setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME "=" expr
 onready_stmt: "onready" class_var_stmt
@@ -31,9 +39,14 @@ onready_stmt: "onready" class_var_stmt
 class_def: "class" NAME ":" suite
 suite: _NL _INDENT class_stmt+ _DEDENT
 
-func_def: "func" NAME "(" [func_args] "):" func_body
+func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" func_body
 func_args: func_arg ("," func_arg)*
-func_arg: ["var"] NAME
+func_arg: func_arg_regular
+        | func_arg_inf
+        | func_arg_typed
+func_arg_regular: ["var"] NAME ["=" atom]
+func_arg_inf: ["var"] NAME ":=" atom
+func_arg_typed: ["var"] NAME ":" TYPE ["=" atom]
 func_body: _NL _INDENT func_stmt+ _DEDENT
 func_stmt: simple_func_stmt _NL | compound_func_stmt | _NL
 simple_func_stmt: pass_stmt
@@ -46,7 +59,7 @@ compound_func_stmt: if_stmt
                   | match_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
-func_var_stmt: var_empty | var_assigned
+func_var_stmt: var_stmt
 if_stmt: "if" expr ":" func_body ("elif" expr ":" func_body)* [ "else" ":" func_body ]
 while_stmt: "while" expr ":" func_body
 for_stmt: "for" NAME "in" expr ":" func_body
@@ -81,11 +94,12 @@ addn_expr: mdr_expr ("+" mdr_expr)*
 mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 neg_expr: "-" neg_expr | bitw_not
 bitw_not: "~" bitw_not | type_test
-type_test: attr_expr ("is" atom)*
+type_test: type_cast ("is" atom)*
+type_cast: attr_expr ("as" TYPE)* // TODO: check precedence
 attr_expr: subscr_expr ("." subscr_expr)*
 subscr_expr: subscr_expr "[" expr "]"
            | (call_expr | atom)
-call_expr: ["."] NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")"
+call_expr: ["."] NAME "(" [_f* expr (_f* "," _f* expr)*] _f* ")" // TODO: check precedence
 atom: "(" expr ")"
     | array
     | dict
