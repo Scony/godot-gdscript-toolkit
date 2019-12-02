@@ -18,13 +18,35 @@ The grammar and parser are mostly done, but still under some WIP.
 To install this project you will need `python3` and `pip`. The command is as follows:
 
 ```
-pip install git+https://github.com/Scony/godot-gdscript-toolkit
+$ pip install git+https://github.com/Scony/godot-gdscript-toolkit
 ```
+
+## Parser
+
+To run a parser you need to perform installation first. Once done, you can run e.g.:
+
+```
+$ gdparse tests/valid-gd-scripts/recursive_tool.gd -p
+start
+  class_def
+    X
+    class_body
+      tool_stmt
+      signal_stmt	sss
+  class_def
+    Y
+    class_body
+      tool_stmt
+      signal_stmt	sss
+  tool_stmt
+```
+
+If parser succeeded, it will return the exit code `0`.
 
 ## Running tests
 
 To run tests you will need `python` and `tox`. To invoke test suite run:
 
 ```
-tox
+$ tox
 ```
