@@ -14,4 +14,10 @@ class Indenter(indenter.Indenter):
     tab_len = 4                 # TODO: guess
 
 _self_dir = os.path.dirname(os.path.abspath(Path(__file__).resolve()))
-parser = Lark.open(os.path.join(_self_dir, 'gdscript.lark'), postlex=Indenter(), parser='lalr')
+
+parser = Lark.open(
+    os.path.join(_self_dir, 'gdscript.lark'),
+    postlex=Indenter(),
+    parser='lalr',
+    start='start'
+)
