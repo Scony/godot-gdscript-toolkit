@@ -1,2 +1,4 @@
 __pycache__
 misc/
+.tox
+gdtoolkit.egg-info/
