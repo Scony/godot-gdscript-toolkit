@@ -1,0 +1,16 @@
+sudo: false
+dist: trusty
+
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+
+cache: pip
+
+install:
+  - pip install tox
+
+script:
+  - tox
