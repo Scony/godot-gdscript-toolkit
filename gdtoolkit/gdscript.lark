@@ -1,4 +1,4 @@
-start: class_stmt*
+start: _class_stmt_chain
 
 ?class_stmt: (simple_class_stmt _NL) | compound_class_stmt | _NL
 ?simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
