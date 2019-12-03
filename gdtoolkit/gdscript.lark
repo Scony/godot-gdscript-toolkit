@@ -3,17 +3,17 @@ start: _class_stmt_chain
 ?class_stmt: (simple_class_stmt _NL) | compound_class_stmt | _NL
 ?simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
 ?single_class_stmt: tool_stmt
-                 | signal_stmt
-                 | extends_stmt
-                 | classname_stmt
-                 | class_var_stmt
-                 | const_stmt
-                 | export_stmt
-                 | onready_stmt
+                  | signal_stmt
+                  | extends_stmt
+                  | classname_stmt
+                  | class_var_stmt
+                  | const_stmt
+                  | export_stmt
+                  | onready_stmt
 ?compound_class_stmt: class_def
-                   | enum_def
-                   | "static" func_def -> static_func_def
-                   | func_def
+                    | enum_def
+                    | "static" func_def -> static_func_def
+                    | func_def
 
 tool_stmt: "tool"
 signal_stmt: "signal" NAME ["(" NAME ("," NAME)* ")"]
@@ -50,18 +50,18 @@ func_arg: func_arg_regular
 func_arg_regular: ["var"] NAME ["=" expr]
 func_arg_inf: ["var"] NAME ":=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
-func_body: _NL _INDENT func_stmt_chain _DEDENT
-func_stmt_chain: func_stmt* [simple_func_stmt]
-func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
-simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
-single_func_stmt: pass_stmt
-                | return_stmt
-                | func_var_stmt
-                | expr
-compound_func_stmt: if_stmt
-                  | while_stmt
-                  | for_stmt
-                  | match_stmt
+func_body: _NL _INDENT _func_stmt_chain _DEDENT
+_func_stmt_chain: func_stmt* [simple_func_stmt]
+?func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
+?simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
+?single_func_stmt: pass_stmt
+                 | return_stmt
+                 | func_var_stmt
+                 | expr
+?compound_func_stmt: if_stmt
+                   | while_stmt
+                   | for_stmt
+                   | match_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
 func_var_stmt: var_stmt
@@ -82,39 +82,42 @@ expr: test_expr
     | assnmtn_expr
 assnmtn_expr: lvalue assnmtn_op expr
 assnmtn_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
-lvalue: attr_expr             // TODO: shrink, it's too wide probably
-test_expr: or_test ["if" or_test "else" test_expr]
-or_test: and_test (("or" | "||") and_test)*
-and_test: not_test (("and" | "&&") not_test)*
-not_test: ("not" | "!") not_test | content_test
-content_test: comparison ("in" comparison)*
-comparison: bitw_or (comp_op bitw_or)*
+?lvalue: attr_expr             // TODO: shrink, it's too wide probably
+?test_expr: or_test ["if" or_test "else" test_expr]
+?or_test: and_test (("or" | "||") and_test)*
+?and_test: not_test (("and" | "&&") not_test)*
+?not_test: ("not" | "!") not_test | content_test
+?content_test: comparison ("in" comparison)*
+?comparison: bitw_or (comp_op bitw_or)*
 comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
-bitw_or: bitw_xor ("|" bitw_xor)*
-bitw_xor: bitw_and ("^" bitw_and)*
-bitw_and: shift_expr ("&" shift_expr)*
-shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
-subtr_expr: addn_expr ("-" addn_expr)*
-addn_expr: mdr_expr ("+" mdr_expr)*
-mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
-neg_expr: "-" neg_expr | bitw_not
-bitw_not: "~" bitw_not | type_test
-type_test: type_cast ("is" attr_expr)*
-type_cast: attr_expr ("as" TYPE)* // TODO: fix precedence (same as "is" probably(!))
-attr_expr: subscr_expr ("." subscr_expr)*
-subscr_expr: subscr_expr "[" expr "]"
-           | (call_expr | atom)
-call_expr: ["."] call // TODO: fix precedence (it has lower precedence than . and [])
-call: NAME "(" [expr ("," expr)*] ")"
-atom: "(" expr ")"
-    | array
-    | dict
-    | NAME
-    | literal
-literal: NUMBER
-       | string
-       | node_path
-       | get_node
+?bitw_or: bitw_xor ("|" bitw_xor)*
+?bitw_xor: bitw_and ("^" bitw_and)*
+?bitw_and: shift_expr ("&" shift_expr)*
+?shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
+?subtr_expr: addn_expr ("-" addn_expr)*
+?addn_expr: mdr_expr ("+" mdr_expr)*
+?mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
+?neg_expr: "-" neg_expr | bitw_not
+?bitw_not: "~" bitw_not | type_test
+?type_test: type_cast ("is" attr_expr)*
+?type_cast: attr_expr ("as" TYPE)* // TODO: fix precedence (same as "is" probably(!))
+?attr_expr: subscr_expr ("." subscr_expr)*
+?subscr_expr: subscr_expr "[" expr "]"
+            | (call_expr | atom)
+?call_expr: ["."] call // TODO: fix precedence (it has lower precedence than . and [])
+?call: NAME "(" [expr ("," expr)*] ")"
+?atom: "(" expr ")" -> par_expr
+     | array
+     | dict
+     | "null" -> null
+     | NAME
+     | HEX
+     | literal
+?literal: NUMBER
+        | string
+        | node_path
+        | get_node
+HEX.2: /0x[a-fA-F0-9]+/
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
@@ -123,11 +126,12 @@ dict: "{" [attr_expr ":" expr ("," attr_expr ":" expr)* [","]] "}"
     | "{" [attr_expr "=" expr ("," attr_expr "=" expr)* [","]] "}"
 
 TYPE: NAME
-_NL: ( /\r?\n[\t ]*/ | COMMENT )+
-_WS: WS
+
 string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
 LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is
+
+_NL: ( /\r?\n[\t ]*/ | COMMENT )+
 COMMENT: /#[^\n]*/
 LINE_CONT: /\\[\t \f]*\r?\n/
 
@@ -137,9 +141,6 @@ LINE_CONT: /\\[\t \f]*\r?\n/
 %ignore COMMENT
 %ignore LINE_CONT
 
-%import common.NUMBER
-%import common.WS
 %import common.WS_INLINE
 %import common.CNAME -> NAME
-%import common.ESCAPED_STRING
-%import common._STRING_ESC_INNER
+%import common.NUMBER
