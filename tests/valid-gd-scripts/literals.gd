@@ -11,6 +11,10 @@ func foo():
 	@"asdf/dfg"
 	$Node
 	$"../xxx"
+	0xaf01
+	0xAfA01
+	012
+	null
 
 func assert_string_contains(text, search, match_case=true):
 	var empty_search = "Expected text and search strings to be non-empty. You passed \"%s\" and \"%s\"."
