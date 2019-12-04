@@ -21,3 +21,5 @@ var z = {
 	q = 5,
 	w = 7,
 }
+var q = { str(Color.red): 1 }
+var qq = { 1+2: 1 }
