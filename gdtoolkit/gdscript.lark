@@ -80,9 +80,8 @@ enum_entry: NAME ["=" NUMBER]
 
 expr: test_expr
     | assnmtn_expr
-assnmtn_expr: lvalue assnmtn_op expr
+assnmtn_expr: attr_expr assnmtn_op test_expr
 assnmtn_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
-?lvalue: attr_expr
 ?test_expr: or_test ["if" or_test "else" test_expr]
 ?or_test: and_test (("or" | "||") and_test)*
 ?and_test: not_test (("and" | "&&") not_test)*
@@ -104,13 +103,13 @@ comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
 !?call_expr: ["."] NAME _call_arglist
            | getattr _call_arglist
            | attr_expr
-!_call_arglist: "(" [expr ("," expr)*] ")"
+!_call_arglist: "(" [test_expr ("," test_expr)*] ")"
 !?attr_expr: getattr
            | subscr_expr
 ?getattr: call_expr ("." NAME)+
-?subscr_expr: call_expr "[" expr "]"
+?subscr_expr: call_expr "[" test_expr "]"
             | atom
-?atom: "(" expr ")" -> par_expr
+?atom: "(" test_expr ")" -> par_expr
      | array
      | dict
      | "null" -> null
@@ -125,9 +124,9 @@ HEX.2: /0x[a-fA-F0-9]+/
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
-array: "[" [expr ("," expr)* [","]] "]"
-dict: "{" [attr_expr ":" expr ("," attr_expr ":" expr)* [","]] "}"
-    | "{" [attr_expr "=" expr ("," attr_expr "=" expr)* [","]] "}"
+array: "[" [test_expr ("," test_expr)* [","]] "]"
+dict: "{" [test_expr ":" test_expr ("," test_expr ":" test_expr)* [","]] "}"
+    | "{" [test_expr "=" test_expr ("," test_expr "=" test_expr)* [","]] "}"
 
 TYPE: NAME
 
