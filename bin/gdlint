@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""GDScript linter
+
+By default, nothing is being printed on success and the exitcode is 0.
+On failure, python exception or list of problems is shown and exitcode is non-zero.
+
+Usage:
+  gdlint <file>... [options]
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+"""
+import sys
+import pkg_resources
+
+from docopt import docopt
+from gdtoolkit.linter import lint_code
+
+
+arguments = docopt(__doc__, version='gdlint {}'.format(
+    pkg_resources.get_distribution("gdtoolkit").version))
+
+if not isinstance(arguments, dict):
+    print(arguments)
+    sys.exit(0)
+
+for file_path in arguments['<file>']:
+    with open(file_path, 'r') as fh: # TODO: handle exception
+        content = fh.read()
+        problems = lint_code(content)
+        if len(problems) > 0:
+            for problem in problems:
+                print(problem)
+            sys.exit(1)
