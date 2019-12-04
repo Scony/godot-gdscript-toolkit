@@ -15,6 +15,7 @@ setup(
     },
     scripts=[
         'bin/gdparse',
+        'bin/gdlint',
     ],
     include_package_data=True,
     install_requires=[
