@@ -29,7 +29,8 @@ for file_path in arguments['<file>']:
     with open(file_path, 'r') as fh: # TODO: handle exception
         content = fh.read()
         problems = lint_code(content)
-        if len(problems) > 0:
+        if len(problems) > 0:   # TODO: friendly frontend like in halint
+            print('{}:'.format(file_path))
             for problem in problems:
                 print(problem)
             sys.exit(1)
