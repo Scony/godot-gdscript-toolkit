@@ -1,16 +1,15 @@
 import re
-from dataclasses import dataclass
 
 from .parser import parser_with_metadata_gathering
 
 
-@dataclass
 class Problem:
-    code: int
-    name: str
-    description: str
-    line: int
-    column: int
+    def __init__(self, code: str, name: str, description: str, line: int, column: int):
+        self.code = code
+        self.name = name
+        self.description = description
+        self.line = line
+        self.column = column
 
 
 def function_name_check(parse_tree):
