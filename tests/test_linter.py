@@ -56,3 +56,33 @@ def test_function_args_nok(code):
     assert len(outcome) == 1
     assert outcome[0].name == 'function-arguments-number'
     assert outcome[0].line == 2
+
+
+@pytest.mark.parametrize('code', [
+# """
+# class_name SomeClassName
+# """,
+"""
+class SubClassName:
+    tool
+""",
+])
+def test_class_name_ok(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 0
+
+
+@pytest.mark.parametrize('code', [
+# """
+# class_name some_class_name
+# """,
+"""
+class sub_class_name:
+    tool
+""",
+])
+def test_class_name_nok(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 1
+    assert outcome[0].name == 'class-name'
+    assert outcome[0].line == 2
