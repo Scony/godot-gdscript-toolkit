@@ -25,7 +25,8 @@ class Problem:
 
 def lint_code(gdscript_code):
     parse_tree = parser_with_metadata_gathering.parse(gdscript_code)
-    return _function_name_check(parse_tree) + _function_args_num_check(parse_tree)
+    return _function_name_check(parse_tree) + _function_args_num_check(parse_tree) +\
+        _class_name_check(parse_tree)
 
 
 def _function_name_check(parse_tree):
@@ -63,4 +64,22 @@ def _function_args_num_check(parse_tree): # TODO: consolidate
                     line=func_name_token.line,
                     column=func_name_token.column,
                 ))
+    return problems
+
+
+def _class_name_check(parse_tree): # TODO: consolidate
+    problems = []
+    class_name_regex = re.compile('([A-Z][a-z]*)+')
+    for class_def in parse_tree.find_data('class_def'):
+        class_name_token = class_def.children[0]
+        assert class_name_token.type == 'NAME'
+        class_name = class_name_token.value
+        if class_name_regex.match(class_name) is None:
+            problems.append(Problem(
+                code='1',
+                name='class-name',
+                description='Class name "{}" is not valid'.format(class_name),
+                line=class_name_token.line,
+                column=class_name_token.column,
+            ))
     return problems
