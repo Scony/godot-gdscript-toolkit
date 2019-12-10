@@ -59,9 +59,9 @@ def test_function_args_nok(code):
 
 
 @pytest.mark.parametrize('code', [
-# """
-# class_name SomeClassName
-# """,
+"""
+class_name SomeClassName
+""",
 """
 class SubClassName:
     tool
@@ -73,9 +73,9 @@ def test_class_name_ok(code):
 
 
 @pytest.mark.parametrize('code', [
-# """
-# class_name some_class_name
-# """,
+"""
+class_name some_class_name
+""",
 """
 class sub_class_name:
     tool

@@ -34,6 +34,7 @@ def lint_code(gdscript_code):
     rule_name_tokens = _gather_rule_name_tokens(parse_tree, [
         'class_def',
         'func_def',
+        'classname_stmt',
     ])
     checks_to_run_w_tree = [
         partial(_function_args_num_check, DEFAULT_CONFIG['func-args-num-max']),
@@ -41,10 +42,27 @@ def lint_code(gdscript_code):
     problem_clusters = map(lambda f: f(parse_tree), checks_to_run_w_tree)
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_wo_tree = [
-        partial(_generic_name_check, DEFAULT_CONFIG['func-name-regex'], rule_name_tokens['func_def'],
-                'function-name', 'Function name "{}" is not valid'),
-        partial(_generic_name_check, DEFAULT_CONFIG['class-name-regex'], rule_name_tokens['class_def'],
-                'class-name', 'Class name "{}" is not valid'),
+        partial(
+            _generic_name_check,
+            DEFAULT_CONFIG['func-name-regex'],
+            rule_name_tokens['func_def'],
+            'function-name',
+            'Function name "{}" is not valid',
+        ),
+        partial(
+            _generic_name_check,
+            DEFAULT_CONFIG['class-name-regex'],
+            rule_name_tokens['class_def'],
+            'class-name',
+            'Class name "{}" is not valid',
+        ),
+        partial(
+            _generic_name_check,
+            DEFAULT_CONFIG['class-name-regex'],
+            rule_name_tokens['classname_stmt'],
+            'class-name',
+            'Class name "{}" is not valid',
+        ),
     ]
     problem_clusters = map(lambda f: f(), checks_to_run_wo_tree)
     problems += [problem for cluster in problem_clusters for problem in cluster]
