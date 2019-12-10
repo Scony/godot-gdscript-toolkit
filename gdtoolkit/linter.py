@@ -1,7 +1,7 @@
 import re
 from functools import partial
 
-from lark import Tree
+from lark import Tree, Token
 
 from .parser import parser_with_metadata_gathering
 
@@ -33,34 +33,25 @@ class Problem:                  # TODO: use dataclass if python 3.6 support is d
 
 def lint_code(gdscript_code):
     parse_tree = parser_with_metadata_gathering.parse(gdscript_code)
-    checks_to_run = [
-        partial(_function_name_check, DEFAULT_CONFIG['func-name-regex']),
+    rule_name_tokens = _gather_rule_name_tokens(parse_tree, [
+        'class_def',
+        'func_def',
+    ])
+    checks_to_run_w_tree = [
         partial(_function_args_num_check, DEFAULT_CONFIG['func-args-num-max']),
-        partial(_class_name_check, DEFAULT_CONFIG['class-name-regex']),
     ]
-    problem_clusters = map(lambda f: f(parse_tree), checks_to_run)
-    return [problem for cluster in problem_clusters for problem in cluster]
-
-
-def _function_name_check(func_name_regex, parse_tree):
-    problems = []
-    func_name_regex = re.compile(func_name_regex)
-    for func_def in parse_tree.find_data('func_def'):
-        func_name_token = func_def.children[0]
-        assert func_name_token.type == 'NAME'
-        func_name = func_name_token.value
-        if func_name_regex.match(func_name) is None:
-            problems.append(Problem(
-                code='1',
-                name='function-name',
-                description='Function name "{}" is not valid'.format(func_name),
-                line=func_name_token.line,
-                column=func_name_token.column,
-            ))
+    problem_clusters = map(lambda f: f(parse_tree), checks_to_run_w_tree)
+    problems = [problem for cluster in problem_clusters for problem in cluster]
+    checks_to_run_wo_tree = [
+        partial(_class_name_check, DEFAULT_CONFIG['class-name-regex'], rule_name_tokens['class_def']),
+        partial(_function_name_check, DEFAULT_CONFIG['func-name-regex'], rule_name_tokens['func_def']),
+    ]
+    problem_clusters = map(lambda f: f(), checks_to_run_wo_tree)
+    problems += [problem for cluster in problem_clusters for problem in cluster]
     return problems
 
 
-def _function_args_num_check(threshold, parse_tree): # TODO: consolidate
+def _function_args_num_check(threshold, parse_tree):
     problems = []
     for func_def in parse_tree.find_data('func_def'):
         func_name_token = func_def.children[0]
@@ -79,12 +70,27 @@ def _function_args_num_check(threshold, parse_tree): # TODO: consolidate
     return problems
 
 
-def _class_name_check(class_name_regex, parse_tree): # TODO: consolidate
+def _function_name_check(func_name_regex, func_name_tokens):
+    problems = []
+    func_name_regex = re.compile(func_name_regex)
+    for func_name_token in func_name_tokens:
+        assert func_name_token.type == 'NAME'
+        func_name = func_name_token.value
+        if func_name_regex.match(func_name) is None:
+            problems.append(Problem(
+                code='1',
+                name='function-name',
+                description='Function name "{}" is not valid'.format(func_name),
+                line=func_name_token.line,
+                column=func_name_token.column,
+            ))
+    return problems
+
+
+def _class_name_check(class_name_regex, class_name_tokens):
     problems = []
     class_name_regex = re.compile(class_name_regex)
-    for class_def in parse_tree.find_data('class_def'):
-        class_name_token = class_def.children[0]
-        assert class_name_token.type == 'NAME'
+    for class_name_token in class_name_tokens:
         class_name = class_name_token.value
         if class_name_regex.match(class_name) is None:
             problems.append(Problem(
@@ -95,3 +101,21 @@ def _class_name_check(class_name_regex, parse_tree): # TODO: consolidate
                 column=class_name_token.column,
             ))
     return problems
+
+
+def _gather_rule_name_tokens(parse_tree, rules):
+    name_tokens_per_rule = {rule:[] for rule in rules}
+    for node in parse_tree.iter_subtrees():
+        if isinstance(node, Tree) and node.data in rules:
+            rule_name = node.data
+            name_token = _find_name_token(node)
+            assert name_token is not None
+            name_tokens_per_rule[rule_name].append(name_token)
+    return name_tokens_per_rule
+
+
+def _find_name_token(tree):
+    for child in tree.children:
+        if isinstance(child, Token) and child.type == 'NAME':
+            return child
+    return None
