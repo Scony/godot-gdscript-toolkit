@@ -41,8 +41,10 @@ def lint_code(gdscript_code):
     problem_clusters = map(lambda f: f(parse_tree), checks_to_run_w_tree)
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_wo_tree = [
-        partial(_class_name_check, DEFAULT_CONFIG['class-name-regex'], rule_name_tokens['class_def']),
-        partial(_function_name_check, DEFAULT_CONFIG['func-name-regex'], rule_name_tokens['func_def']),
+        partial(_generic_name_check, DEFAULT_CONFIG['func-name-regex'], rule_name_tokens['func_def'],
+                'function-name', 'Function name "{}" is not valid'),
+        partial(_generic_name_check, DEFAULT_CONFIG['class-name-regex'], rule_name_tokens['class_def'],
+                'class-name', 'Class name "{}" is not valid'),
     ]
     problem_clusters = map(lambda f: f(), checks_to_run_wo_tree)
     problems += [problem for cluster in problem_clusters for problem in cluster]
@@ -67,33 +69,17 @@ def _function_args_num_check(threshold, parse_tree):
     return problems
 
 
-def _function_name_check(func_name_regex, func_name_tokens):
+def _generic_name_check(name_regex, name_tokens, problem_name, description_template):
     problems = []
-    func_name_regex = re.compile(func_name_regex)
-    for func_name_token in func_name_tokens:
-        assert func_name_token.type == 'NAME'
-        func_name = func_name_token.value
-        if func_name_regex.match(func_name) is None:
+    name_regex = re.compile(name_regex)
+    for name_token in name_tokens:
+        name = name_token.value
+        if name_regex.match(name) is None:
             problems.append(Problem(
-                name='function-name',
-                description='Function name "{}" is not valid'.format(func_name),
-                line=func_name_token.line,
-                column=func_name_token.column,
-            ))
-    return problems
-
-
-def _class_name_check(class_name_regex, class_name_tokens):
-    problems = []
-    class_name_regex = re.compile(class_name_regex)
-    for class_name_token in class_name_tokens:
-        class_name = class_name_token.value
-        if class_name_regex.match(class_name) is None:
-            problems.append(Problem(
-                name='class-name',
-                description='Class name "{}" is not valid'.format(class_name),
-                line=class_name_token.line,
-                column=class_name_token.column,
+                name=problem_name,
+                description=description_template.format(name),
+                line=name_token.line,
+                column=name_token.column,
             ))
     return problems
 
