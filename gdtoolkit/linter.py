@@ -7,10 +7,10 @@ from .parser import parser_with_metadata_gathering
 
 
 DEFAULT_CONFIG = {
-    'func-name-regex': r'[a-z_]+',
+    'func-name-regex': r'[a-z_][0-9a-z_]*',
     'func-args-num-max': 10,
-    'class-name-regex': r'([A-Z][a-z]*)+',
-    'signal-name-regex': r'[a-z][a-z_]*',
+    'class-name-regex': r'([A-Z][a-z0-9]*)+',
+    'signal-name-regex': r'[a-z][a-z_0-9]*',
 }
 
 
