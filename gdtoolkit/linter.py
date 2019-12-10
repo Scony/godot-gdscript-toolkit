@@ -14,8 +14,7 @@ DEFAULT_CONFIG = {
 
 
 class Problem:                  # TODO: use dataclass if python 3.6 support is dropped
-    def __init__(self, code: str, name: str, description: str, line: int, column: int):
-        self.code = code
+    def __init__(self, name: str, description: str, line: int, column: int):
         self.name = name
         self.description = description
         self.line = line
@@ -23,7 +22,6 @@ class Problem:                  # TODO: use dataclass if python 3.6 support is d
 
     def __repr__(self):
         return 'Problem({})'.format({
-            'code': self.code,
             'name': self.name,
             'description': self.description,
             'line': self.line,
@@ -61,7 +59,6 @@ def _function_args_num_check(threshold, parse_tree):
             args_num = len(func_def.children[1].children)
             if args_num > threshold:
                 problems.append(Problem(
-                    code='2',
                     name='function-arguments-number',
                     description='Function "{}" has more than {} arguments'.format(func_name, threshold),
                     line=func_name_token.line,
@@ -78,7 +75,6 @@ def _function_name_check(func_name_regex, func_name_tokens):
         func_name = func_name_token.value
         if func_name_regex.match(func_name) is None:
             problems.append(Problem(
-                code='1',
                 name='function-name',
                 description='Function name "{}" is not valid'.format(func_name),
                 line=func_name_token.line,
@@ -94,7 +90,6 @@ def _class_name_check(class_name_regex, class_name_tokens):
         class_name = class_name_token.value
         if class_name_regex.match(class_name) is None:
             problems.append(Problem(
-                code='1',
                 name='class-name',
                 description='Class name "{}" is not valid'.format(class_name),
                 line=class_name_token.line,
