@@ -86,3 +86,31 @@ def test_class_name_nok(code):
     assert len(outcome) == 1
     assert outcome[0].name == 'class-name'
     assert outcome[0].line == 2
+
+
+@pytest.mark.parametrize('code', [
+"""
+signal some_signal
+""",
+"""
+signal signal(a, b, c)
+""",
+])
+def test_signal_name_ok(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 0
+
+
+@pytest.mark.parametrize('code', [
+"""
+signal someSignal
+""",
+"""
+signal Signal(a, b)
+""",
+])
+def test_signal_name_nok(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 1
+    assert outcome[0].name == 'signal-name'
+    assert outcome[0].line == 2

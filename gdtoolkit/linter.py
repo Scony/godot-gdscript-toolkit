@@ -10,6 +10,7 @@ DEFAULT_CONFIG = {
     'func-name-regex': r'[a-z_]+',
     'func-args-num-max': 10,
     'class-name-regex': r'([A-Z][a-z]*)+',
+    'signal-name-regex': r'[a-z][a-z_]*',
 }
 
 
@@ -35,6 +36,7 @@ def lint_code(gdscript_code):
         'class_def',
         'func_def',
         'classname_stmt',
+        'signal_stmt',
     ])
     checks_to_run_w_tree = [
         partial(_function_args_num_check, DEFAULT_CONFIG['func-args-num-max']),
@@ -62,6 +64,13 @@ def lint_code(gdscript_code):
             rule_name_tokens['classname_stmt'],
             'class-name',
             'Class name "{}" is not valid',
+        ),
+        partial(
+            _generic_name_check,
+            DEFAULT_CONFIG['signal-name-regex'],
+            rule_name_tokens['signal_stmt'],
+            'signal-name',
+            'Signal name "{}" is not valid',
         ),
     ]
     problem_clusters = map(lambda f: f(), checks_to_run_wo_tree)
@@ -92,7 +101,7 @@ def _generic_name_check(name_regex, name_tokens, problem_name, description_templ
     name_regex = re.compile(name_regex)
     for name_token in name_tokens:
         name = name_token.value
-        if name_regex.match(name) is None:
+        if name_regex.fullmatch(name) is None:
             problems.append(Problem(
                 name=problem_name,
                 description=description_template.format(name),
