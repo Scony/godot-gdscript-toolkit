@@ -7,10 +7,16 @@ from .parser import parser_with_metadata_gathering
 
 
 DEFAULT_CONFIG = {
-    'func-name-regex': r'[a-z_][0-9a-z_]*',
-    'func-args-num-max': 10,
-    'class-name-regex': r'([A-Z][a-z0-9]*)+',
-    'signal-name-regex': r'[a-z][a-z_0-9]*',
+    'enable': [                 # TODO: implement
+        'function-name',
+        'function-arguments-number',
+        'class-name',
+        'signal-name',
+    ],
+    'function-name': r'[a-z_][0-9a-z_]*',
+    'function-arguments-number': 10,
+    'class-name': r'([A-Z][a-z0-9]*)+',
+    'signal-name': r'[a-z][a-z_0-9]*',
 }
 
 
@@ -30,7 +36,7 @@ class Problem:                  # TODO: use dataclass if python 3.6 support is d
         })
 
 
-def lint_code(gdscript_code):
+def lint_code(gdscript_code, config=DEFAULT_CONFIG):
     parse_tree = parser_with_metadata_gathering.parse(gdscript_code)
     rule_name_tokens = _gather_rule_name_tokens(parse_tree, [
         'class_def',
@@ -39,35 +45,35 @@ def lint_code(gdscript_code):
         'signal_stmt',
     ])
     checks_to_run_w_tree = [
-        partial(_function_args_num_check, DEFAULT_CONFIG['func-args-num-max']),
+        partial(_function_args_num_check, config['function-arguments-number']),
     ]
     problem_clusters = map(lambda f: f(parse_tree), checks_to_run_w_tree)
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_wo_tree = [
         partial(
             _generic_name_check,
-            DEFAULT_CONFIG['func-name-regex'],
+            config['function-name'],
             rule_name_tokens['func_def'],
             'function-name',
             'Function name "{}" is not valid',
         ),
         partial(
             _generic_name_check,
-            DEFAULT_CONFIG['class-name-regex'],
+            config['class-name'],
             rule_name_tokens['class_def'],
             'class-name',
             'Class name "{}" is not valid',
         ),
         partial(
             _generic_name_check,
-            DEFAULT_CONFIG['class-name-regex'],
+            config['class-name'],
             rule_name_tokens['classname_stmt'],
             'class-name',
             'Class name "{}" is not valid',
         ),
         partial(
             _generic_name_check,
-            DEFAULT_CONFIG['signal-name-regex'],
+            config['signal-name'],
             rule_name_tokens['signal_stmt'],
             'signal-name',
             'Signal name "{}" is not valid',

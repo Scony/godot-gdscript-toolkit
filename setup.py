@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'lark-parser>=0.7.8',
         'docopt>=0.6.2',
+        'pyyaml>=5.1',
     ],
     python_requires='>=3'
 )
