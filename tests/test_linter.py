@@ -7,11 +7,44 @@ def test_empty_code_linting():
     lint_code('')
 
 
-def test_function_name():       # TODO: ok case
-    code = """
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    pass
+""",
+"""
+func foo_bar():
+    pass
+""",
+"""
+func _foo():
+    pass
+""",
+"""
+func _foo_bar():
+    pass
+""",
+"""
+func _on_Button_pressed():
+    pass
+""",
+])
+def test_function_name_ok(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 0
+
+
+@pytest.mark.parametrize('code', [
+"""
+func some_Button_pressed():
+    pass
+""",
+"""
 func SomeName():
     pass
-"""
+""",
+])
+def test_function_name_nok(code):
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == 'function-name'
