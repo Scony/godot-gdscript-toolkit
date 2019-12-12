@@ -6,7 +6,7 @@ from lark import Tree, Token
 from .parser import parser_with_metadata_gathering
 
 
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG = {              # TODO: make immutable
     'function-name': r'[a-z_][0-9a-z_]*',
     'function-arguments-number': 10,
     'class-name': r'([A-Z][a-z0-9]*)+',
@@ -33,6 +33,7 @@ class Problem:                  # TODO: use dataclass if python 3.6 support is d
 
 
 def lint_code(gdscript_code, config=DEFAULT_CONFIG):
+    disable = config['disable']
     parse_tree = parser_with_metadata_gathering.parse(gdscript_code)
     rule_name_tokens = _gather_rule_name_tokens(parse_tree, [
         'class_def',
@@ -41,41 +42,58 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         'signal_stmt',
     ])
     checks_to_run_w_tree = [
-        partial(_function_args_num_check, config['function-arguments-number']),
+        (
+            'function-arguments-number',
+            partial(_function_args_num_check, config['function-arguments-number']),
+        ),
     ]
-    problem_clusters = map(lambda f: f(parse_tree), checks_to_run_w_tree)
+    problem_clusters = map(
+        lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
+    )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_wo_tree = [
-        partial(
-            _generic_name_check,
-            config['function-name'],
-            rule_name_tokens['func_def'],
+        (
             'function-name',
-            'Function name "{}" is not valid',
+            partial(
+                _generic_name_check,
+                config['function-name'],
+                rule_name_tokens['func_def'],
+                'function-name',
+                'Function name "{}" is not valid',
+            ),
         ),
-        partial(
-            _generic_name_check,
-            config['sub-class-name'],
-            rule_name_tokens['class_def'],
+        (
             'sub-class-name',
-            'Class name "{}" is not valid',
+            partial(
+                _generic_name_check,
+                config['sub-class-name'],
+                rule_name_tokens['class_def'],
+                'sub-class-name',
+                'Class name "{}" is not valid',
+            ),
         ),
-        partial(
-            _generic_name_check,
-            config['class-name'],
-            rule_name_tokens['classname_stmt'],
+        (
             'class-name',
-            'Class name "{}" is not valid',
+            partial(
+                _generic_name_check,
+                config['class-name'],
+                rule_name_tokens['classname_stmt'],
+                'class-name',
+                'Class name "{}" is not valid',
+            ),
         ),
-        partial(
-            _generic_name_check,
-            config['signal-name'],
-            rule_name_tokens['signal_stmt'],
+        (
             'signal-name',
-            'Signal name "{}" is not valid',
+            partial(
+                _generic_name_check,
+                config['signal-name'],
+                rule_name_tokens['signal_stmt'],
+                'signal-name',
+                'Signal name "{}" is not valid',
+            ),
         ),
     ]
-    problem_clusters = map(lambda f: f(), checks_to_run_wo_tree)
+    problem_clusters = map(lambda x: x[1]() if x[0] not in disable else [], checks_to_run_wo_tree)
     problems += [problem for cluster in problem_clusters for problem in cluster]
     return problems
 
