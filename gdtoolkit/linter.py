@@ -11,11 +11,13 @@ DEFAULT_CONFIG = {
         'function-name',
         'function-arguments-number',
         'class-name',
+        'sub-class-name',
         'signal-name',
     ],
     'function-name': r'[a-z_][0-9a-z_]*',
     'function-arguments-number': 10,
     'class-name': r'([A-Z][a-z0-9]*)+',
+    'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
     'signal-name': r'[a-z][a-z_0-9]*',
 }
 
@@ -59,9 +61,9 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         ),
         partial(
             _generic_name_check,
-            config['class-name'],
+            config['sub-class-name'],
             rule_name_tokens['class_def'],
-            'class-name',
+            'sub-class-name',
             'Class name "{}" is not valid',
         ),
         partial(
