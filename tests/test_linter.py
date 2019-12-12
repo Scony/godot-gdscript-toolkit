@@ -1,6 +1,6 @@
 import pytest
 
-from gdtoolkit.linter import lint_code
+from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 
 def test_empty_code_linting():
@@ -52,6 +52,9 @@ func foo(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11):
 """,
 ])
 def test_function_args_nok(code):
+    config_w_disable = DEFAULT_CONFIG.copy()
+    config_w_disable.update({'disable':['function-arguments-number']})
+    assert len(lint_code(code, config_w_disable)) == 0
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == 'function-arguments-number'
@@ -80,6 +83,9 @@ class_name _Some
 """,
 ])
 def test_class_name_nok(code):
+    config_w_disable = DEFAULT_CONFIG.copy()
+    config_w_disable.update({'disable':['class-name']})
+    assert len(lint_code(code, config_w_disable)) == 0
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == 'class-name'
@@ -112,6 +118,9 @@ class sub_class_name:
 """,
 ])
 def test_sub_class_name_nok(code):
+    config_w_disable = DEFAULT_CONFIG.copy()
+    config_w_disable.update({'disable':['sub-class-name']})
+    assert len(lint_code(code, config_w_disable)) == 0
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == 'sub-class-name'
@@ -139,7 +148,10 @@ signal someSignal
 signal Signal(a, b)
 """,
 ])
-def test_signal_name_nok(code):
+def test_signal_name_nok(code): # TODO: extract common func / make 2arg parametrization
+    config_w_disable = DEFAULT_CONFIG.copy()
+    config_w_disable.update({'disable':['signal-name']})
+    assert len(lint_code(code, config_w_disable)) == 0
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == 'signal-name'
