@@ -7,11 +7,11 @@ from .parser import parser_with_metadata_gathering
 
 
 DEFAULT_CONFIG = {              # TODO: make immutable
-    'function-name': r'[a-z_][0-9a-z_]*',
+    'function-name': r'(_on_[0-9a-zA-Z_]+|[a-z_][0-9a-z_]*)', # TODO: improve
     'function-arguments-number': 10,
     'class-name': r'([A-Z][a-z0-9]*)+',
     'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
-    'signal-name': r'[a-z][a-z_0-9]*',
+    'signal-name': r'[a-z][a-z_0-9]*', # TODO: improve
     'disable': [],
 }
 
