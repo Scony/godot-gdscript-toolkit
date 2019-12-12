@@ -67,7 +67,14 @@ else:
     with open(found_config_file_path, 'r') as fh:
         config = yaml.load(fh.read(), Loader=yaml.Loader)
 
-logging.info(config)
+logging.info("Loaded config:")
+for entry in config.items():
+    logging.info(entry)
+
+for key in DEFAULT_CONFIG:
+    if key not in config:
+        logging.info('Adding missing entry from defaults: %s', (key, DEFAULT_CONFIG[key]))
+        config[key] = DEFAULT_CONFIG[key]
 
 for file_path in arguments['<file>']:
     with open(file_path, 'r') as fh: # TODO: handle exception

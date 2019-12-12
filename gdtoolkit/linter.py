@@ -7,18 +7,12 @@ from .parser import parser_with_metadata_gathering
 
 
 DEFAULT_CONFIG = {
-    'enable': [                 # TODO: implement
-        'function-name',
-        'function-arguments-number',
-        'class-name',
-        'sub-class-name',
-        'signal-name',
-    ],
     'function-name': r'[a-z_][0-9a-z_]*',
     'function-arguments-number': 10,
     'class-name': r'([A-Z][a-z0-9]*)+',
     'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
     'signal-name': r'[a-z][a-z_0-9]*',
+    'disable': [],
 }
 
 
