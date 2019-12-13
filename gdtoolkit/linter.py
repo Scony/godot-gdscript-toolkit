@@ -5,6 +5,7 @@ from types import MappingProxyType
 from lark import Tree, Token
 
 from .parser import parser_with_metadata_gathering
+from . import Problem
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
 SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
@@ -26,22 +27,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # TODO: constant-name
     'disable': [],
 })
-
-
-class Problem:                  # TODO: use dataclass if python 3.6 support is dropped
-    def __init__(self, name: str, description: str, line: int, column: int):
-        self.name = name
-        self.description = description
-        self.line = line
-        self.column = column
-
-    def __repr__(self):
-        return 'Problem({})'.format({
-            'name': self.name,
-            'description': self.description,
-            'line': self.line,
-            'column': self.column,
-        })
 
 
 def lint_code(gdscript_code, config=DEFAULT_CONFIG):
@@ -137,7 +122,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 config['loop-variable-name'],
                 rule_name_tokens['for_stmt'],
                 'loop-variable-name',
-                'Loop\'s variable name "{}" is not valid',
+                'Loop variable name "{}" is not valid',
             ),
         ),
         (
@@ -149,7 +134,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 rule_name_tokens['func_arg_inf'] +\
                 rule_name_tokens['func_arg_typed'],
                 'function-argument-name',
-                'Function\'s argument name "{}" is not valid',
+                'Function argument name "{}" is not valid',
             ),
         ),
     ]
