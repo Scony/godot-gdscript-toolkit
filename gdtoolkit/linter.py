@@ -1,19 +1,20 @@
 import re
 from functools import partial
+from types import MappingProxyType
 
 from lark import Tree, Token
 
 from .parser import parser_with_metadata_gathering
 
 
-DEFAULT_CONFIG = {              # TODO: make immutable
-    'function-name': r'(_on_[0-9a-zA-Z_]+|[a-z_][0-9a-z_]*)', # TODO: improve
+DEFAULT_CONFIG = MappingProxyType({
+    'function-name': r'(_on_[0-9a-zA-Z]+(_[a-z0-9]+)*|_?[a-z0-9]+(_[a-z0-9]+)*)',
     'function-arguments-number': 10,
     'class-name': r'([A-Z][a-z0-9]*)+',
     'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
-    'signal-name': r'[a-z][a-z_0-9]*', # TODO: improve
+    'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
     'disable': [],
-}
+})
 
 
 class Problem:                  # TODO: use dataclass if python 3.6 support is dropped
