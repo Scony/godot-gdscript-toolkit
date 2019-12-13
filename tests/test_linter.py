@@ -173,3 +173,33 @@ signal Signal(a, b)
 ])
 def test_signal_name_nok(code):
     simple_nok_check(code, 'signal-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+enum Name {}
+""",
+"""
+enum PascalCase { XXX }
+""",
+"""
+enum PascalXCase { XXX }
+""",
+])
+def test_enum_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+enum some_name {}
+""",
+"""
+enum camelCase { XXX }
+""",
+"""
+enum PascalCase_ { XXX }
+""",
+])
+def test_enum_name_nok(code):
+    simple_nok_check(code, 'enum-name')
