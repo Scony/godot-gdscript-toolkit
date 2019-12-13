@@ -3,6 +3,22 @@ import pytest
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 
+def simple_ok_check(code):
+    outcome = lint_code(code)
+    assert len(outcome) == 0
+
+
+def simple_nok_check(code, check_name):
+    config_w_disable = DEFAULT_CONFIG.copy()
+    config_w_disable.update({'disable':[check_name]})
+    assert len(lint_code(code, config_w_disable)) == 0
+
+    outcome = lint_code(code)
+    assert len(outcome) == 1
+    assert outcome[0].name == check_name
+    assert outcome[0].line == 2
+
+
 def test_empty_code_linting():
     lint_code('')
 
@@ -30,8 +46,7 @@ func _on_Button_pressed():
 """,
 ])
 def test_function_name_ok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 0
+    simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
@@ -45,10 +60,7 @@ func SomeName():
 """,
 ])
 def test_function_name_nok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 1
-    assert outcome[0].name == 'function-name'
-    assert outcome[0].line == 2
+    simple_nok_check(code, 'function-name')
 
 
 @pytest.mark.parametrize('code', [
@@ -70,8 +82,7 @@ func foo() -> int:
 """,
 ])
 def test_function_args_ok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 0
+    simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
@@ -85,13 +96,7 @@ func foo(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11):
 """,
 ])
 def test_function_args_nok(code):
-    config_w_disable = DEFAULT_CONFIG.copy()
-    config_w_disable.update({'disable':['function-arguments-number']})
-    assert len(lint_code(code, config_w_disable)) == 0
-    outcome = lint_code(code)
-    assert len(outcome) == 1
-    assert outcome[0].name == 'function-arguments-number'
-    assert outcome[0].line == 2
+    simple_nok_check(code, 'function-arguments-number')
 
 
 @pytest.mark.parametrize('code', [
@@ -103,8 +108,7 @@ class_name Some
 """,
 ])
 def test_class_name_ok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 0
+    simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
@@ -116,13 +120,7 @@ class_name _Some
 """,
 ])
 def test_class_name_nok(code):
-    config_w_disable = DEFAULT_CONFIG.copy()
-    config_w_disable.update({'disable':['class-name']})
-    assert len(lint_code(code, config_w_disable)) == 0
-    outcome = lint_code(code)
-    assert len(outcome) == 1
-    assert outcome[0].name == 'class-name'
-    assert outcome[0].line == 2
+    simple_nok_check(code, 'class-name')
 
 
 @pytest.mark.parametrize('code', [
@@ -136,8 +134,7 @@ class SubClassName:
 """,
 ])
 def test_sub_class_name_ok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 0
+    simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
@@ -151,13 +148,7 @@ class sub_class_name:
 """,
 ])
 def test_sub_class_name_nok(code):
-    config_w_disable = DEFAULT_CONFIG.copy()
-    config_w_disable.update({'disable':['sub-class-name']})
-    assert len(lint_code(code, config_w_disable)) == 0
-    outcome = lint_code(code)
-    assert len(outcome) == 1
-    assert outcome[0].name == 'sub-class-name'
-    assert outcome[0].line == 2
+    simple_nok_check(code, 'sub-class-name')
 
 
 @pytest.mark.parametrize('code', [
@@ -169,8 +160,7 @@ signal signal(a, b, c)
 """,
 ])
 def test_signal_name_ok(code):
-    outcome = lint_code(code)
-    assert len(outcome) == 0
+    simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
@@ -181,11 +171,5 @@ signal someSignal
 signal Signal(a, b)
 """,
 ])
-def test_signal_name_nok(code): # TODO: extract common func / make 2arg parametrization
-    config_w_disable = DEFAULT_CONFIG.copy()
-    config_w_disable.update({'disable':['signal-name']})
-    assert len(lint_code(code, config_w_disable)) == 0
-    outcome = lint_code(code)
-    assert len(outcome) == 1
-    assert outcome[0].name == 'signal-name'
-    assert outcome[0].line == 2
+def test_signal_name_nok(code):
+    simple_nok_check(code, 'signal-name')
