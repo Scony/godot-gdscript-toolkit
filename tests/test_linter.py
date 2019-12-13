@@ -269,3 +269,31 @@ def test_loop_variable_name_ok(code):
 ])
 def test_loop_variable_name_nok(code):
     simple_nok_check(code, 'loop-variable-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo(a, _b, c_d := 123, xxx : int):
+    pass
+""",
+])
+def test_function_argument_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo(a_):
+    pass
+""",
+"""
+func foo(xX):
+    pass
+""",
+"""
+func foo(X_X):
+    pass
+""",
+])
+def test_function_argument_name_nok(code):
+    simple_nok_check(code, 'function-argument-name')

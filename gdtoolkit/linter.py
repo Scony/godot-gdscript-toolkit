@@ -8,6 +8,7 @@ from .parser import parser_with_metadata_gathering
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
 SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
+PRIVATE_SNAKE_CASE = r'_?{}'.format(SNAKE_CASE)
 UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
@@ -18,8 +19,8 @@ DEFAULT_CONFIG = MappingProxyType({
     'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
     # TODO: class-variable-name
     # TODO: function-variable-name
-    # TODO: function-argument-name
-    'loop-variable-name': r'_?{}'.format(SNAKE_CASE),
+    'function-argument-name': PRIVATE_SNAKE_CASE,
+    'loop-variable-name': PRIVATE_SNAKE_CASE,
     'enum-name': PASCAL_CASE,
     'enum-element-name': UPPER_SNAKE_CASE,
     # TODO: constant-name
@@ -54,6 +55,9 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         'enum_named',
         'enum_element',
         'for_stmt',
+        'func_arg_regular',
+        'func_arg_inf',
+        'func_arg_typed',
     ])
     checks_to_run_w_tree = [
         (
@@ -134,6 +138,18 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 rule_name_tokens['for_stmt'],
                 'loop-variable-name',
                 'Loop\'s variable name "{}" is not valid',
+            ),
+        ),
+        (
+            'function-argument-name',
+            partial(
+                _generic_name_check,
+                config['function-argument-name'],
+                rule_name_tokens['func_arg_regular'] +\
+                rule_name_tokens['func_arg_inf'] +\
+                rule_name_tokens['func_arg_typed'],
+                'function-argument-name',
+                'Function\'s argument name "{}" is not valid',
             ),
         ),
     ]
