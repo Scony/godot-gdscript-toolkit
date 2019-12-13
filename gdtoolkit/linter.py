@@ -6,20 +6,21 @@ from lark import Tree, Token
 
 from .parser import parser_with_metadata_gathering
 
-PASCAL_CASE_REGEX = r'([A-Z][a-z0-9]*)+'
+PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
+UPPER_SNAKE_CASE = r'[A-Z]+(_[A-Z]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
     'function-name': r'(_on_[0-9a-zA-Z]+(_[a-z0-9]+)*|_?[a-z0-9]+(_[a-z0-9]+)*)',
     'function-arguments-number': 10,
-    'class-name': PASCAL_CASE_REGEX,
-    'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
+    'class-name': PASCAL_CASE,
+    'sub-class-name': r'_?{}'.format(PASCAL_CASE),
     'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
     # TODO: class-variable-name
     # TODO: function-variable-name
     # TODO: function-argument-name
     # TODO: loop-variable-name (?)
-    'enum-name': PASCAL_CASE_REGEX,
-    # TODO: enum-value-name
+    'enum-name': PASCAL_CASE,
+    'enum-element-name': UPPER_SNAKE_CASE,
     # TODO: constant-name
     'disable': [],
 })
@@ -50,6 +51,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         'classname_stmt',
         'signal_stmt',
         'enum_named',
+        'enum_element',
     ])
     checks_to_run_w_tree = [
         (
@@ -110,6 +112,16 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 rule_name_tokens['enum_named'],
                 'enum-name',
                 'Enum name "{}" is not valid',
+            ),
+        ),
+        (
+            'enum-element-name',
+            partial(
+                _generic_name_check,
+                config['enum-element-name'],
+                rule_name_tokens['enum_element'],
+                'enum-element-name',
+                'Enum element name "{}" is not valid',
             ),
         ),
     ]

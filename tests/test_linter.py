@@ -203,3 +203,33 @@ enum PascalCase_ { XXX }
 ])
 def test_enum_name_nok(code):
     simple_nok_check(code, 'enum-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+enum Name { XXX }
+""",
+"""
+enum { XXX, Y_Y_Y }
+""",
+])
+def test_enum_element_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+enum { X_, Y }
+""",
+"""
+enum { _XXX }
+""",
+"""
+enum { xx_xx }
+""",
+"""
+enum { SomeStuff }
+""",
+])
+def test_enum_element_name_nok(code):
+    simple_nok_check(code, 'enum-element-name')
