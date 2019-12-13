@@ -24,3 +24,7 @@ class Household:
 enum {TILE_BRICK, TILE_FLOOR, TILE_SPIKE, TILE_TELEPORT}
 
 enum State {STATE_IDLE, STATE_JUMP = 5, STATE_SHOOT}
+
+enum {}
+
+enum Name {}

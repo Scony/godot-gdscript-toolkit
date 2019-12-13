@@ -6,13 +6,21 @@ from lark import Tree, Token
 
 from .parser import parser_with_metadata_gathering
 
+PASCAL_CASE_REGEX = r'([A-Z][a-z0-9]*)+'
 
 DEFAULT_CONFIG = MappingProxyType({
     'function-name': r'(_on_[0-9a-zA-Z]+(_[a-z0-9]+)*|_?[a-z0-9]+(_[a-z0-9]+)*)',
     'function-arguments-number': 10,
-    'class-name': r'([A-Z][a-z0-9]*)+',
+    'class-name': PASCAL_CASE_REGEX,
     'sub-class-name': r'_?([A-Z][a-z0-9]*)+',
     'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
+    # TODO: class-variable-name
+    # TODO: function-variable-name
+    # TODO: function-argument-name
+    # TODO: loop-variable-name (?)
+    'enum-name': PASCAL_CASE_REGEX,
+    # TODO: enum-value-name
+    # TODO: constant-name
     'disable': [],
 })
 
@@ -41,6 +49,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         'func_def',
         'classname_stmt',
         'signal_stmt',
+        'enum_named',
     ])
     checks_to_run_w_tree = [
         (
@@ -91,6 +100,16 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 rule_name_tokens['signal_stmt'],
                 'signal-name',
                 'Signal name "{}" is not valid',
+            ),
+        ),
+        (
+            'enum-name',
+            partial(
+                _generic_name_check,
+                config['enum-name'],
+                rule_name_tokens['enum_named'],
+                'enum-name',
+                'Enum name "{}" is not valid',
             ),
         ),
     ]

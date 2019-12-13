@@ -73,9 +73,9 @@ match_body: _NL _INDENT match_branch+ _DEDENT
 match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT // TODO: extend
 
 enum_def: (enum_regular | enum_named) _NL
-enum_regular: "enum" enum_body
-enum_named: "enum" NAME enum_body
-enum_body: "{" (enum_entry [","])* "}"
+enum_regular: "enum" _enum_body
+enum_named: "enum" NAME _enum_body
+_enum_body: "{" (enum_entry [","])* "}"
 enum_entry: NAME ["=" NUMBER]
 
 expr: test_expr
