@@ -233,3 +233,39 @@ enum { SomeStuff }
 ])
 def test_enum_element_name_nok(code):
     simple_nok_check(code, 'enum-element-name')
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    for _x in y:
+        pass
+""",
+"""func foo():
+    for xyz in y:
+        pass
+""",
+"""func foo():
+    for aaa_bbb in y:
+        pass
+""",
+])
+def test_loop_variable_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    for x_ in y:
+        pass
+""",
+"""func foo():
+    for xX in y:
+        pass
+""",
+"""func foo():
+    for X_X in y:
+        pass
+""",
+])
+def test_loop_variable_name_nok(code):
+    simple_nok_check(code, 'loop-variable-name')

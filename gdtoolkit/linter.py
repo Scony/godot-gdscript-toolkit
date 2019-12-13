@@ -7,7 +7,8 @@ from lark import Tree, Token
 from .parser import parser_with_metadata_gathering
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
-UPPER_SNAKE_CASE = r'[A-Z]+(_[A-Z]+)*'
+SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
+UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
     'function-name': r'(_on_[0-9a-zA-Z]+(_[a-z0-9]+)*|_?[a-z0-9]+(_[a-z0-9]+)*)',
@@ -18,7 +19,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # TODO: class-variable-name
     # TODO: function-variable-name
     # TODO: function-argument-name
-    # TODO: loop-variable-name (?)
+    'loop-variable-name': r'_?{}'.format(SNAKE_CASE),
     'enum-name': PASCAL_CASE,
     'enum-element-name': UPPER_SNAKE_CASE,
     # TODO: constant-name
@@ -52,6 +53,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         'signal_stmt',
         'enum_named',
         'enum_element',
+        'for_stmt',
     ])
     checks_to_run_w_tree = [
         (
@@ -122,6 +124,16 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 rule_name_tokens['enum_element'],
                 'enum-element-name',
                 'Enum element name "{}" is not valid',
+            ),
+        ),
+        (
+            'loop-variable-name',
+            partial(
+                _generic_name_check,
+                config['loop-variable-name'],
+                rule_name_tokens['for_stmt'],
+                'loop-variable-name',
+                'Loop\'s variable name "{}" is not valid',
             ),
         ),
     ]
