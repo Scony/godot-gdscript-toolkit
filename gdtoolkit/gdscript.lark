@@ -130,8 +130,8 @@ node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" [test_expr ("," test_expr)* [","]] "]"
-dict: "{" [test_expr ":" test_expr ("," test_expr ":" test_expr)* [","]] "}"
-    | "{" [test_expr "=" test_expr ("," test_expr "=" test_expr)* [","]] "}"
+dict: "{" [_kv_pair ("," _kv_pair)* [","]] "}"
+_kv_pair: (test_expr ":" test_expr | NAME "=" test_expr)
 
 TYPE: NAME
 
