@@ -19,12 +19,14 @@ DEFAULT_CONFIG = MappingProxyType({
     'sub-class-name': r'_?{}'.format(PASCAL_CASE),
     'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
     # TODO: class-variable-name
-    # TODO: function-variable-name
+    # TODO: class-load-variable-name
+    'function-variable-name': SNAKE_CASE,
     'function-argument-name': PRIVATE_SNAKE_CASE,
     'loop-variable-name': PRIVATE_SNAKE_CASE,
     'enum-name': PASCAL_CASE,
     'enum-element-name': UPPER_SNAKE_CASE,
     # TODO: constant-name
+    # TODO: load-constant-name
     'disable': [],
 })
 
@@ -137,6 +139,20 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 'Function argument name "{}" is not valid',
             ),
         ),
+        (
+            'function-variable-name',
+            partial(
+                _generic_name_check,
+                config['function-variable-name'],
+                _gather_rule_name_tokens(
+                    parse_tree,
+                    ['func_var_stmt'],
+                    lambda x: not _has_load_or_preload_call_expr(x),
+                )['func_var_stmt'],
+                'function-variable-name',
+                'Function-scope variable name "{}" is not valid',
+            ),
+        ),
     ]
     problem_clusters = map(lambda x: x[1]() if x[0] not in disable else [], checks_to_run_wo_tree)
     problems += [problem for cluster in problem_clusters for problem in cluster]
@@ -176,14 +192,20 @@ def _generic_name_check(name_regex, name_tokens, problem_name, description_templ
     return problems
 
 
-def _gather_rule_name_tokens(parse_tree, rules):
+def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
     name_tokens_per_rule = {rule:[] for rule in rules}
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree) and node.data in rules:
             rule_name = node.data
             name_token = _find_name_token(node)
+            if name_token is None:
+                name_token = _find_name_token(node.children[0])
+                predicate_outcome = predicate(node.children[0])
+            else:
+                predicate_outcome = predicate(node)
             assert name_token is not None
-            name_tokens_per_rule[rule_name].append(name_token)
+            if predicate_outcome:
+                name_tokens_per_rule[rule_name].append(name_token)
     return name_tokens_per_rule
 
 
@@ -192,3 +214,17 @@ def _find_name_token(tree):
         if isinstance(child, Token) and child.type == 'NAME':
             return child
     return None
+
+
+def _has_load_or_preload_call_expr(tree):
+    for child in tree.children:
+        if isinstance(child, Tree) and child.data == 'expr':
+            expr = child
+            if len(expr.children) == 1 and isinstance(expr.children[0], Tree) and \
+               expr.children[0].data == 'call_expr':
+                call_expr = expr.children[0]
+                name_token = _find_name_token(call_expr)
+                if name_token is not None: # is a real call_expr, TODO: introduce invis proxy?
+                    name = name_token.value
+                    return name in ['load', 'preload']
+    return False

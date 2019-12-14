@@ -23,16 +23,17 @@ export_stmt: export_inf | export_typed
 export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
 export_typed: "export" "(" export_hint ")" class_var_stmt
 export_hint: TYPE ("," expr)*
-class_var_stmt: var_stmt [setget]
-var_stmt: var_empty
-        | var_assigned
-        | var_typed
-        | var_typed_assgnd
-        | var_inf
+class_var_stmt: _var_stmt [setget]
+_var_stmt: var_empty
+         | var_assigned
+         | var_typed
+         | var_typed_assgnd
+         | var_inf
 var_empty: "var" NAME
 var_assigned: "var" NAME "=" expr
-var_typed: "var" NAME ":" TYPE
-var_typed_assgnd: var_typed "=" expr
+_var_typed: "var" NAME ":" TYPE
+var_typed: _var_typed
+var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":=" expr
 setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME "=" expr
@@ -42,7 +43,7 @@ class_def: "class" NAME ":" class_body
 class_body: _NL _INDENT _class_stmt_chain _DEDENT
 _class_stmt_chain: class_stmt* [simple_class_stmt]
 
-func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" func_body
+func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" _func_body
 func_args: func_arg ("," func_arg)*
 ?func_arg: func_arg_regular
          | func_arg_inf
@@ -50,7 +51,7 @@ func_args: func_arg ("," func_arg)*
 func_arg_regular: ["var"] NAME ["=" expr]
 func_arg_inf: ["var"] NAME ":=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
-func_body: _NL _INDENT _func_stmt_chain _DEDENT
+_func_body: _NL _INDENT _func_stmt_chain _DEDENT
 _func_stmt_chain: func_stmt* [simple_func_stmt]
 ?func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
 ?simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
@@ -64,10 +65,10 @@ _func_stmt_chain: func_stmt* [simple_func_stmt]
                    | match_stmt
 pass_stmt: "pass"
 return_stmt: "return" [expr]
-func_var_stmt: var_stmt
-if_stmt: "if" expr ":" func_body (_NL* "elif" expr ":" func_body)* [_NL* "else" ":" func_body]
-while_stmt: "while" expr ":" func_body
-for_stmt: "for" NAME "in" expr ":" func_body
+func_var_stmt: _var_stmt
+if_stmt: "if" expr ":" _func_body (_NL* "elif" expr ":" _func_body)* [_NL* "else" ":" _func_body]
+while_stmt: "while" expr ":" _func_body
+for_stmt: "for" NAME "in" expr ":" _func_body
 match_stmt: "match" expr ":" match_body
 match_body: _NL _INDENT match_branch+ _DEDENT
 match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT // TODO: extend

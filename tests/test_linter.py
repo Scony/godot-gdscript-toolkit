@@ -297,3 +297,47 @@ func foo(X_X):
 ])
 def test_function_argument_name_nok(code):
     simple_nok_check(code, 'function-argument-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    var xxx
+""",
+"""
+func foo():
+    var x_y = 1
+""",
+"""
+func foo():
+    var y : int = 1
+""",
+"""
+func foo():
+    var y := 1
+""",
+"""
+func foo():
+    var y : int
+""",
+])
+def test_function_variable_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    var xxx_
+""",
+"""func foo():
+    var _x_y = 1
+""",
+"""func foo():
+    var X : int = 1
+""",
+"""func foo():
+    var yY := 1
+""",
+])
+def test_function_variable_name_nok(code):
+    simple_nok_check(code, 'function-variable-name')
