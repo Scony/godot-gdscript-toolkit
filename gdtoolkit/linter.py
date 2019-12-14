@@ -13,8 +13,8 @@ PRIVATE_SNAKE_CASE = r'_?{}'.format(SNAKE_CASE)
 UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
+    # name checks
     'function-name': r'(_on_{}(_[a-z0-9]+)*|{})'.format(PASCAL_CASE, PRIVATE_SNAKE_CASE),
-    'function-arguments-number': 10,
     'class-name': PASCAL_CASE,
     'sub-class-name': r'_?{}'.format(PASCAL_CASE),
     'signal-name': SNAKE_CASE,
@@ -29,6 +29,49 @@ DEFAULT_CONFIG = MappingProxyType({
     'constant-name': UPPER_SNAKE_CASE,
     'load-constant-name': r'({}|{})'.format(PASCAL_CASE, UPPER_SNAKE_CASE),
     'disable': [],
+    # basic checks
+    # not-in-loop (break/continue) # check in godot
+    # duplicate-argument-name # check in godot
+    # self-assigning-variable # check in godot
+    # comparison-with-callable
+    # duplicate-key # check in godot
+    # expression-not-assigned # check in godot
+    # unnecessary-pass # check in godot
+    # unreachable # check in godot
+    # using-constant-test # check in godot
+    # comparison-with-itself # check in godot
+
+    # class checks
+    # protected-access
+    # useless-super-delegation
+
+    # design checks
+    'function-arguments-number': 10,
+    # max-locals
+    # max-returns
+    # max-branches
+    # max-statements
+    # max-attributes
+    # max-public-methods
+    # max-private-methods
+    # max-nested-blocks
+    # max-line-length
+    # max-file-lines
+    # trailing-ws
+
+    # never-returning-function # for non-void, typed functions
+    # simplify-boolean-expression
+    # consider-using-in
+    # inconsistent-return-statements
+    # redefined-argument-from-local
+    # chained-comparison
+    # unused-load-const
+    # unused-argument
+    # unused-variable
+    # pointless-statement
+    # Constant actual parameter value
+    # magic values
+    # == on floats
 })
 
 
