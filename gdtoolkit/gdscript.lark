@@ -47,7 +47,7 @@ class_def: "class" NAME ["extends" NAME] ":" (_class_body | _class_stmt_chain)
 _class_body: _NL _INDENT _class_stmt_chain _DEDENT
 _class_stmt_chain: class_stmt* [simple_class_stmt]
 
-func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" (_func_body | _func_stmt_chain)
+func_def: "func" NAME "(" [func_args] ")" ["." _call_arglist] ["->" TYPE] ":" _func_suite
 func_args: func_arg ("," func_arg)*
 ?func_arg: func_arg_regular
          | func_arg_inf
@@ -55,6 +55,8 @@ func_args: func_arg ("," func_arg)*
 func_arg_regular: ["var"] NAME ["=" expr]
 func_arg_inf: ["var"] NAME ":=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
+_func_suite: _func_body
+           | _func_stmt_chain
 _func_body: _NL _INDENT _func_stmt_chain _DEDENT
 _func_stmt_chain: func_stmt* [simple_func_stmt]
 ?func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
