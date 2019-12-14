@@ -26,7 +26,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'loop-variable-name': PRIVATE_SNAKE_CASE,
     'enum-name': PASCAL_CASE,
     'enum-element-name': UPPER_SNAKE_CASE,
-    # TODO: constant-name
+    'constant-name': UPPER_SNAKE_CASE,
     # TODO: load-constant-name
     'disable': [],
 })
@@ -166,6 +166,20 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 )['func_var_stmt'],
                 'function-load-variable-name',
                 'Function-scope load/preload variable name "{}" is not valid',
+            ),
+        ),
+        (
+            'constant-name',
+            partial(
+                _generic_name_check,
+                config['constant-name'],
+                _gather_rule_name_tokens(
+                    parse_tree,
+                    ['const_stmt'],
+                    lambda x: not _has_load_or_preload_call_expr(x),
+                )['const_stmt'],
+                'constant-name',
+                'Constant name "{}" is not valid',
             ),
         ),
     ]
