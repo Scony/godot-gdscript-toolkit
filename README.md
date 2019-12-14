@@ -57,7 +57,8 @@ signal-name: '[a-z][a-z0-9]*(_[a-z0-9]+)*'
 sub-class-name: _?([A-Z][a-z0-9]*)+
 ```
 
-Once the dump is performed, the `gdlintrc` (or `.gdlintrc`) file will be used by linter overriding default config.
+Once the dump is performed, you can modify the `gdlintrc` file and optionally rename it to `.gdlintrc`.
+From now on, linter will use this config file to override the default config.
 
 ## Parser - gdparse
 
