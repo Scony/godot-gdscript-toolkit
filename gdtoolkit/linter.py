@@ -279,6 +279,8 @@ def _function_args_num_check(threshold, parse_tree):
         func_name_token = func_def.children[0]
         assert func_name_token.type == 'NAME'
         func_name = func_name_token.value
+        if len(func_def.children) == 1: # TODO: fix empty func parsing?
+            continue
         if isinstance(func_def.children[1], Tree) and func_def.children[1].data == 'func_args':
             args_num = len(func_def.children[1].children)
             if args_num > threshold:
