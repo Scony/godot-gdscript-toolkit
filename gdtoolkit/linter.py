@@ -18,7 +18,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'class-name': PASCAL_CASE,
     'sub-class-name': r'_?{}'.format(PASCAL_CASE),
     'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
-    # TODO: class-variable-name
+    'class-variable-name': PRIVATE_SNAKE_CASE,
     # TODO: class-load-variable-name
     'function-variable-name': SNAKE_CASE,
     'function-load-variable-name': PASCAL_CASE,
@@ -194,6 +194,20 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 )['const_stmt'],
                 'load-constant-name',
                 'Constant (load/preload) name "{}" is not valid',
+            ),
+        ),
+        (
+            'class-variable-name',
+            partial(
+                _generic_name_check,
+                config['class-variable-name'],
+                _gather_rule_name_tokens(
+                    parse_tree,
+                    ['class_var_stmt'],
+                    lambda x: not _has_load_or_preload_call_expr(x),
+                )['class_var_stmt'],
+                'class-variable-name',
+                'Class-scope variable name "{}" is not valid',
             ),
         ),
     ]
