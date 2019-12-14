@@ -457,3 +457,36 @@ var XY_Z
 ])
 def test_class_variable_name_nok(code):
     simple_nok_check(code, 'class-variable-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+var x = load()
+""",
+"""
+var xx_yy = preload()
+""",
+"""
+var _xx_yy := load()
+""",
+"""
+var XxYy := load()
+""",
+])
+def test_class_load_variable_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+var X_Y = load()
+""",
+"""
+var x_ = load()
+""",
+"""
+var XY_Z = load()
+""",
+])
+def test_class_load_variable_name_nok(code):
+    simple_nok_check(code, 'class-load-variable-name')
