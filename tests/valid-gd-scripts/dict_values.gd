@@ -23,3 +23,7 @@ var z = {
 }
 var q = { str(Color.red): 1 }
 var qq = { 1+2: 1 }
+# var mixed = { 1 : 2, 2 = 3 }		# illegal
+# var mixed = { 1 = 2, 2 : 3 }		# illegal
+var mixed = {x = 2, 'y': 1}
+var mixed2 = {'y': 1, x = 2}
