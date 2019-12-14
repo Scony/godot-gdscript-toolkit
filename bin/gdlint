@@ -43,7 +43,7 @@ if arguments['--verbose']:
 if arguments['--dump-default-config']: # TODO: error handling
     assert not os.path.isfile(CONFIG_FILE_NAME)
     with open(CONFIG_FILE_NAME, 'w') as fh:
-        fh.write(yaml.dump(DEFAULT_CONFIG))
+        fh.write(yaml.dump(DEFAULT_CONFIG.copy()))
     sys.exit(0)
 
 # TODO: extract the algorithm
