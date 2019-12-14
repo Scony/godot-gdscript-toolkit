@@ -39,11 +39,11 @@ setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME [":" [TYPE]] "=" expr
 onready_stmt: "onready" class_var_stmt
 
-class_def: "class" NAME ":" class_body
-class_body: _NL _INDENT _class_stmt_chain _DEDENT
+class_def: "class" NAME ["extends" NAME] ":" (_class_body | _class_stmt_chain)
+_class_body: _NL _INDENT _class_stmt_chain _DEDENT
 _class_stmt_chain: class_stmt* [simple_class_stmt]
 
-func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" _func_body
+func_def: "func" NAME "(" [func_args] ")" ["->" TYPE] ":" (_func_body | _func_stmt_chain)
 func_args: func_arg ("," func_arg)*
 ?func_arg: func_arg_regular
          | func_arg_inf

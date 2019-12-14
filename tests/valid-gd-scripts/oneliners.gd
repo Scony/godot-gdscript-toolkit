@@ -1,5 +1,5 @@
-# func foo(): pass
+func foo(): pass
 
-# class X: func foo(): pass
+class X: func foo(): pass
 
-# class X extends Reference: tool
+class Y extends Reference: tool
