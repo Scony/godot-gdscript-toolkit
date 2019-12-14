@@ -36,7 +36,7 @@ var_typed: _var_typed
 var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":=" expr
 setget: "setget" [NAME] ["," NAME]
-const_stmt: "const" NAME "=" expr
+const_stmt: "const" NAME [":" [TYPE]] "=" expr
 onready_stmt: "onready" class_var_stmt
 
 class_def: "class" NAME ":" class_body
