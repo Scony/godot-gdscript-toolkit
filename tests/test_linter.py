@@ -394,3 +394,33 @@ const x_x = 2
 ])
 def test_constant_name_nok(code):
     simple_nok_check(code, 'constant-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+const Xx = load()
+""",
+"""
+const XxYy = preload()
+""",
+"""
+const X = load()
+""",
+"""
+const X_Y_Z = preload()
+""",
+])
+def test_load_constant_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+const _Xx = preload()
+""",
+"""
+const x_x = load()
+""",
+])
+def test_load_constant_name_nok(code):
+    simple_nok_check(code, 'load-constant-name')

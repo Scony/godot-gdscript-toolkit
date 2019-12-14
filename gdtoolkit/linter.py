@@ -27,7 +27,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'enum-name': PASCAL_CASE,
     'enum-element-name': UPPER_SNAKE_CASE,
     'constant-name': UPPER_SNAKE_CASE,
-    # TODO: load-constant-name
+    'load-constant-name': r'({}|{})'.format(PASCAL_CASE, UPPER_SNAKE_CASE),
     'disable': [],
 })
 
@@ -180,6 +180,20 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
                 )['const_stmt'],
                 'constant-name',
                 'Constant name "{}" is not valid',
+            ),
+        ),
+        (
+            'load-constant-name',
+            partial(
+                _generic_name_check,
+                config['load-constant-name'],
+                _gather_rule_name_tokens(
+                    parse_tree,
+                    ['const_stmt'],
+                    _has_load_or_preload_call_expr,
+                )['const_stmt'],
+                'load-constant-name',
+                'Constant (load/preload) name "{}" is not valid',
             ),
         ),
     ]
