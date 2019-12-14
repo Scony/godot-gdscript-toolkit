@@ -13,11 +13,11 @@ PRIVATE_SNAKE_CASE = r'_?{}'.format(SNAKE_CASE)
 UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
-    'function-name': r'(_on_[0-9a-zA-Z]+(_[a-z0-9]+)*|_?[a-z0-9]+(_[a-z0-9]+)*)',
+    'function-name': r'(_on_{}(_[a-z0-9]+)*|{})'.format(PASCAL_CASE, PRIVATE_SNAKE_CASE),
     'function-arguments-number': 10,
     'class-name': PASCAL_CASE,
     'sub-class-name': r'_?{}'.format(PASCAL_CASE),
-    'signal-name': r'[a-z][a-z0-9]*(_[a-z0-9]+)*',
+    'signal-name': SNAKE_CASE,
     'class-variable-name': PRIVATE_SNAKE_CASE,
     'class-load-variable-name': r'({}|{})'.format(PASCAL_CASE, PRIVATE_SNAKE_CASE),
     'function-variable-name': SNAKE_CASE,
