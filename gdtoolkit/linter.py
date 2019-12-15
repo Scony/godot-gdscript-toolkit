@@ -72,6 +72,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # Constant actual parameter value
     # magic values
     # == on floats
+    # class definitions order
 })
 
 
