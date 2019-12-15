@@ -3,13 +3,16 @@ from setuptools import setup
 
 setup(
     name='gdtoolkit',
-    version='0.1',
+    version='0.2',
     description='Independent, standalone set of tools for working with GDScript',
     url='https://github.com/Scony/godot-gdscript-toolkit',
     author='Pawel Lampe',
     author_email='pawel.lampe@gmail.com',
     license='MIT',
-    packages=['gdtoolkit'],
+    packages=[
+        'gdtoolkit',
+        'gdtoolkit.linter',
+    ],
     package_data={
         'gdtoolkit': ['gdscript.lark']
     },
