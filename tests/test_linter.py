@@ -490,3 +490,21 @@ var XY_Z = load()
 ])
 def test_class_load_variable_name_nok(code):
     simple_nok_check(code, 'class-load-variable-name')
+
+
+@pytest.mark.parametrize('code', [
+"""
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+""",
+])
+def test_class_load_variable_name_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+""",
+])
+def test_class_load_variable_name_nok(code):
+    simple_nok_check(code, 'max-line-length')
