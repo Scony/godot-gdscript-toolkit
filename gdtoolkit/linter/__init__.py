@@ -55,8 +55,10 @@ DEFAULT_CONFIG = MappingProxyType({
     # max-public-methods
     # max-private-methods
     # max-nested-blocks
-    # max-line-length
     # max-file-lines
+
+    # format checks
+    'max-line-length': 100,
     # trailing-ws
 
     # never-returning-function # for non-void, typed functions
@@ -89,6 +91,16 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
+    checks_to_run_w_code = [
+        (
+            'max-line-length',
+            partial(_max_line_length_check, config['max-line-length']),
+        ),
+    ]
+    problem_clusters = map(
+        lambda x: x[1](gdscript_code) if x[0] not in disable else [], checks_to_run_w_code
+    )
+    problems += [problem for cluster in problem_clusters for problem in cluster]
     problems += name_checks.lint(parse_tree, config)
     return problems
 
@@ -110,4 +122,18 @@ def _function_args_num_check(threshold, parse_tree):
                     line=func_name_token.line,
                     column=func_name_token.column,
                 ))
+    return problems
+
+
+def _max_line_length_check(threshold, code):
+    problems = []
+    lines = code.split('\n')
+    for line_number in range(len(lines)):
+        if len(lines[line_number]) > threshold:
+            problems.append(Problem(
+                name='max-line-length',
+                description='Max allowed line length ({}) exceeded'.format(threshold),
+                line=line_number + 1,
+                column=0,
+            ))
     return problems
