@@ -6,6 +6,7 @@ from lark import Tree
 from ..parser import parser_with_metadata_gathering
 from .. import Problem
 from . import name_checks
+from . import class_checks
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
 SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
@@ -43,8 +44,9 @@ DEFAULT_CONFIG = MappingProxyType({
     # comparison-with-itself # check in godot
 
     # class checks
-    # protected-access
+    'private-method-call': None,
     # useless-super-delegation
+    # class definitions order
 
     # design checks
     'function-arguments-number': 10,
@@ -75,7 +77,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # Constant actual parameter value
     # magic values
     # == on floats
-    # class definitions order
     # misc-redundant-expression ~ https://clang.llvm.org/extra/clang-tidy/checks/misc-redundant-expression.html
     # readability-magic-numbers ~ https://clang.llvm.org/extra/clang-tidy/checks/readability-magic-numbers.html
     # bugprone-virtual-near-miss ~ https://clang.llvm.org/extra/clang-tidy/checks/list.html
@@ -106,6 +107,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
     )
     problems += [problem for cluster in problem_clusters for problem in cluster]
     problems += name_checks.lint(parse_tree, config)
+    problems += class_checks.lint(parse_tree, config)
     return problems
 
 

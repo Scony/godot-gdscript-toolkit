@@ -46,6 +46,7 @@ if arguments['--dump-default-config']: # TODO: error handling
         fh.write(yaml.dump(DEFAULT_CONFIG.copy()))
     sys.exit(0)
 
+# TODO: add opt-based config-file providing
 # TODO: extract the algorithm
 search_dir = Path(os.getcwd())
 found_config_file_path = None

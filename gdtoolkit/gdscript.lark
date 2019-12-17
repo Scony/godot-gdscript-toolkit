@@ -115,7 +115,7 @@ _call_expr: standalone_call
 !_call_arglist: "(" [test_expr ("," test_expr)*] ")"
 !?attr_expr: getattr
            | subscr_expr
-?getattr: _call_expr ("." NAME)+
+getattr: _call_expr ("." NAME)+
 ?subscr_expr: _call_expr "[" test_expr "]"
             | atom
 ?atom: "(" test_expr ")" -> par_expr
