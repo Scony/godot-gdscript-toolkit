@@ -13,6 +13,8 @@ PRIVATE_SNAKE_CASE = r'_?{}'.format(SNAKE_CASE)
 UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
 
 DEFAULT_CONFIG = MappingProxyType({
+    # check control
+    'disable': [],
     # name checks
     'function-name': r'(_on_{}(_[a-z0-9]+)*|{})'.format(PASCAL_CASE, PRIVATE_SNAKE_CASE),
     'class-name': PASCAL_CASE,
@@ -28,7 +30,6 @@ DEFAULT_CONFIG = MappingProxyType({
     'enum-element-name': UPPER_SNAKE_CASE,
     'constant-name': UPPER_SNAKE_CASE,
     'load-constant-name': r'({}|{})'.format(PASCAL_CASE, UPPER_SNAKE_CASE),
-    'disable': [],
     # basic checks
     # not-in-loop (break/continue) # check in godot
     # duplicate-argument-name # check in godot
@@ -55,10 +56,10 @@ DEFAULT_CONFIG = MappingProxyType({
     # max-public-methods
     # max-private-methods
     # max-nested-blocks
-    # max-file-lines
 
     # format checks
     'max-line-length': 100,
+    # max-file-lines
     # trailing-ws
 
     # never-returning-function # for non-void, typed functions
@@ -75,6 +76,9 @@ DEFAULT_CONFIG = MappingProxyType({
     # magic values
     # == on floats
     # class definitions order
+    # misc-redundant-expression ~ https://clang.llvm.org/extra/clang-tidy/checks/misc-redundant-expression.html
+    # readability-magic-numbers ~ https://clang.llvm.org/extra/clang-tidy/checks/readability-magic-numbers.html
+    # bugprone-virtual-near-miss ~ https://clang.llvm.org/extra/clang-tidy/checks/list.html
 })
 
 
