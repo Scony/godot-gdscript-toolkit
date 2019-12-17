@@ -46,7 +46,20 @@ DEFAULT_CONFIG = MappingProxyType({
     # class checks
     'private-method-call': None,
     # useless-super-delegation
-    # class definitions order
+    'class-definitions-order': [
+        'tools',
+        'extends',
+        'classnames',
+        'enums',
+        'consts',
+        'signals',
+        'exports',
+        'onreadypubvars',
+        'pubvars',
+        'onreadyprvvars',
+        'prvvars',
+        'others',
+    ],
 
     # design checks
     'function-arguments-number': 10,
