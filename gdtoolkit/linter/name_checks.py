@@ -4,6 +4,7 @@ from functools import partial
 from lark import Tree, Token
 
 from .. import Problem
+from .helpers import find_name_token_among_children
 
 
 def lint(parse_tree, config):
@@ -213,9 +214,9 @@ def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree) and node.data in rules:
             rule_name = node.data
-            name_token = _find_name_token_among_children(node)
+            name_token = find_name_token_among_children(node)
             if name_token is None:
-                name_token = _find_name_token_among_children(node.children[0])
+                name_token = find_name_token_among_children(node.children[0])
                 predicate_outcome = predicate(node.children[0])
             else:
                 predicate_outcome = predicate(node)
@@ -225,13 +226,6 @@ def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
     return name_tokens_per_rule
 
 
-def _find_name_token_among_children(tree):
-    for child in tree.children:
-        if isinstance(child, Token) and child.type == 'NAME':
-            return child
-    return None
-
-
 def _has_load_or_preload_call_expr(tree):
     for child in tree.children:
         if isinstance(child, Tree) and child.data == 'expr':
@@ -239,7 +233,7 @@ def _has_load_or_preload_call_expr(tree):
             if len(expr.children) == 1 and isinstance(expr.children[0], Tree) and \
                expr.children[0].data == 'standalone_call':
                 standalone_call = expr.children[0]
-                name_token = _find_name_token_among_children(standalone_call)
+                name_token = find_name_token_among_children(standalone_call)
                 assert name_token is not None
                 name = name_token.value
                 return name in ['load', 'preload']
