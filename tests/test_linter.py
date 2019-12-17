@@ -508,3 +508,30 @@ def test_class_load_variable_name_ok(code):
 ])
 def test_class_load_variable_name_nok(code):
     simple_nok_check(code, 'max-line-length')
+
+
+@pytest.mark.parametrize('code', [
+"""
+var x = _foo()
+""",
+"""
+var x = self._foo()
+""",
+"""
+var x = a.b.c.foo()
+""",
+])
+def test_private_method_call_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+var x = y._foo()
+""",
+"""
+var x = a.b.c._foo()
+""",
+])
+def test_private_method_call_nok(code):
+    simple_nok_check(code, 'private-method-call')
