@@ -574,3 +574,32 @@ class X: extends Node;tool
 ])
 def test_class_definitions_order_nok(code):
     simple_nok_check(code, 'class-definitions-order')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    pass
+""",
+"""
+func foo():
+    var x = true
+    if x:
+        pass
+""",
+])
+def test_unnecessary_pass_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    pass
+    1 + 1
+""",
+"""func foo():
+    if x: pass; 1+1
+""",
+])
+def test_unnecessary_pass_nok(code):
+    simple_nok_check(code, 'unnecessary-pass')
