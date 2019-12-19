@@ -572,5 +572,5 @@ tool
 class X: extends Node;tool
 """,
 ])
-def test_private_method_call_nok(code):
+def test_class_definitions_order_nok(code):
     simple_nok_check(code, 'class-definitions-order')
