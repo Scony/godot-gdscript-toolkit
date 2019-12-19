@@ -5,8 +5,7 @@ from lark import Tree
 
 from ..parser import parser_with_metadata_gathering
 from .. import Problem
-from . import name_checks
-from . import class_checks
+from . import name_checks, class_checks, basic_checks
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
 SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
@@ -38,11 +37,10 @@ DEFAULT_CONFIG = MappingProxyType({
     # comparison-with-callable
     # duplicate-key # check in godot
     # expression-not-assigned # check in godot
-    # unnecessary-pass # check in godot
     # unreachable # check in godot
     # using-constant-test # check in godot
     # comparison-with-itself # check in godot
-
+    'unnecessary-pass': None,
     # class checks
     'private-method-call': None,
     # useless-super-delegation
@@ -60,9 +58,7 @@ DEFAULT_CONFIG = MappingProxyType({
         'prvvars',
         'others',
     ],
-
     # design checks
-    'function-arguments-number': 10,
     # max-locals
     # max-returns
     # max-branches
@@ -71,12 +67,12 @@ DEFAULT_CONFIG = MappingProxyType({
     # max-public-methods
     # max-private-methods
     # max-nested-blocks
-
+    'function-arguments-number': 10,
     # format checks
-    'max-line-length': 100,
     # max-file-lines
     # trailing-ws
-
+    'max-line-length': 100,
+    # misc
     # never-returning-function # for non-void, typed functions
     # simplify-boolean-expression
     # consider-using-in
@@ -121,6 +117,7 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
     problems += [problem for cluster in problem_clusters for problem in cluster]
     problems += name_checks.lint(parse_tree, config)
     problems += class_checks.lint(parse_tree, config)
+    problems += basic_checks.lint(parse_tree, config)
     return problems
 
 
