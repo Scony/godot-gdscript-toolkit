@@ -64,6 +64,8 @@ _func_stmt_chain: func_stmt* [simple_func_stmt]
 ?single_func_stmt: pass_stmt
                  | return_stmt
                  | func_var_stmt
+                 | break_stmt
+                 | continue_stmt
                  | expr_stmt
 ?compound_func_stmt: if_stmt
                    | while_stmt
@@ -72,6 +74,8 @@ _func_stmt_chain: func_stmt* [simple_func_stmt]
 pass_stmt: "pass"
 return_stmt: "return" [expr]
 func_var_stmt: _var_stmt
+break_stmt.2: "break"
+continue_stmt.2: "continue"
 expr_stmt: expr
 if_stmt: "if" expr ":" _func_suite (_NL* "elif" expr ":" _func_suite)* [_NL* "else" ":" _func_suite]
 while_stmt: "while" expr ":" _func_suite
@@ -87,9 +91,9 @@ _enum_body: "{" (enum_element [","])* "}"
 enum_element: NAME ["=" NUMBER]
 
 expr: test_expr
-    | assnmtn_expr
-assnmtn_expr: attr_expr assnmtn_op test_expr
-assnmtn_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
+    | assnmnt_expr
+assnmnt_expr: attr_expr assnmnt_op test_expr
+assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
 ?test_expr: or_test ["if" or_test "else" test_expr]
 ?or_test: and_test (("or" | "||") and_test)*
 ?and_test: not_test (("and" | "&&") not_test)*
