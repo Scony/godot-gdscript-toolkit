@@ -40,6 +40,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # unreachable # check in godot
     # using-constant-test # check in godot
     # comparison-with-itself # check in godot
+    # extract-loads-to-preload
     'unnecessary-pass': None,
     # class checks
     'private-method-call': None,
@@ -69,7 +70,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # max-nested-blocks
     'function-arguments-number': 10,
     # format checks
-    # max-file-lines
+    'max-file-lines': 1000,
     # trailing-ws
     'max-line-length': 100,
     # misc
@@ -109,6 +110,10 @@ def lint_code(gdscript_code, config=DEFAULT_CONFIG):
         (
             'max-line-length',
             partial(_max_line_length_check, config['max-line-length']),
+        ),
+        (
+            'max-file-lines',
+            partial(_max_file_lines_check, config['max-file-lines']),
         ),
     ]
     problem_clusters = map(
@@ -150,6 +155,19 @@ def _max_line_length_check(threshold, code):
                 name='max-line-length',
                 description='Max allowed line length ({}) exceeded'.format(threshold),
                 line=line_number + 1,
+                column=0,
+            ))
+    return problems
+
+
+def _max_file_lines_check(threshold, code):
+    problems = []
+    lines = code.split('\n')
+    if len(lines) > threshold:
+        problems.append(Problem(
+            name='max-file-lines',
+            description='Max allowed file lines num ({}) exceeded'.format(threshold),
+                line=len(lines),
                 column=0,
             ))
     return problems
