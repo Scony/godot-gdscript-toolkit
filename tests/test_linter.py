@@ -8,7 +8,7 @@ def simple_ok_check(code):
     assert len(outcome) == 0
 
 
-def simple_nok_check(code, check_name):
+def simple_nok_check(code, check_name, line=2):
     config_w_disable = DEFAULT_CONFIG.copy()
     config_w_disable.update({'disable':[check_name]})
     assert len(lint_code(code, config_w_disable)) == 0
@@ -16,7 +16,7 @@ def simple_nok_check(code, check_name):
     outcome = lint_code(code)
     assert len(outcome) == 1
     assert outcome[0].name == check_name
-    assert outcome[0].line == 2
+    assert outcome[0].line == line
 
 
 def test_empty_code_linting():
@@ -603,3 +603,13 @@ def test_unnecessary_pass_ok(code):
 ])
 def test_unnecessary_pass_nok(code):
     simple_nok_check(code, 'unnecessary-pass')
+
+
+def test_max_file_lines_ok():
+    code = '\n'.join(['tool'] * 1000)
+    simple_ok_check(code)
+
+
+def test_max_file_lines_nok():
+    code = '\n'.join(['tool'] * 1001)
+    simple_nok_check(code, 'max-file-lines', 1001)
