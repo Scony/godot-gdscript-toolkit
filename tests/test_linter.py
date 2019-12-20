@@ -8,12 +8,15 @@ def simple_ok_check(code):
     assert len(outcome) == 0
 
 
-def simple_nok_check(code, check_name, line=2):
+def simple_nok_check(code, check_name, line=2, **kwargs):
+    extra_disable = [] if 'disable' not in kwargs else kwargs['disable']
     config_w_disable = DEFAULT_CONFIG.copy()
-    config_w_disable.update({'disable':[check_name]})
+    config_w_disable.update({'disable':[check_name]+extra_disable})
     assert len(lint_code(code, config_w_disable)) == 0
 
-    outcome = lint_code(code)
+    config = DEFAULT_CONFIG.copy()
+    config.update({'disable':extra_disable})
+    outcome = lint_code(code, config)
     assert len(outcome) == 1
     assert outcome[0].name == check_name
     assert outcome[0].line == line
@@ -602,7 +605,7 @@ def test_unnecessary_pass_ok(code):
 """,
 ])
 def test_unnecessary_pass_nok(code):
-    simple_nok_check(code, 'unnecessary-pass')
+    simple_nok_check(code, 'unnecessary-pass', disable=['expression-not-assigned'])
 
 
 def test_max_file_lines_ok():
@@ -613,3 +616,44 @@ def test_max_file_lines_ok():
 def test_max_file_lines_nok():
     code = '\n'.join(['tool'] * 1001)
     simple_nok_check(code, 'max-file-lines', 1001)
+
+
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    var x
+    x = 1
+""",
+"""
+func foo():
+    bar()
+""",
+"""
+func foo():
+    x.bar()
+""",
+"""
+func foo():
+    for x in [1]: break
+""",
+"""
+func foo():
+    for x in [1]: continue
+""",
+])
+def test_expression_not_assigned_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    1 + 1
+""",
+"""func foo():
+    true
+""",
+])
+def test_expression_not_assigned_nok(code):
+    simple_nok_check(code, 'expression-not-assigned')

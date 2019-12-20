@@ -36,7 +36,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # self-assigning-variable # check in godot
     # comparison-with-callable
     # duplicate-key # check in godot
-    # expression-not-assigned # check in godot
+    'expression-not-assigned': None,
     # unreachable # check in godot
     # using-constant-test # check in godot
     # comparison-with-itself # check in godot
