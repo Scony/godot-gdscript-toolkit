@@ -8,188 +8,187 @@ from .helpers import find_name_token_among_children
 
 
 def lint(parse_tree, config):
-    disable = config['disable']
-    rule_name_tokens = _gather_rule_name_tokens(parse_tree, [
-        'class_def',
-        'func_def',
-        'classname_stmt',
-        'signal_stmt',
-        'enum_named',
-        'enum_element',
-        'for_stmt',
-        'func_arg_regular',
-        'func_arg_inf',
-        'func_arg_typed',
-    ])
+    disable = config["disable"]
+    rule_name_tokens = _gather_rule_name_tokens(
+        parse_tree,
+        [
+            "class_def",
+            "func_def",
+            "classname_stmt",
+            "signal_stmt",
+            "enum_named",
+            "enum_element",
+            "for_stmt",
+            "func_arg_regular",
+            "func_arg_inf",
+            "func_arg_typed",
+        ],
+    )
     checks_to_run_wo_tree = [
         (
-            'function-name',
+            "function-name",
             partial(
                 _generic_name_check,
-                config['function-name'],
-                rule_name_tokens['func_def'],
-                'function-name',
+                config["function-name"],
+                rule_name_tokens["func_def"],
+                "function-name",
                 'Function name "{}" is not valid',
             ),
         ),
         (
-            'sub-class-name',
+            "sub-class-name",
             partial(
                 _generic_name_check,
-                config['sub-class-name'],
-                rule_name_tokens['class_def'],
-                'sub-class-name',
+                config["sub-class-name"],
+                rule_name_tokens["class_def"],
+                "sub-class-name",
                 'Class name "{}" is not valid',
             ),
         ),
         (
-            'class-name',
+            "class-name",
             partial(
                 _generic_name_check,
-                config['class-name'],
-                rule_name_tokens['classname_stmt'],
-                'class-name',
+                config["class-name"],
+                rule_name_tokens["classname_stmt"],
+                "class-name",
                 'Class name "{}" is not valid',
             ),
         ),
         (
-            'signal-name',
+            "signal-name",
             partial(
                 _generic_name_check,
-                config['signal-name'],
-                rule_name_tokens['signal_stmt'],
-                'signal-name',
+                config["signal-name"],
+                rule_name_tokens["signal_stmt"],
+                "signal-name",
                 'Signal name "{}" is not valid',
             ),
         ),
         (
-            'enum-name',
+            "enum-name",
             partial(
                 _generic_name_check,
-                config['enum-name'],
-                rule_name_tokens['enum_named'],
-                'enum-name',
+                config["enum-name"],
+                rule_name_tokens["enum_named"],
+                "enum-name",
                 'Enum name "{}" is not valid',
             ),
         ),
         (
-            'enum-element-name',
+            "enum-element-name",
             partial(
                 _generic_name_check,
-                config['enum-element-name'],
-                rule_name_tokens['enum_element'],
-                'enum-element-name',
+                config["enum-element-name"],
+                rule_name_tokens["enum_element"],
+                "enum-element-name",
                 'Enum element name "{}" is not valid',
             ),
         ),
         (
-            'loop-variable-name',
+            "loop-variable-name",
             partial(
                 _generic_name_check,
-                config['loop-variable-name'],
-                rule_name_tokens['for_stmt'],
-                'loop-variable-name',
+                config["loop-variable-name"],
+                rule_name_tokens["for_stmt"],
+                "loop-variable-name",
                 'Loop variable name "{}" is not valid',
             ),
         ),
         (
-            'function-argument-name',
+            "function-argument-name",
             partial(
                 _generic_name_check,
-                config['function-argument-name'],
-                rule_name_tokens['func_arg_regular'] +\
-                rule_name_tokens['func_arg_inf'] +\
-                rule_name_tokens['func_arg_typed'],
-                'function-argument-name',
+                config["function-argument-name"],
+                rule_name_tokens["func_arg_regular"]
+                + rule_name_tokens["func_arg_inf"]
+                + rule_name_tokens["func_arg_typed"],
+                "function-argument-name",
                 'Function argument name "{}" is not valid',
             ),
         ),
         (
-            'function-variable-name',
+            "function-variable-name",
             partial(
                 _generic_name_check,
-                config['function-variable-name'],
+                config["function-variable-name"],
                 _gather_rule_name_tokens(
                     parse_tree,
-                    ['func_var_stmt'],
+                    ["func_var_stmt"],
                     lambda x: not _has_load_or_preload_call_expr(x),
-                )['func_var_stmt'],
-                'function-variable-name',
+                )["func_var_stmt"],
+                "function-variable-name",
                 'Function-scope variable name "{}" is not valid',
             ),
         ),
         (
-            'function-load-variable-name',
+            "function-load-variable-name",
             partial(
                 _generic_name_check,
-                config['function-load-variable-name'],
+                config["function-load-variable-name"],
                 _gather_rule_name_tokens(
-                    parse_tree,
-                    ['func_var_stmt'],
-                    _has_load_or_preload_call_expr,
-                )['func_var_stmt'],
-                'function-load-variable-name',
+                    parse_tree, ["func_var_stmt"], _has_load_or_preload_call_expr,
+                )["func_var_stmt"],
+                "function-load-variable-name",
                 'Function-scope load/preload variable name "{}" is not valid',
             ),
         ),
         (
-            'constant-name',
+            "constant-name",
             partial(
                 _generic_name_check,
-                config['constant-name'],
+                config["constant-name"],
                 _gather_rule_name_tokens(
                     parse_tree,
-                    ['const_stmt'],
+                    ["const_stmt"],
                     lambda x: not _has_load_or_preload_call_expr(x),
-                )['const_stmt'],
-                'constant-name',
+                )["const_stmt"],
+                "constant-name",
                 'Constant name "{}" is not valid',
             ),
         ),
         (
-            'load-constant-name',
+            "load-constant-name",
             partial(
                 _generic_name_check,
-                config['load-constant-name'],
+                config["load-constant-name"],
                 _gather_rule_name_tokens(
-                    parse_tree,
-                    ['const_stmt'],
-                    _has_load_or_preload_call_expr,
-                )['const_stmt'],
-                'load-constant-name',
+                    parse_tree, ["const_stmt"], _has_load_or_preload_call_expr,
+                )["const_stmt"],
+                "load-constant-name",
                 'Constant (load/preload) name "{}" is not valid',
             ),
         ),
         (
-            'class-variable-name',
+            "class-variable-name",
             partial(
                 _generic_name_check,
-                config['class-variable-name'],
+                config["class-variable-name"],
                 _gather_rule_name_tokens(
                     parse_tree,
-                    ['class_var_stmt'],
+                    ["class_var_stmt"],
                     lambda x: not _has_load_or_preload_call_expr(x),
-                )['class_var_stmt'],
-                'class-variable-name',
+                )["class_var_stmt"],
+                "class-variable-name",
                 'Class-scope variable name "{}" is not valid',
             ),
         ),
         (
-            'class-load-variable-name',
+            "class-load-variable-name",
             partial(
                 _generic_name_check,
-                config['class-load-variable-name'],
+                config["class-load-variable-name"],
                 _gather_rule_name_tokens(
-                    parse_tree,
-                    ['class_var_stmt'],
-                    _has_load_or_preload_call_expr,
-                )['class_var_stmt'],
-                'class-load-variable-name',
+                    parse_tree, ["class_var_stmt"], _has_load_or_preload_call_expr,
+                )["class_var_stmt"],
+                "class-load-variable-name",
                 'Class-scope load/preload variable name "{}" is not valid',
             ),
         ),
     ]
-    problem_clusters = map(lambda x: x[1]() if x[0] not in disable else [], checks_to_run_wo_tree)
+    problem_clusters = map(
+        lambda x: x[1]() if x[0] not in disable else [], checks_to_run_wo_tree
+    )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     return problems
 
@@ -200,17 +199,19 @@ def _generic_name_check(name_regex, name_tokens, problem_name, description_templ
     for name_token in name_tokens:
         name = name_token.value
         if name_regex.fullmatch(name) is None:
-            problems.append(Problem(
-                name=problem_name,
-                description=description_template.format(name),
-                line=name_token.line,
-                column=name_token.column,
-            ))
+            problems.append(
+                Problem(
+                    name=problem_name,
+                    description=description_template.format(name),
+                    line=name_token.line,
+                    column=name_token.column,
+                )
+            )
     return problems
 
 
 def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
-    name_tokens_per_rule = {rule:[] for rule in rules}
+    name_tokens_per_rule = {rule: [] for rule in rules}
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree) and node.data in rules:
             rule_name = node.data
@@ -228,13 +229,16 @@ def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
 
 def _has_load_or_preload_call_expr(tree):
     for child in tree.children:
-        if isinstance(child, Tree) and child.data == 'expr':
+        if isinstance(child, Tree) and child.data == "expr":
             expr = child
-            if len(expr.children) == 1 and isinstance(expr.children[0], Tree) and \
-               expr.children[0].data == 'standalone_call':
+            if (
+                len(expr.children) == 1
+                and isinstance(expr.children[0], Tree)
+                and expr.children[0].data == "standalone_call"
+            ):
                 standalone_call = expr.children[0]
                 name_token = find_name_token_among_children(standalone_call)
                 assert name_token is not None
                 name = name_token.value
-                return name in ['load', 'preload']
+                return name in ["load", "preload"]
     return False
