@@ -17,7 +17,7 @@ import sys
 import pkg_resources
 
 from docopt import docopt
-from gdtoolkit.parser import parser
+from gdtoolkit.parser import parse
 
 
 arguments = docopt(__doc__, version='gdparse {}'.format(
@@ -30,7 +30,7 @@ if not isinstance(arguments, dict):
 for file_path in arguments['<file>']:
     with open(file_path, 'r') as fh: # TODO: handle exception
         content = fh.read()
-        tree = parser.parse(content) # TODO: handle exception
+        tree = parse(content) # TODO: handle exception
         if arguments['--pretty']:
             print(tree.pretty())
         elif arguments['--verbose']:

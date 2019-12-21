@@ -1,4 +1,4 @@
-start: _class_stmt_chain
+start: _class_stmt+
 
 _class_stmt: (_simple_class_stmt _NL) | compound_class_stmt | _NL
 _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
@@ -43,9 +43,8 @@ setget: "setget" [NAME] ["," NAME]
 const_stmt: "const" NAME [":" [TYPE]] "=" expr
 onready_stmt: "onready" class_var_stmt
 
-class_def: "class" NAME ["extends" NAME] ":" (_class_body | _class_stmt_chain)
-_class_body: _NL _INDENT _class_stmt_chain _DEDENT
-_class_stmt_chain: _class_stmt* [_simple_class_stmt]
+class_def: "class" NAME ["extends" NAME] ":" (_class_body | _class_stmt+)
+_class_body: _NL _INDENT _class_stmt+ _DEDENT
 
 func_def: "func" NAME "(" [func_args] ")" ["." _call_arglist] ["->" TYPE] ":" _func_suite
 func_args: func_arg ("," func_arg)*
@@ -56,10 +55,9 @@ func_arg_regular: ["var"] NAME ["=" expr]
 func_arg_inf: ["var"] NAME ":=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
 _func_suite: _func_body
-           | _func_stmt_chain
-_func_body: _NL _INDENT _func_stmt_chain _DEDENT
-_func_stmt_chain: func_stmt* [simple_func_stmt]
-?func_stmt: (simple_func_stmt _NL) | compound_func_stmt | _NL
+           | func_stmt+
+_func_body: _NL _INDENT func_stmt+ _DEDENT
+?func_stmt: (simple_func_stmt _NL) | compound_func_stmt
 ?simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
 ?single_func_stmt: pass_stmt
                  | return_stmt
@@ -77,7 +75,7 @@ func_var_stmt: _var_stmt
 break_stmt.2: "break"
 continue_stmt.2: "continue"
 expr_stmt: expr
-if_stmt: "if" expr ":" _func_suite (_NL* "elif" expr ":" _func_suite)* [_NL* "else" ":" _func_suite]
+if_stmt: "if" expr ":" _func_suite (_NL? "elif" expr ":" _func_suite)* [_NL? "else" ":" _func_suite]
 while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
 match_stmt: "match" expr ":" match_body
