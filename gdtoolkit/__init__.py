@@ -19,7 +19,7 @@ class Problem:  # TODO: use dataclass if python 3.6 support is dropped
         )
 
 
-def print_problem(problem, file_path, file_lines, colorful=False):  # TODO: colors
+def print_problem(problem, file_path):  # TODO: colors
     print(
         "{}:{}: Error: {} ({})".format(
             file_path, problem.line, problem.description, problem.name,

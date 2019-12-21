@@ -1,5 +1,3 @@
-from functools import partial
-
 from lark import Tree
 
 from .. import Problem

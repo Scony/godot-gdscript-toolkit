@@ -43,7 +43,7 @@ def test_parsing_failure(gdscript_nok_path):
         code = fh.read()
         try:
             parse(code)
-        except:
+        except:  # pylint: disable=bare-except
             return
         raise Exception("shall fail")
 

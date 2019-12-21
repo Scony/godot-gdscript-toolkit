@@ -63,7 +63,7 @@ def _trailing_ws_check(code):
     lines = code.splitlines()
     for line_number in range(len(lines)):
         line = lines[line_number]
-        if re.search("\s$", line) is not None:
+        if re.search(r"\s$", line) is not None:
             problems.append(
                 Problem(
                     name="trailing-whitespace",
