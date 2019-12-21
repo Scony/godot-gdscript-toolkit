@@ -618,8 +618,6 @@ def test_max_file_lines_nok():
     simple_nok_check(code, 'max-file-lines', 1001)
 
 
-
-
 @pytest.mark.parametrize('code', [
 """
 func foo():
@@ -665,3 +663,41 @@ def test_expression_not_assigned_nok(code):
 ])
 def test_newlineless_code(code):
     lint_code(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    var x
+
+
+""",
+"""
+func foo():
+    pass
+""",
+"""
+func foo():
+	x.bar()
+""",
+])
+def test_trailing_ws_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    pass 
+""",
+"""func foo():
+    pass   
+""",
+"""func foo():
+    pass	
+""",
+"""func foo():
+    pass 	  
+""",
+])
+def test_trailing_ws_nok(code):
+    simple_nok_check(code, 'trailing-whitespace')

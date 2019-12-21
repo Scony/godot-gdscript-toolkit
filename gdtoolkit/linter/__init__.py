@@ -2,7 +2,7 @@ from types import MappingProxyType
 
 from ..parser import parse
 from .. import Problem
-from . import name_checks, class_checks, basic_checks, design_checks
+from . import name_checks, class_checks, basic_checks, design_checks, format_checks
 
 PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
 SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
@@ -73,7 +73,7 @@ DEFAULT_CONFIG = MappingProxyType({
 
     # format checks
     'max-file-lines': 1000,
-    # trailing-ws
+    'trailing-whitespace': None,
     'max-line-length': 100,
     # mixed tabs and spaces
 
@@ -101,7 +101,8 @@ DEFAULT_CONFIG = MappingProxyType({
 
 def lint_code(gdscript_code, config=DEFAULT_CONFIG):
     parse_tree = parse(gdscript_code, gather_metadata=True)
-    problems = design_checks.lint(gdscript_code, parse_tree, config)
+    problems = design_checks.lint(parse_tree, config)
+    problems += format_checks.lint(gdscript_code, config)
     problems += name_checks.lint(parse_tree, config)
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
