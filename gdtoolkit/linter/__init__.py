@@ -4,11 +4,12 @@ from ..parser import parse
 from .. import Problem
 from . import name_checks, class_checks, basic_checks, design_checks, format_checks
 
-PASCAL_CASE = r'([A-Z][a-z0-9]*)+'
-SNAKE_CASE = r'[a-z][a-z0-9]*(_[a-z0-9]+)*'
-PRIVATE_SNAKE_CASE = r'_?{}'.format(SNAKE_CASE)
-UPPER_SNAKE_CASE = r'[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
+PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
+SNAKE_CASE = r"[a-z][a-z0-9]*(_[a-z0-9]+)*"
+PRIVATE_SNAKE_CASE = r"_?{}".format(SNAKE_CASE)
+UPPER_SNAKE_CASE = r"[A-Z][A-Z0-9]*(_[A-Z0-9]+)*"
 
+# fmt: off
 DEFAULT_CONFIG = MappingProxyType({
     # check control
     'disable': [],
@@ -97,6 +98,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # bugprone-virtual-near-miss
     # ~ https://clang.llvm.org/extra/clang-tidy/checks/list.html
 })
+# fmt: on
 
 
 def lint_code(gdscript_code, config=DEFAULT_CONFIG):
