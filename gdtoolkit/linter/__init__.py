@@ -1,6 +1,6 @@
 from types import MappingProxyType
 
-from ..parser import parser_with_metadata_gathering
+from ..parser import parse
 from .. import Problem
 from . import name_checks, class_checks, basic_checks, design_checks
 
@@ -100,7 +100,7 @@ DEFAULT_CONFIG = MappingProxyType({
 
 
 def lint_code(gdscript_code, config=DEFAULT_CONFIG):
-    parse_tree = parser_with_metadata_gathering.parse(gdscript_code)
+    parse_tree = parse(gdscript_code, gather_metadata=True)
     problems = design_checks.lint(gdscript_code, parse_tree, config)
     problems += name_checks.lint(parse_tree, config)
     problems += class_checks.lint(parse_tree, config)

@@ -657,3 +657,11 @@ def test_expression_not_assigned_ok(code):
 ])
 def test_expression_not_assigned_nok(code):
     simple_nok_check(code, 'expression-not-assigned')
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    pass""",
+])
+def test_newlineless_code(code):
+    lint_code(code)
