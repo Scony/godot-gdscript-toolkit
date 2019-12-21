@@ -19,6 +19,10 @@ def lint(gdscript_code, config):
             'trailing-whitespace',
             _trailing_ws_check,
         ),
+        (
+            'mixed-tabs-and-spaces',
+            _mixed_tabs_and_spaces_check,
+        ),
     ]
     problem_clusters = map(
         lambda x: x[1](gdscript_code) if x[0] not in disable else [], checks_to_run_w_code
@@ -63,6 +67,21 @@ def _trailing_ws_check(code):
             problems.append(Problem(
                 name='trailing-whitespace',
                 description='Trailing whitespace(s)',
+                line=line_number + 1,
+                column=0,
+            ))
+    return problems
+
+
+def _mixed_tabs_and_spaces_check(code):
+    problems = []
+    lines = code.splitlines()
+    for line_number in range(len(lines)):
+        line = lines[line_number]
+        if re.search('^(\t+ +| +\t+)', line) is not None:
+            problems.append(Problem(
+                name='mixed-tabs-and-spaces',
+                description='Mixed tabs and spaces',
                 line=line_number + 1,
                 column=0,
             ))

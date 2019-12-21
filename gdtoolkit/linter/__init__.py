@@ -75,7 +75,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'max-file-lines': 1000,
     'trailing-whitespace': None,
     'max-line-length': 100,
-    # mixed tabs and spaces
+    'mixed-tabs-and-spaces': None,
 
     # misc
     # never-returning-function # for non-void, typed functions

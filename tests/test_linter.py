@@ -701,3 +701,33 @@ def test_trailing_ws_ok(code):
 ])
 def test_trailing_ws_nok(code):
     simple_nok_check(code, 'trailing-whitespace')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    pass
+""",
+"""
+func foo():
+	pass
+""",
+])
+def test_mixed_tabs_and_spaces_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+class X:
+    func foo():
+    	pass
+""",
+"""
+class X:
+	func foo():
+	    pass
+""",
+])
+def test_mixed_tabs_and_spaces_nok(code):
+    simple_nok_check(code, 'mixed-tabs-and-spaces', line=4)
