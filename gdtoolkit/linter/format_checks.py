@@ -29,7 +29,7 @@ def lint(gdscript_code, config):
 
 def _max_line_length_check(threshold, code):
     problems = []
-    lines = code.split('\n')
+    lines = code.splitlines()
     for line_number in range(len(lines)):
         if len(lines[line_number]) > threshold:
             problems.append(Problem(
@@ -43,7 +43,7 @@ def _max_line_length_check(threshold, code):
 
 def _max_file_lines_check(threshold, code):
     problems = []
-    lines = code.split('\n')
+    lines = code.splitlines()
     if len(lines) > threshold:
         problems.append(Problem(
             name='max-file-lines',
@@ -56,7 +56,7 @@ def _max_file_lines_check(threshold, code):
 
 def _trailing_ws_check(code):
     problems = []
-    lines = code.split('\n')
+    lines = code.splitlines()
     for line_number in range(len(lines)):
         line = lines[line_number]
         if re.search('\s$', line) is not None:
