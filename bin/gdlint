@@ -83,9 +83,8 @@ for file_path in arguments['<file>']:
         content = fh.read()
         problems = lint_code(content, config)
         if len(problems) > 0:   # TODO: friendly frontend like in halint
-            lines = content.split('\n')
             for problem in problems:
-                print_problem(problem, file_path, lines)
+                print_problem(problem, file_path)
             sys.exit(1)
 
 logging.info('Success: no problems found')

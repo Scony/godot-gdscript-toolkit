@@ -501,7 +501,7 @@ def test_class_load_variable_name_nok(code):
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """,
 ])
-def test_class_load_variable_name_ok(code):
+def test_max_line_length_ok(code):
     simple_ok_check(code)
 
 
@@ -510,7 +510,7 @@ def test_class_load_variable_name_ok(code):
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """,
 ])
-def test_class_load_variable_name_nok(code):
+def test_max_line_length_nok(code):
     simple_nok_check(code, 'max-line-length')
 
 

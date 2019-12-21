@@ -1,7 +1,7 @@
 import re
 from functools import partial
 
-from lark import Tree, Token
+from lark import Tree
 
 from .. import Problem
 from .helpers import find_name_token_among_children
