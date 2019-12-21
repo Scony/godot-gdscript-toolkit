@@ -84,8 +84,13 @@ If parser succeeded, it will return the exit code `0`.
 
 ## Running tests
 
-To run tests you will need `python` and `tox`. To invoke test suite run:
+To run tests you will need `tox`. To invoke entire test suite run:
 
 ```
 $ tox
+```
+
+To run only selected test cases run e.g.
+```
+tox -e py3 -- -k lint
 ```
