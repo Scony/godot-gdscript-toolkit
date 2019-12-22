@@ -2,39 +2,45 @@
 [![](https://travis-ci.org/Scony/godot-gdscript-toolkit.svg?branch=master)](https://travis-ci.org/Scony/godot-gdscript-toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project aims to create an E2E set of tools for daily work with `GDScript`. The ultimate goal is to provide tools such as:
+This project aims to create an end-to-end set of tools for daily work with `GDScript`. The goal is to provide the following tools:
 
-* parser - producing a parse tree for debug/educational purposes
-* compiler - producing an easy to use intermediate representation (IR)
-* linter - performing a static analysis according to some predefined configuration
-* formatter - formatting the code according to some predefined rules
+- A parser that produces a parse tree for debugging and educational purposes.
+- A compiler to create an easy to use Intermediate Representation of the code (IR).
+- A linter that performs a static analysis according to some predefined configuration.
+- A formatter to format the code according to some predefined rules.
 
-## Current status
+## Current progress
 
-The grammar and parser are done (may have minor issues). The linter is under WIP, although it already has some useful checks.
+The parser and the language grammar are ready to use, although they may have minor bugs. If you find any, please [open an issue](https://github.com/Scony/godot-gdscript-toolkit/issues/new).
+
+The linter is currently a work-in-progress. Some useful tests are already available.
 
 ## Installation
 
-To install this project you will need `python3` and `pip`. The command is as follows:
+To install this project you need `python3` and `pip`. 
+
+Use this command in your terminal to install from this git repository:
 
 ```
-$ pip install git+https://github.com/Scony/godot-gdscript-toolkit
+pip3 install git+https://github.com/Scony/godot-gdscript-toolkit
 ```
 
-## Linter - gdlint
+## Linting with gdlint
 
 To run a linter you need to perform installation first. Once done, you can run e.g.:
 
 ```
 $ gdlint misc/MarkovianPCG.gd
-misc/MarkovianPCG.gd:96: Error: Function argument name "aOrigin" is not valid (function-argument-name)
-misc/MarkovianPCG.gd:96: Error: Function argument name "aPos" is not valid (function-argument-name)
-misc/MarkovianPCG.gd:96: Error: Function argument name "aType" is not valid (function-argument-name)
-misc/MarkovianPCG.gd:96: Error: Function argument name "aConnections" is not valid (function-argument-name)
-misc/MarkovianPCG.gd:222: Error: Function argument name "aConnections" is not valid (function-argument-name)
 ```
 
-In order to tweak the default check settings (regexes, thresholds etc.) you can easily dump default config to a file:
+Which outputs messages like:
+
+```
+misc/MarkovianPCG.gd:96: Error: Function argument name "aOrigin" is not valid (function-argument-name)
+misc/MarkovianPCG.gd:96: Error: Function argument name "aPos" is not valid (function-argument-name)
+```
+
+To tweak the default check settings, you can dump the default config to a file:
 
 ```
 $ gdlint -d
@@ -60,12 +66,17 @@ sub-class-name: _?([A-Z][a-z0-9]*)+
 Once the dump is performed, you can modify the `gdlintrc` file and optionally rename it to `.gdlintrc`.
 From now on, linter will use this config file to override the default config.
 
-## Parser - gdparse
+## Parsing with gdparse
 
-To run a parser you need to perform installation first. Once done, you can run e.g.:
+To parse a file, use the `gdparse` program:
 
 ```
-$ gdparse tests/valid-gd-scripts/recursive_tool.gd -p
+gdparse tests/valid-gd-scripts/recursive_tool.gd -p
+```
+
+The parser outputs a tree that represents your code's structure:
+
+```
 start
   class_def
     X
@@ -80,17 +91,26 @@ start
   tool_stmt
 ```
 
-If parser succeeded, it will return the exit code `0`.
+If the program parses your file sucessfully, it will return the exit code `0`.
 
 ## Running tests
 
-To run tests you will need `tox`. To invoke entire test suite run:
+To run tests you need [tox](https://tox.readthedocs.io/en/latest/), a tool to automate testing in Python.
+
+Install it with:
 
 ```
-$ tox
+pip3 install tox
 ```
 
-To run only selected test cases run e.g.
+To invoke entire test suite, in the `godot-gdscript-toolkit` project directory, run:
+
+```
+tox
+```
+
+You can run only selected test cases:
+
 ```
 tox -e py3 -- -k lint
 ```
