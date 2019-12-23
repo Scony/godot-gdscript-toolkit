@@ -7,21 +7,24 @@ import pytest
 from gdtoolkit.parser import parse
 
 
-OK_DATA_DIR = "valid-gd-scripts"
-NOK_DATA_DIR = "invalid-gd-scripts"
+OK_DATA_DIR = "./valid-gd-scripts"
+NOK_DATA_DIR = "./invalid-gd-scripts"
 GODOT_SERVER = "godot-server"
 
 
 def pytest_generate_tests(metafunc):
+    this_directory = os.path.dirname(os.path.abspath(__file__))
     if "gdscript_ok_path" in metafunc.fixturenames:
+        directory_tests = os.path.join(this_directory, OK_DATA_DIR)
         metafunc.parametrize(
             "gdscript_ok_path",
-            [os.path.join(OK_DATA_DIR, x) for x in os.listdir(OK_DATA_DIR)],
+            [os.path.join(directory_tests, f) for f in os.listdir(directory_tests)],
         )
     if "gdscript_nok_path" in metafunc.fixturenames:
+        directory_tests = os.path.join(this_directory, NOK_DATA_DIR)
         metafunc.parametrize(
             "gdscript_nok_path",
-            [os.path.join(NOK_DATA_DIR, x) for x in os.listdir(NOK_DATA_DIR)],
+            [os.path.join(directory_tests, f) for f in os.listdir(directory_tests)],
         )
 
 
