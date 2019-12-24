@@ -1,22 +1,13 @@
 import sys
+from dataclasses import dataclass
 
 
-class Problem:  # TODO: use dataclass if python 3.6 support is dropped
-    def __init__(self, name: str, description: str, line: int, column: int):
-        self.name = name
-        self.description = description
-        self.line = line
-        self.column = column
-
-    def __repr__(self):
-        return "Problem({})".format(
-            {
-                "name": self.name,
-                "description": self.description,
-                "line": self.line,
-                "column": self.column,
-            }
-        )
+@dataclass
+class Problem:
+    name: str
+    description: str
+    line: int
+    column: int
 
 
 def print_problem(problem, file_path):  # TODO: colors
