@@ -1,9 +1,12 @@
+from types import MappingProxyType
+from typing import List
+
 from lark import Tree
 
 from .. import Problem
 
 
-def lint(parse_tree, config):
+def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_tree = [
         ("unnecessary-pass", _unnecessary_pass_check,),
@@ -16,7 +19,7 @@ def lint(parse_tree, config):
     return problems
 
 
-def _unnecessary_pass_check(parse_tree):  # performance... use AST once available
+def _unnecessary_pass_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree):
@@ -35,7 +38,7 @@ def _unnecessary_pass_check(parse_tree):  # performance... use AST once availabl
     return problems
 
 
-def _expression_not_assigned_check(parse_tree):
+def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for expr_stmt in parse_tree.find_data("expr_stmt"):
         expr = expr_stmt.children[0]
@@ -56,7 +59,7 @@ def _expression_not_assigned_check(parse_tree):
     return problems
 
 
-def _find_stmts_among_children(tree, suffix):
+def _find_stmts_among_children(tree: Tree, suffix: str):
     stmts = []
     for child in tree.children:
         if isinstance(child, Tree):

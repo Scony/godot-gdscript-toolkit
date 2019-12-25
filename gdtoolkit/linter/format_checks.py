@@ -1,10 +1,12 @@
 import re
 from functools import partial
+from types import MappingProxyType
+from typing import List
 
 from .. import Problem
 
 
-def lint(gdscript_code, config):
+def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_code = [
         (
@@ -23,7 +25,7 @@ def lint(gdscript_code, config):
     return problems
 
 
-def _max_line_length_check(threshold, code):
+def _max_line_length_check(threshold, code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
     for line_number in range(len(lines)):
@@ -41,7 +43,7 @@ def _max_line_length_check(threshold, code):
     return problems
 
 
-def _max_file_lines_check(threshold, code):
+def _max_file_lines_check(threshold, code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
     if len(lines) > threshold:
@@ -58,7 +60,7 @@ def _max_file_lines_check(threshold, code):
     return problems
 
 
-def _trailing_ws_check(code):
+def _trailing_ws_check(code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
     for line_number in range(len(lines)):
@@ -75,7 +77,7 @@ def _trailing_ws_check(code):
     return problems
 
 
-def _mixed_tabs_and_spaces_check(code):
+def _mixed_tabs_and_spaces_check(code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
     for line_number in range(len(lines)):

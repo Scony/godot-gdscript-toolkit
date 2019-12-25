@@ -1,12 +1,14 @@
 from functools import partial
+from types import MappingProxyType
+from typing import List
 
-from lark import Tree, Token
+from lark import Token, Tree
 
 from .. import Problem
 from .helpers import find_name_token_among_children
 
 
-def lint(parse_tree, config):
+def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_tree = [
         ("private-method-call", _private_method_call_check,),
@@ -22,7 +24,7 @@ def lint(parse_tree, config):
     return problems
 
 
-def _private_method_call_check(parse_tree):
+def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for getattr_call in parse_tree.find_data("getattr_call"):
         _getattr = getattr_call.children[0]
@@ -48,11 +50,11 @@ def _private_method_call_check(parse_tree):
     return problems
 
 
-def _is_method_private(method_name):
+def _is_method_private(method_name: str) -> bool:
     return method_name.startswith("_")  # TODO: consider making configurable
 
 
-def _class_definitions_order_check(order, parse_tree):
+def _class_definitions_order_check(order, parse_tree: Tree) -> List[Problem]:
     problems = _class_definitions_order_check_for_class(
         "global scope", parse_tree.children, order
     )
@@ -64,7 +66,9 @@ def _class_definitions_order_check(order, parse_tree):
     return problems
 
 
-def _class_definitions_order_check_for_class(class_name, class_children, order):
+def _class_definitions_order_check_for_class(
+    class_name: str, class_children, order
+) -> List[Problem]:
     stmt_to_section_mapping = {
         "tool_stmt": "tools",
         "signal_stmt": "signals",
@@ -106,7 +110,7 @@ def _class_definitions_order_check_for_class(class_name, class_children, order):
     return problems
 
 
-def _class_var_stmt_visibility(class_var_stmt):
+def _class_var_stmt_visibility(class_var_stmt) -> str:
     some_var_stmt = class_var_stmt.children[0]
     name_token = find_name_token_among_children(some_var_stmt)
     return "prv" if name_token.startswith("_") else "pub"
