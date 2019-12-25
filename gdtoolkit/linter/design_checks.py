@@ -1,11 +1,13 @@
 from functools import partial
+from types import MappingProxyType
+from typing import List
 
 from lark import Tree
 
 from .. import Problem
 
 
-def lint(parse_tree, config):
+def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_tree = [
         (
@@ -20,7 +22,7 @@ def lint(parse_tree, config):
     return problems
 
 
-def _function_args_num_check(threshold, parse_tree):
+def _function_args_num_check(threshold, parse_tree: Tree) -> List[Problem]:
     problems = []
     for func_def in parse_tree.find_data("func_def"):
         func_name_token = func_def.children[0]

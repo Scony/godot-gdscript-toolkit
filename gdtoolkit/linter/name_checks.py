@@ -1,5 +1,7 @@
 import re
 from functools import partial
+from typing import List
+from types import MappingProxyType
 
 from lark import Tree
 
@@ -7,7 +9,7 @@ from .. import Problem
 from .helpers import find_name_token_among_children
 
 
-def lint(parse_tree, config):
+def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     rule_name_tokens = _gather_rule_name_tokens(
         parse_tree,
@@ -193,7 +195,9 @@ def lint(parse_tree, config):
     return problems
 
 
-def _generic_name_check(name_regex, name_tokens, problem_name, description_template):
+def _generic_name_check(
+    name_regex, name_tokens, problem_name, description_template
+) -> List[Problem]:
     problems = []
     name_regex = re.compile(name_regex)
     for name_token in name_tokens:
@@ -210,7 +214,9 @@ def _generic_name_check(name_regex, name_tokens, problem_name, description_templ
     return problems
 
 
-def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
+def _gather_rule_name_tokens(
+    parse_tree: Tree, rules, predicate=lambda _: True
+) -> List[Problem]:
     name_tokens_per_rule = {rule: [] for rule in rules}
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree) and node.data in rules:
@@ -227,7 +233,7 @@ def _gather_rule_name_tokens(parse_tree, rules, predicate=lambda _: True):
     return name_tokens_per_rule
 
 
-def _has_load_or_preload_call_expr(tree):
+def _has_load_or_preload_call_expr(tree: Tree) -> bool:
     for child in tree.children:
         if isinstance(child, Tree) and child.data == "expr":
             expr = child
