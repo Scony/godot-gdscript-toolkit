@@ -10,7 +10,7 @@ class Problem:
     column: int
 
 
-def print_problem(problem, file_path):  # TODO: colors
+def print_problem(problem: Problem, file_path: str) -> None:  # TODO: colors
     print(
         "{}:{}: Error: {} ({})".format(
             file_path, problem.line, problem.description, problem.name,
