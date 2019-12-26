@@ -4,7 +4,7 @@ import shutil
 
 import pytest
 
-from gdtoolkit.parser import parse
+from gdtoolkit.parser import parser
 
 
 OK_DATA_DIR = "./valid-gd-scripts"
@@ -31,7 +31,7 @@ def pytest_generate_tests(metafunc):
 def test_parsing_success(gdscript_ok_path):
     with open(gdscript_ok_path, "r") as fh:
         code = fh.read()
-        parse(code)  # just checking if not throwing
+        parser.parse(code)  # just checking if not throwing
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
@@ -45,7 +45,7 @@ def test_parsing_failure(gdscript_nok_path):
     with open(gdscript_nok_path, "r") as fh:
         code = fh.read()
         try:
-            parse(code)
+            parser.parse(code)
         except:  # pylint: disable=bare-except
             return
         raise Exception("shall fail")
