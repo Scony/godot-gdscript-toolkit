@@ -1,13 +1,15 @@
 import os
 from pathlib import Path
 
-from lark import Lark, indenter
+from lark import Lark, indenter, Tree
 
 
 SELF_DIR = os.path.dirname(os.path.abspath(Path(__file__).resolve()))
 
 
-def parse(code, gather_metadata=False):  # TODO: lazy parser loading
+def parse(
+    code: str, gather_metadata: bool = False
+) -> Tree:  # TODO: lazy parser loading
     """gdscript parsing function - when gather_metadata is True
        the parsing will be slower but the tree will contain metadata
        like line and column positions for rules and tokens"""
