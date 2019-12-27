@@ -2,7 +2,7 @@ from types import MappingProxyType
 from typing import List
 
 from .. import Problem
-from ..parser import parse
+from ..parser import parser
 from . import basic_checks, class_checks, design_checks, format_checks, name_checks
 
 PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
@@ -105,7 +105,7 @@ DEFAULT_CONFIG = MappingProxyType({
 def lint_code(
     gdscript_code: str, config: MappingProxyType = DEFAULT_CONFIG
 ) -> List[Problem]:
-    parse_tree = parse(gdscript_code, gather_metadata=True)
+    parse_tree = parser.parse(gdscript_code, gather_metadata=True)
     problems = design_checks.lint(parse_tree, config)
     problems += format_checks.lint(gdscript_code, config)
     problems += name_checks.lint(parse_tree, config)

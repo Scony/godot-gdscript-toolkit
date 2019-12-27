@@ -1,36 +1,10 @@
+"""
+Initializes and caches the GDScript parsers, using Lark.
+Provides a function to parse GDScript code and get an intermediate representation as a Lark Tree.
+"""
 import os
-from pathlib import Path
 
-from lark import Lark, indenter, Tree
-
-
-SELF_DIR = os.path.dirname(os.path.abspath(Path(__file__).resolve()))
-
-
-def parse(code: str, gather_metadata: bool = False) -> Tree:
-    """gdscript parsing function - when gather_metadata is True
-       the parsing will be slower but the tree will contain metadata
-       like line and column positions for rules and tokens"""
-    global _parser, _parser_with_metadata_gathering
-    code += "\n"
-    if gather_metadata:
-        if _parser_with_metadata_gathering is None:
-            _parser_with_metadata_gathering = Lark.open(
-                os.path.join(SELF_DIR, "gdscript.lark"),
-                postlex=Indenter(),
-                parser="lalr",
-                start="start",
-                propagate_positions=True,
-            )
-        return _parser_with_metadata_gathering.parse(code)
-    if _parser is None:
-        _parser = Lark.open(
-            os.path.join(SELF_DIR, "gdscript.lark"),
-            postlex=Indenter(),
-            parser="lalr",
-            start="start",
-        )
-    return _parser.parse(code)
+from lark import Lark, Tree, indenter
 
 
 class Indenter(indenter.Indenter):
@@ -39,8 +13,66 @@ class Indenter(indenter.Indenter):
     CLOSE_PAREN_types = ["RPAR", "RSQB", "RBRACE"]
     INDENT_type = "_INDENT"
     DEDENT_type = "_DEDENT"
-    tab_len = 4  # TODO: guess
+    # TODO: guess tab length
+    tab_len = 4
 
 
-_parser = None
-_parser_with_metadata_gathering = None
+# When upgrading to Python 3.8, replace with functools.cached_property
+class cached_property:
+    """ A property that is only computed once per instance and then replaces
+        itself with an ordinary attribute. Deleting the attribute resets the
+        property.
+        """
+
+    def __init__(self, func):
+        self.__doc__ = getattr(func, "__doc__")
+        self.func = func
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        value = obj.__dict__[self.func.__name__] = self.func(obj)
+        return value
+
+
+class Parser:
+    """Parses GDScript code using lark parsers.
+    The parsers are only created once, upon using them for the first time.
+    """
+
+    def __init__(self):
+        self._directory = os.path.dirname(__file__)
+
+    def parse(self, code: str, gather_metadata: bool = False) -> Tree:
+        """Parses GDScript code and returns an intermediate representation as a Lark Tree.
+        If gather_metadata is True, parsing is slower but the returned Tree comes with line
+        and column numbers for statements and rules.
+        """
+        code += "\n"
+        return (
+            self._parser_with_metadata.parse(code)
+            if gather_metadata
+            else self._parser.parse(code)
+        )
+
+    @cached_property
+    def _parser(self) -> Tree:
+        return Lark.open(
+            os.path.join(self._directory, "gdscript.lark"),
+            postlex=Indenter(),
+            parser="lalr",
+            start="start",
+        )
+
+    @cached_property
+    def _parser_with_metadata(self) -> Tree:
+        return Lark.open(
+            os.path.join(self._directory, "gdscript.lark"),
+            postlex=Indenter(),
+            parser="lalr",
+            start="start",
+            propagate_positions=True,
+        )
+
+
+parser = Parser()
