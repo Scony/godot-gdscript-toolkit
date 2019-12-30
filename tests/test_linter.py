@@ -641,6 +641,10 @@ func foo():
 func foo():
     for x in [1]: continue
 """,
+"""
+func foo():
+    '''docstr'''
+"""
 ])
 def test_expression_not_assigned_ok(code):
     simple_ok_check(code)
