@@ -5,7 +5,7 @@ from typing import List
 from lark import Token, Tree
 
 from .. import Problem
-from .helpers import find_name_token_among_children
+from .helpers import find_name_token_among_children, is_function_public
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
@@ -113,4 +113,4 @@ def _class_definitions_order_check_for_class(
 def _class_var_stmt_visibility(class_var_stmt) -> str:
     some_var_stmt = class_var_stmt.children[0]
     name_token = find_name_token_among_children(some_var_stmt)
-    return "prv" if name_token.startswith("_") else "pub"
+    return "pub" if is_function_public(name_token.value) else "prv"
