@@ -9,3 +9,6 @@ master func baz():
 
 puppet func asd():
 	return null
+
+sync func qwe():
+	return null
