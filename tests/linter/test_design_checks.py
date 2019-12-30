@@ -38,3 +38,106 @@ func foo(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11):
 ])
 def test_function_args_nok(code):
     simple_nok_check(code, 'function-arguments-number')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo1():
+    pass
+func foo2():
+    pass
+func foo3():
+    pass
+func foo4():
+    pass
+func foo5():
+    pass
+func foo6():
+    pass
+func foo7():
+    pass
+func foo8():
+    pass
+func foo9():
+    pass
+func foo10():
+    pass
+func foo11():
+    pass
+class X:
+    func foo1():
+        pass
+    func foo2():
+        pass
+    func foo3():
+        pass
+    func foo4():
+        pass
+    func foo5():
+        pass
+    func foo6():
+        pass
+    func foo7():
+        pass
+    func foo8():
+        pass
+    func foo9():
+        pass
+    func foo10():
+        pass
+    func foo11():
+        pass
+""",
+])
+def test_max_public_methods_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo1():
+    pass
+func foo2():
+    pass
+func foo3():
+    pass
+func foo4():
+    pass
+func foo5():
+    pass
+func foo6():
+    pass
+func foo7():
+    pass
+func foo8():
+    pass
+func foo9():
+    pass
+func foo10():
+    pass
+func foo11():
+    pass
+func foo12():
+    pass
+func foo13():
+    pass
+func foo14():
+    pass
+func foo15():
+    pass
+func foo16():
+    pass
+func foo17():
+    pass
+func foo18():
+    pass
+func foo19():
+    pass
+func foo20():
+    pass
+func foo21():
+    pass
+""",
+])
+def test_max_public_methods_nok(code):
+    simple_nok_check(code, 'max-public-methods')

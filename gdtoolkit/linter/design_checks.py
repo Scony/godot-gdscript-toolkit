@@ -5,6 +5,8 @@ from typing import List
 from lark import Tree
 
 from .. import Problem
+from .ast import AbstractSyntaxTree
+from .helpers import is_function_public
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
@@ -19,6 +21,17 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
+    checks_to_run_w_ast = [
+        (
+            "max-public-methods",
+            partial(_max_public_methods_check, config["max-public-methods"]),
+        ),
+    ]
+    ast = AbstractSyntaxTree(parse_tree)
+    problem_clusters = map(
+        lambda x: x[1](ast) if x[0] not in disable else [], checks_to_run_w_ast
+    )
+    problems += [problem for cluster in problem_clusters for problem in cluster]
     return problems
 
 
@@ -44,4 +57,27 @@ def _function_args_num_check(threshold, parse_tree: Tree) -> List[Problem]:
                         column=func_name_token.column,
                     )
                 )
+    return problems
+
+
+def _max_public_methods_check(threshold: int, ast: AbstractSyntaxTree) -> List[Problem]:
+    problems = []
+    for a_class in ast.classes:
+        public_functions = [f for f in a_class.functions if is_function_public(f.name)]
+        if len(public_functions) > threshold:
+            class_name = (
+                "Class {}".format(a_class.name)
+                if a_class.name is not None
+                else "Global scope class"
+            )
+            problems.append(
+                Problem(
+                    name="max-public-methods",
+                    description='"{}" has more than {} public methods (functions)'.format(
+                        class_name, threshold
+                    ),
+                    line=a_class.lark_node.line,
+                    column=a_class.lark_node.column,
+                )
+            )
     return problems

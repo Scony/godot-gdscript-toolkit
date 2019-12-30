@@ -68,8 +68,7 @@ DEFAULT_CONFIG = MappingProxyType({
     # max-branches
     # max-statements
     # max-attributes
-    # max-public-methods
-    # max-private-methods
+    'max-public-methods': 20,
     # max-nested-blocks
     'function-arguments-number': 10,
 
