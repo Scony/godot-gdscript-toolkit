@@ -146,7 +146,7 @@ TYPE: NAME
 
 string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
-LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is
+LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is | /'''.*?(?<!\\)(\\\\)*?'''/is
 
 _NL: ( /\r?\n[\t ]*/ | COMMENT )+
 COMMENT: /#[^\n]*/
