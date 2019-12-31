@@ -3,7 +3,7 @@ from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 def simple_ok_check(code):
     outcome = lint_code(code)
-    assert len(outcome) == 0
+    assert len(outcome) == 0, outcome
 
 
 def simple_nok_check(code, check_name, line=2, **kwargs):

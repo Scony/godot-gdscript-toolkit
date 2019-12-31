@@ -74,3 +74,34 @@ def test_unnecessary_pass_ok(code):
 ])
 def test_unnecessary_pass_nok(code):
     simple_nok_check(code, 'unnecessary-pass', disable=['expression-not-assigned'])
+
+
+@pytest.mark.parametrize('code', [
+"""
+const B = preload('b')
+var A = load('a')
+func foo():
+    var X = load('c')
+    var Y = preload('d')
+""",
+])
+def test_duplicated_load_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+const B = preload('b')
+var A = load('a')
+func foo():
+    var X = load('a')
+""",
+"""
+const B = preload('b')
+var A = load('a')
+func foo():
+    var X = preload('a')
+""",
+])
+def test_duplicated_load_nok(code):
+    simple_nok_check(code, 'duplicated-load', line=5)
