@@ -11,6 +11,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     checks_to_run_w_tree = [
         ("unnecessary-pass", _unnecessary_pass_check,),
         ("expression-not-assigned", _expression_not_assigned_check,),
+        ("duplicated-load", _duplicated_load_check,),
     ]
     problem_clusters = map(
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
@@ -60,7 +61,35 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
     return problems
 
 
-def _find_stmts_among_children(tree: Tree, suffix: str):
+def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
+    problems = []
+    loaded_strings = set()
+    for call in parse_tree.find_data("standalone_call"):
+        name_token = call.children[0]
+        callee_name = name_token.value
+        if (
+            callee_name in ["load", "preload"]
+            and len(call.children) > 1
+            and isinstance(call.children[2], Tree)
+            and call.children[2].data == "string"
+        ):
+            string_rule = call.children[2]
+            loaded_string = string_rule.children[0].value
+            if loaded_string in loaded_strings:
+                problems.append(
+                    Problem(
+                        name="duplicated-load",
+                        description="duplicated loading of {}".format(loaded_string),
+                        line=string_rule.line,
+                        column=string_rule.column,
+                    )
+                )
+            else:
+                loaded_strings.add(loaded_string)
+    return problems
+
+
+def _find_stmts_among_children(tree: Tree, suffix: str) -> List[Tree]:
     stmts = []
     for child in tree.children:
         if isinstance(child, Tree):

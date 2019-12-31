@@ -32,6 +32,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'load-constant-name': r'({}|{})'.format(PASCAL_CASE, UPPER_SNAKE_CASE),
 
     # basic checks
+    'duplicated-load': None,
     # not-in-loop (break/continue) # check in godot
     # duplicate-argument-name # check in godot
     # self-assigning-variable # check in godot
