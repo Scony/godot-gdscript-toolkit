@@ -41,7 +41,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # unreachable # check in godot
     # using-constant-test # check in godot
     # comparison-with-itself # check in godot
-    # extract-loads-to-preload
     'unnecessary-pass': None,
 
     # class checks
@@ -85,7 +84,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # inconsistent-return-statements
     # redefined-argument-from-local
     # chained-comparison
-    # unused-load-const
     # unused-argument
     # unused-variable
     # pointless-statement
