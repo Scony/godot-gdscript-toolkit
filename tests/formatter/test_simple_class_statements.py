@@ -28,6 +28,55 @@ tool
 tool
 """,
 ),
+(
+"""
+tool     # xxx
+tool
+# yyy
+tool
+""",
+"""tool  # xxx
+tool
+# yyy
+tool
+""",
+),
+(
+"""
+# xxx
+tool
+tool
+
+# zzz
+tool
+""",
+"""# xxx
+tool
+tool
+
+# zzz
+tool
+""",
+),
+(
+"""
+# xxx
+tool
+tool
+
+# zzz
+tool
+# yyy
+""",
+"""# xxx
+tool
+tool
+
+# zzz
+tool
+# yyy
+""",
+),
 ])
 # fmt: on
 def test_formatting(input_code, expected_output_code):
