@@ -105,3 +105,27 @@ func foo():
 ])
 def test_duplicated_load_nok(code):
     simple_nok_check(code, 'duplicated-load', line=5)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo(x):
+    print(x)
+""",
+"""
+func foo(_x):
+    pass
+""",
+])
+def test_unused_argument_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo(x):
+    pass
+""",
+])
+def test_unused_argument_nok(code):
+    simple_nok_check(code, 'unused-argument')
