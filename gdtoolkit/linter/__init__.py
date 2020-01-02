@@ -88,7 +88,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # unused-argument
     # unused-variable
     # pointless-statement
-    # Constant actual parameter value
     # magic values
     # misc-redundant-expression
     # ~ https://clang.llvm.org/extra/clang-tidy/checks/misc-redundant-expression.html
