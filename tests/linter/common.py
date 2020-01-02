@@ -1,8 +1,11 @@
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 
-def simple_ok_check(code):
-    outcome = lint_code(code)
+def simple_ok_check(code, **kwargs):
+    extra_disable = [] if "disable" not in kwargs else kwargs["disable"]
+    config = DEFAULT_CONFIG.copy()
+    config.update({"disable": extra_disable})
+    outcome = lint_code(code, config)
     assert len(outcome) == 0, outcome
 
 

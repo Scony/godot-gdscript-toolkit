@@ -33,20 +33,20 @@ DEFAULT_CONFIG = MappingProxyType({
 
     # basic checks
     'duplicated-load': None,
+    'expression-not-assigned': None,
+    'unnecessary-pass': None,
+    'unused-argument': None,
     # not-in-loop (break/continue) # check in godot
     # duplicate-argument-name # check in godot
     # self-assigning-variable # check in godot
     # comparison-with-callable
     # duplicate-key # check in godot
-    'expression-not-assigned': None,
     # unreachable # check in godot
     # using-constant-test # check in godot
     # comparison-with-itself # check in godot
-    'unnecessary-pass': None,
 
     # class checks
     'private-method-call': None,
-    # useless-super-delegation
     'class-definitions-order': [
         'tools',
         'extends',
@@ -61,6 +61,7 @@ DEFAULT_CONFIG = MappingProxyType({
         'prvvars',
         'others',
     ],
+    # useless-super-delegation
 
     # design checks
     # max-locals
@@ -85,7 +86,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # inconsistent-return-statements
     # redefined-argument-from-local
     # chained-comparison
-    # unused-argument
     # unused-variable
     # pointless-statement
     # magic values

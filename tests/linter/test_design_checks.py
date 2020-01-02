@@ -23,7 +23,7 @@ func foo() -> int:
 """,
 ])
 def test_function_args_ok(code):
-    simple_ok_check(code)
+    simple_ok_check(code, disable=['unused-argument'])
 
 
 @pytest.mark.parametrize('code', [
@@ -37,7 +37,7 @@ func foo(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11):
 """,
 ])
 def test_function_args_nok(code):
-    simple_nok_check(code, 'function-arguments-number')
+    simple_nok_check(code, 'function-arguments-number', disable=['unused-argument'])
 
 
 @pytest.mark.parametrize('code', [

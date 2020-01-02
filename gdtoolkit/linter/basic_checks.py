@@ -1,9 +1,10 @@
 from types import MappingProxyType
 from typing import List
 
-from lark import Tree
+from lark import Tree, Token
 
 from .. import Problem
+from .helpers import find_name_token_among_children
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
@@ -12,6 +13,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         ("unnecessary-pass", _unnecessary_pass_check,),
         ("expression-not-assigned", _expression_not_assigned_check,),
         ("duplicated-load", _duplicated_load_check,),
+        ("unused-argument", _unused_argument_check,),
     ]
     problem_clusters = map(
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
@@ -86,6 +88,46 @@ def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
                 )
             else:
                 loaded_strings.add(loaded_string)
+    return problems
+
+
+def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
+    problems = []
+    for func_def in parse_tree.find_data("func_def"):
+        if (
+            isinstance(func_def.children[1], Tree)
+            and func_def.children[1].data == "func_args"
+        ):
+            argument_definitions = {}
+            argument_tokens = {}
+            func_args = func_def.children[1]
+            for func_arg in func_args.children:
+                arg_name_token = find_name_token_among_children(func_arg)
+                arg_name = arg_name_token.value
+                argument_definitions[arg_name] = (
+                    argument_definitions.get(arg_name, 0) + 1
+                )
+                argument_tokens[arg_name] = arg_name_token
+            name_occurances = {}
+            for xnode in func_def.iter_subtrees():
+                for node in xnode.children:
+                    if isinstance(node, Token) and node.type == "NAME":
+                        name = node.value
+                        name_occurances[name] = name_occurances.get(name, 0) + 1
+            for argument in argument_definitions:
+                if argument_definitions[argument] == name_occurances[
+                    argument
+                ] and not argument.startswith("_"):
+                    problems.append(
+                        Problem(
+                            name="unused-argument",
+                            description="unused function argument '{}'".format(
+                                argument
+                            ),
+                            line=argument_tokens[argument].line,
+                            column=argument_tokens[argument].column,
+                        )
+                    )
     return problems
 
 
