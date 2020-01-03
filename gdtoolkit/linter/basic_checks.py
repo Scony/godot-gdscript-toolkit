@@ -14,6 +14,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         ("expression-not-assigned", _expression_not_assigned_check,),
         ("duplicated-load", _duplicated_load_check,),
         ("unused-argument", _unused_argument_check,),
+        ("comparison-with-itself", _comparison_with_itself_check,),
     ]
     problem_clusters = map(
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
@@ -128,6 +129,22 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
                             column=argument_tokens[argument].column,
                         )
                     )
+    return problems
+
+
+def _comparison_with_itself_check(parse_tree: Tree) -> List[Problem]:
+    problems = []
+    for comparison in parse_tree.find_data("comparison"):
+        assert len(comparison.children) == 3
+        if comparison.children[0] == comparison.children[2]:
+            problems.append(
+                Problem(
+                    name="comparison-with-itself",
+                    description="Redundant comparison",
+                    line=comparison.line,
+                    column=comparison.column,
+                )
+            )
     return problems
 
 

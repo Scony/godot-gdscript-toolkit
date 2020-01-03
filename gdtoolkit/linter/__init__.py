@@ -36,6 +36,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'expression-not-assigned': None,
     'unnecessary-pass': None,
     'unused-argument': None,
+    'comparison-with-itself': None,
     # not-in-loop (break/continue) # check in godot
     # duplicate-argument-name # check in godot
     # self-assigning-variable # check in godot
@@ -43,7 +44,6 @@ DEFAULT_CONFIG = MappingProxyType({
     # duplicate-key # check in godot
     # unreachable # check in godot
     # using-constant-test # check in godot
-    # comparison-with-itself # check in godot
 
     # class checks
     'private-method-call': None,
