@@ -100,7 +100,7 @@ assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
 ?and_test: not_test (("and" | "&&") not_test)*
 ?not_test: ("not" | "!") not_test | content_test
 ?content_test: comparison ("in" comparison)*
-?comparison: bitw_or (comp_op bitw_or)*
+?comparison: bitw_or (comp_op bitw_or)?
 comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
 ?bitw_or: bitw_xor ("|" bitw_xor)*
 ?bitw_xor: bitw_and ("^" bitw_and)*
