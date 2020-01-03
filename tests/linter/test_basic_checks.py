@@ -129,3 +129,42 @@ func foo(x):
 ])
 def test_unused_argument_nok(code):
     simple_nok_check(code, 'unused-argument')
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    var x = 1
+    if 1 == x:  # TODO: try handling such cases in the future
+        return 1
+    return 0
+""",
+])
+def test_comparison_with_itself_ok(code):
+    simple_ok_check(code)
+
+
+@pytest.mark.parametrize('code', [
+"""func foo():
+    if 1 == 1:
+        return 1
+    return 0
+""",
+"""func foo(x):
+    if x == x:
+        return 1
+    return 0
+""",
+"""func foo():
+    if "a" == "a":
+        return 1
+    return 0
+""",
+"""func foo():
+    if (x + 1) == (x + 1):
+        return 1
+    return 0
+""",
+])
+def test_comparison_with_itself_nok(code):
+    simple_nok_check(code, 'comparison-with-itself')
