@@ -122,7 +122,3 @@ def _remove_empty_strings_from_begin(lst: List) -> List:
         if el != "":
             return lst[i:]
     return []
-
-
-def _blank_lines_between(begin: int, end: int) -> int:
-    return end - (begin + 1)
