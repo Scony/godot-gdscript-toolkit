@@ -3,7 +3,7 @@ from functools import partial
 from types import MappingProxyType
 from typing import List
 
-from .. import Problem
+from .problem import Problem
 
 
 def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
