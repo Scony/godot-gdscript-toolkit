@@ -19,6 +19,14 @@ class Context:
         self.gdscript_code_lines = gdscript_code_lines
         self.comments = comments
 
+    def create_child_context(self, previously_processed_line_number: int):
+        return Context(
+            indent=self.indent + 4,
+            previously_processed_line_number=previously_processed_line_number,
+            gdscript_code_lines=self.gdscript_code_lines,
+            comments=self.comments,
+        )
+
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
     assert max_line_length > 0
@@ -26,10 +34,9 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
     gdscript_code_lines = [None] + gdscript_code.splitlines()
     comments = _gather_comments_from_code(gdscript_code)
     formatted_lines = []
-    previously_processed_line_number = 0
     context = Context(
         indent=0,
-        previously_processed_line_number=previously_processed_line_number,
+        previously_processed_line_number=0,
         gdscript_code_lines=gdscript_code_lines,
         comments=comments,
     )
@@ -53,12 +60,7 @@ def _format_class_body(statements: List, context: Context) -> (List[str], int):
             formatted_lines.append("{}class {}:".format(" " * context.indent, name))
             class_lines, last_processed_line = _format_class_body(
                 statement.children[1:],
-                Context(
-                    indent=context.indent + 4,
-                    previously_processed_line_number=previously_processed_line_number,
-                    gdscript_code_lines=context.gdscript_code_lines,
-                    comments=context.comments,
-                ),
+                context.create_child_context(previously_processed_line_number),
             )
             formatted_lines += class_lines
             previously_processed_line_number = last_processed_line
