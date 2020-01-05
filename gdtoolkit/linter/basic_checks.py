@@ -3,7 +3,7 @@ from typing import List
 
 from lark import Tree, Token
 
-from .. import Problem
+from .problem import Problem
 from .helpers import find_name_token_among_children
 
 

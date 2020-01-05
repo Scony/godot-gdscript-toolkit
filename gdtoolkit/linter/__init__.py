@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import List
 
-from .. import Problem
+from .problem import Problem
 from ..parser import parser
 from . import basic_checks, class_checks, design_checks, format_checks, name_checks
 
