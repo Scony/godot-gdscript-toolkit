@@ -87,20 +87,20 @@ class X:
     tool
 """,
 ),
-# (
-# """tool
-# class X:
-#     # aaa
-#     tool
-#     # bbb
-# """,
-# """tool
-# class X:
-#     # aaa
-#     tool
-#     # bbb
-# """,
-# ),
+(
+"""tool
+class X:
+    # aaa
+    tool
+    # bbb
+""",
+"""tool
+class X:
+    # aaa
+    tool
+    # bbb
+""",
+),
 ])
 # fmt: on
 def test_formatting(input_code, expected_output_code):
