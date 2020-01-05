@@ -80,6 +80,7 @@ DEFAULT_CONFIG = MappingProxyType({
     'mixed-tabs-and-spaces': None,
 
     # misc
+    # no-else-return
     # never-returning-function # for non-void, typed functions
     # simplify-boolean-expression
     # consider-using-in
