@@ -4,7 +4,7 @@ from typing import List
 
 from lark import Tree
 
-from .. import Problem
+from .problem import Problem
 from .ast import AbstractSyntaxTree
 from .helpers import is_function_public
 

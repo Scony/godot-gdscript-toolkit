@@ -4,7 +4,7 @@ from typing import List
 
 from lark import Token, Tree
 
-from .. import Problem
+from .problem import Problem
 from .helpers import find_name_token_among_children, is_function_public
 
 
