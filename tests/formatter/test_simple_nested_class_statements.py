@@ -101,6 +101,26 @@ class X:
     # bbb
 """,
 ),
+(
+"""tool
+class X:
+    # aaa
+    class Y:
+        # xxx
+        tool
+        # yyy
+    # bbb
+""",
+"""tool
+class X:
+    # aaa
+    class Y:
+        # xxx
+        tool
+        # yyy
+    # bbb
+""",
+),
 ])
 # fmt: on
 def test_formatting(input_code, expected_output_code):
