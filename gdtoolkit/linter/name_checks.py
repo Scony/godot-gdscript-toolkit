@@ -5,7 +5,7 @@ from types import MappingProxyType
 
 from lark import Tree
 
-from .. import Problem
+from .problem import Problem
 from .helpers import find_name_token_among_children
 
 
