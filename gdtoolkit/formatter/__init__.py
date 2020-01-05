@@ -64,6 +64,15 @@ def _format_class_body(statements: List, context: Context) -> (List[str], int):
             )
             formatted_lines += class_lines
             previously_processed_line_number = last_processed_line
+        elif statement.data == "func_def":
+            name = statement.children[0].value
+            formatted_lines.append("{}func {}():".format(" " * context.indent, name))
+            func_lines, last_processed_line = _format_func_body(
+                statement.children[1:],
+                context.create_child_context(previously_processed_line_number),
+            )
+            formatted_lines += func_lines
+            previously_processed_line_number = last_processed_line
         if context.comments[statement.line] is not None:
             formatted_lines[-1] = "{}  {}".format(
                 formatted_lines[-1], context.comments[statement.line]
@@ -75,6 +84,16 @@ def _format_class_body(statements: List, context: Context) -> (List[str], int):
         previously_processed_line_number, dedent_line_number, context,
     )
     previously_processed_line_number = dedent_line_number - 1
+    return (formatted_lines, previously_processed_line_number)
+
+
+def _format_func_body(statements: List, context: Context) -> (List[str], int):
+    formatted_lines = []
+    previously_processed_line_number = context.previously_processed_line_number
+    for statement in statements:
+        previously_processed_line_number = statement.line
+        if statement.data == "pass_stmt":
+            formatted_lines.append("{}pass".format(" " * context.indent))
     return (formatted_lines, previously_processed_line_number)
 
 
