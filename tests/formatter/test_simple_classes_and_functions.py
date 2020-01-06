@@ -17,6 +17,58 @@ class X:
         pass
 """,
 ),
+(
+"""tool
+class X:
+    func foo():
+        # aaa
+        pass # bbb
+        # ccc
+""",
+"""tool
+class X:
+    func foo():
+        # aaa
+        pass  # bbb
+        # ccc
+""",
+),
+(
+"""tool
+class X:
+    func foo():
+
+        pass
+        
+""",
+"""tool
+class X:
+    func foo():
+        pass
+""",
+),
+(
+"""tool
+class X:
+    func foo():
+
+        # aaa
+
+        pass # bbb
+
+        # ccc
+        
+""",
+"""tool
+class X:
+    func foo():
+        # aaa
+
+        pass  # bbb
+
+        # ccc
+""",
+),
 ])
 # fmt: on
 def test_formatting(input_code, expected_output_code):

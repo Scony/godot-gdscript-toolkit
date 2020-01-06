@@ -84,13 +84,14 @@ tool
 tool
 """
 ),
-# (
-# """tool;tool;tool # xxx""",
-# """tool
-# tool
-# tool  # xxx
-# """
-# ),
+(
+"""tool
+
+
+""",
+"""tool
+"""
+),
 ])
 # fmt: on
 def test_formatting(input_code, expected_output_code):
