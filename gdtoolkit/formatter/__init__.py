@@ -1,9 +1,12 @@
 import re
-from typing import List
+from typing import List, Union, Callable
 
-from lark import Tree
+from lark import Tree, Token
 
 from ..parser import parser
+
+
+INLINE_COMMENT_OFFSET = 2
 
 
 class Context:
@@ -40,61 +43,82 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         gdscript_code_lines=gdscript_code_lines,
         comments=comments,
     )
-    formatted_lines, _ = _format_class_body(parse_tree.children, context)
-    formatted_lines.append("")
-    return "\n".join(formatted_lines)
+    formatted_lines, _ = _format_block(
+        parse_tree.children, _format_class_statement, context
+    )
+    formatted_lines.append((None, ""))
+    formatted_lines = _add_inline_comments(formatted_lines, comments)
+    return "\n".join([line for _, line in formatted_lines])
 
 
-def _format_class_body(statements: List, context: Context) -> (List[str], int):
+def _format_block(
+    statements: List, statement_formatter: Callable, context: Context,
+) -> (List, int):
     formatted_lines = []
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
-        formatted_lines += _reconstruct_blank_lines_in_range(
+        blank_lines = _reconstruct_blank_lines_in_range(
             previously_processed_line_number, statement.line, context,
         )
-        previously_processed_line_number = statement.line
-        if statement.data == "tool_stmt":
-            formatted_lines.append("{}tool".format(" " * context.indent))
-        elif statement.data == "class_def":
-            name = statement.children[0].value
-            formatted_lines.append("{}class {}:".format(" " * context.indent, name))
-            class_lines, last_processed_line = _format_class_body(
-                statement.children[1:],
-                context.create_child_context(previously_processed_line_number),
-            )
-            formatted_lines += class_lines
-            previously_processed_line_number = last_processed_line
-        elif statement.data == "func_def":
-            name = statement.children[0].value
-            formatted_lines.append("{}func {}():".format(" " * context.indent, name))
-            func_lines, last_processed_line = _format_func_body(
-                statement.children[1:],
-                context.create_child_context(previously_processed_line_number),
-            )
-            formatted_lines += func_lines
-            previously_processed_line_number = last_processed_line
-        if context.comments[statement.line] is not None:
-            formatted_lines[-1] = "{}  {}".format(
-                formatted_lines[-1], context.comments[statement.line]
-            )
+        if previously_processed_line_number == context.previously_processed_line_number:
+            blank_lines = _remove_empty_strings_from_begin(blank_lines)
+        formatted_lines += blank_lines
+        lines, previously_processed_line_number = statement_formatter(
+            statement, context
+        )
+        formatted_lines += lines
     dedent_line_number = _find_dedent_line_number(
         previously_processed_line_number, context
     )
-    formatted_lines += _reconstruct_blank_lines_in_range(
+    lines_at_the_end = _reconstruct_blank_lines_in_range(
         previously_processed_line_number, dedent_line_number, context,
     )
+    lines_at_the_end = _remove_empty_strings_from_end(lines_at_the_end)
+    formatted_lines += lines_at_the_end
     previously_processed_line_number = dedent_line_number - 1
     return (formatted_lines, previously_processed_line_number)
 
 
-def _format_func_body(statements: List, context: Context) -> (List[str], int):
+def _format_class_statement(
+    statement: Union[Tree, Token], context: Context
+) -> (List, int):
     formatted_lines = []
-    previously_processed_line_number = context.previously_processed_line_number
-    for statement in statements:
-        previously_processed_line_number = statement.line
-        if statement.data == "pass_stmt":
-            formatted_lines.append("{}pass".format(" " * context.indent))
-    return (formatted_lines, previously_processed_line_number)
+    last_processed_line_no = statement.line
+    if statement.data == "tool_stmt":
+        formatted_lines.append((statement.line, "{}tool".format(" " * context.indent)))
+    elif statement.data == "class_def":
+        name = statement.children[0].value
+        formatted_lines.append(
+            (statement.line, "{}class {}:".format(" " * context.indent, name))
+        )
+        class_lines, last_processed_line_no = _format_block(
+            statement.children[1:],
+            _format_class_statement,
+            context.create_child_context(last_processed_line_no),
+        )
+        formatted_lines += class_lines
+    elif statement.data == "func_def":
+        name = statement.children[0].value
+        formatted_lines.append(
+            (statement.line, "{}func {}():".format(" " * context.indent, name))
+        )
+        func_lines, last_processed_line_no = _format_block(
+            statement.children[1:],
+            _format_func_statement,
+            context.create_child_context(last_processed_line_no),
+        )
+        formatted_lines += func_lines
+    return (formatted_lines, last_processed_line_no)
+
+
+def _format_func_statement(
+    statement: Union[Tree, Token], context: Context
+) -> (List, int):
+    formatted_lines = []
+    last_processed_line_no = statement.line
+    if statement.data == "pass_stmt":
+        formatted_lines.append((statement.line, "{}pass".format(" " * context.indent)))
+    return (formatted_lines, last_processed_line_no)
 
 
 def _find_dedent_line_number(previously_processed_line_number: int, context: Context):
@@ -108,7 +132,7 @@ def _find_dedent_line_number(previously_processed_line_number: int, context: Con
     return line_no
 
 
-def _gather_comments_from_code(gdscript_code: str) -> List[str]:
+def _gather_comments_from_code(gdscript_code: str) -> List:
     lines = gdscript_code.splitlines()
     comments = [None] * (len(lines) + 1)
     for i, line in enumerate(lines):
@@ -118,28 +142,46 @@ def _gather_comments_from_code(gdscript_code: str) -> List[str]:
     return comments
 
 
-def _reconstruct_blank_lines_in_range(
-    begin: int, end: int, context: Context
-) -> List[str]:
+def _reconstruct_blank_lines_in_range(begin: int, end: int, context: Context) -> List:
     comments = context.comments
     prefix = " " * context.indent
-    comments_in_range = (
-        comments[begin + 1 : end] if end != -1 else comments[begin + 1 :]
-    )
+    comments_in_range = comments[begin + 1 : end]
     reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
-    if begin == 0:
-        reconstructed_lines = _remove_empty_strings_from_begin(reconstructed_lines)
-    if end == -1:
-        reconstructed_lines = list(
-            reversed(
-                _remove_empty_strings_from_begin(list(reversed(reconstructed_lines)))
-            )
-        )
+    reconstructed_lines = list(
+        zip([None for _ in range(begin + 1, end)], reconstructed_lines)
+    )
     return reconstructed_lines
 
 
 def _remove_empty_strings_from_begin(lst: List) -> List:
     for i, el in enumerate(lst):
-        if el != "":
+        if el[1] != "":
             return lst[i:]
     return []
+
+
+def _remove_empty_strings_from_end(lst: List) -> List:
+    return list(reversed(_remove_empty_strings_from_begin(list(reversed(lst)))))
+
+
+def _add_inline_comments(formatted_lines: List, comments: List) -> List:
+    added_comment_indexes = set()
+
+    def _append_comment(line, line_number):
+        if (
+            line_number not in added_comment_indexes
+            and line_number is not None
+            and comments[line_number] is not None
+        ):
+            added_comment_indexes.add(line_number)
+            return "{}{}{}".format(
+                line, " " * INLINE_COMMENT_OFFSET, comments[line_number]
+            )
+        return line
+
+    return reversed(
+        [
+            (line_no, _append_comment(line, line_no))
+            for line_no, line in reversed(formatted_lines)
+        ]
+    )
