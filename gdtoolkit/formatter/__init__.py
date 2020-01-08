@@ -122,13 +122,21 @@ def _format_func_statement(
 
 
 def _find_dedent_line_number(previously_processed_line_number: int, context: Context):
-    if previously_processed_line_number == len(context.gdscript_code_lines) - 1:
+    if (
+        previously_processed_line_number == len(context.gdscript_code_lines) - 1
+        or context.indent == 0
+    ):
         return len(context.gdscript_code_lines)
     line_no = previously_processed_line_number + 1
     for line in context.gdscript_code_lines[previously_processed_line_number + 1 :]:
         if re.search(r"^ {0,%d}[^ ]+" % (context.indent - 1), line) is not None:
-            return line_no
+            break
         line_no += 1
+    for line in context.gdscript_code_lines[line_no - 1 :: -1]:
+        if line == "":  # TODO: all ws-lines (non-code&non-comment)
+            line_no -= 1
+        else:
+            break
     return line_no
 
 
