@@ -155,10 +155,22 @@ def _reconstruct_blank_lines_in_range(begin: int, end: int, context: Context) ->
     prefix = " " * context.indent
     comments_in_range = comments[begin + 1 : end]
     reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
+    reconstructed_lines = _squeeze_lines(reconstructed_lines)
     reconstructed_lines = list(
         zip([None for _ in range(begin + 1, end)], reconstructed_lines)
     )
+
     return reconstructed_lines
+
+
+def _squeeze_lines(lines: List[str]) -> List[str]:
+    squeezed_lines = []
+    previous_line = None
+    for line in lines:
+        if line != "" or previous_line != "":
+            squeezed_lines.append(line)
+        previous_line = line
+    return squeezed_lines
 
 
 def _remove_empty_strings_from_begin(lst: List) -> List:
