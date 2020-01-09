@@ -15,6 +15,7 @@ class Context:  # pylint: disable=too-many-arguments
         self.max_line_length = max_line_length
         self.gdscript_code_lines = gdscript_code_lines
         self.comments = comments
+        self.indent_string = " " * self.indent
 
     def create_child_context(self, previously_processed_line_number: int):
         return Context(

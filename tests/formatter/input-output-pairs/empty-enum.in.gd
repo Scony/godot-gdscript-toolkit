@@ -1,2 +1,3 @@
-enum{}
-enum SomeEnumName{}
+class X:
+    enum{}
+    enum SomeEnumName{}

@@ -24,19 +24,25 @@ def format_enum(enum_def: Tree, context: Context) -> (List, int):
 
 
 def _calculate_single_line_len(enum: Enum, context: Context) -> int:
-    assert context
-    return 4 + 1 + (len(enum.name) + 1 if enum.name is not None else 0) + 2
+    return (
+        context.indent
+        + 4
+        + 1
+        + (len(enum.name) + 1 if enum.name is not None else 0)
+        + 2
+    )
 
 
 def _format_to_single_line(enum: Enum, context: Context) -> List:
-    assert context
     if enum.name is not None:
-        return [(-1, "enum %s {}" % enum.name)]
-    return [(-1, "enum {}")]
+        return [(-1, "{}enum {} {{}}".format(context.indent_string, enum.name))]
+    return [(-1, "{}enum {{}}".format(context.indent_string))]
 
 
 def _format_to_multiple_lines(enum: Enum, context: Context) -> List:
-    assert context
     if enum.name is not None:
-        return [(-1, "enum %s {\n}" % enum.name)]
-    return (-1, "enum {\n}")
+        return [
+            (-1, "{}enum {} {{".format(context.indent_string, enum.name)),
+            (-1, "{}}}".format(context.indent_string)),
+        ]
+    return [(-1, "{}enum {{\n}}".format(context.indent_string))]
