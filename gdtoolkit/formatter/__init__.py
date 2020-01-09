@@ -4,35 +4,14 @@ from typing import List, Union, Callable
 from lark import Tree, Token
 
 from ..parser import parser
+from .context import Context
+from .enum import format_enum
 
 
 INLINE_COMMENT_OFFSET = 2
 
 
-class Context:
-    def __init__(
-        self,
-        indent: int,
-        previously_processed_line_number: int,
-        gdscript_code_lines: List,
-        comments: List,
-    ):
-        self.indent = indent
-        self.previously_processed_line_number = previously_processed_line_number
-        self.gdscript_code_lines = gdscript_code_lines
-        self.comments = comments
-
-    def create_child_context(self, previously_processed_line_number: int):
-        return Context(
-            indent=self.indent + 4,
-            previously_processed_line_number=previously_processed_line_number,
-            gdscript_code_lines=self.gdscript_code_lines,
-            comments=self.comments,
-        )
-
-
 def format_code(gdscript_code: str, max_line_length: int) -> str:
-    assert max_line_length > 0
     parse_tree = parser.parse(gdscript_code, gather_metadata=True)
     gdscript_code_lines = [None] + gdscript_code.splitlines()
     comments = _gather_comments_from_code(gdscript_code)
@@ -40,6 +19,7 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
     context = Context(
         indent=0,
         previously_processed_line_number=0,
+        max_line_length=max_line_length,
         gdscript_code_lines=gdscript_code_lines,
         comments=comments,
     )
@@ -108,6 +88,9 @@ def _format_class_statement(
             context.create_child_context(last_processed_line_no),
         )
         formatted_lines += func_lines
+    elif statement.data == "enum_def":
+        enum_lines, last_processed_line_no = format_enum(statement, context)
+        formatted_lines += enum_lines
     return (formatted_lines, last_processed_line_no)
 
 
