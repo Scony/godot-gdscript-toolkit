@@ -6,9 +6,9 @@ MAX_LINE_LENGTH = 100
 
 
 def format_and_compare(input_code, expected_output_code):
-    input_code_parse_tree = parser.parse(input_code)
+    input_code_parse_tree = parser.parse(input_code, loosen_grammar=True)
     formatted_code = format_code(input_code, max_line_length=MAX_LINE_LENGTH)
-    formatted_code_parse_tree = parser.parse(formatted_code)
+    formatted_code_parse_tree = parser.parse(formatted_code, loosen_grammar=True)
     _invariant_check(input_code_parse_tree, formatted_code_parse_tree)
     _compare(formatted_code, expected_output_code)
     input_code_comments = _gather_comment_statistics_from_code(input_code)

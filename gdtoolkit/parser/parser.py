@@ -3,6 +3,7 @@ Initializes and caches the GDScript parsers, using Lark.
 Provides a function to parse GDScript code and get an intermediate representation as a Lark Tree.
 """
 import os
+import re
 
 from lark import Lark, Tree, indenter
 
@@ -43,12 +44,16 @@ class Parser:
     def __init__(self):
         self._directory = os.path.dirname(__file__)
 
-    def parse(self, code: str, gather_metadata: bool = False) -> Tree:
+    def parse(
+        self, code: str, gather_metadata: bool = False, loosen_grammar: bool = False
+    ) -> Tree:
         """Parses GDScript code and returns an intermediate representation as a Lark Tree.
         If gather_metadata is True, parsing is slower but the returned Tree comes with line
         and column numbers for statements and rules.
         """
-        code += "\n"
+        code += "\n"  # to overcome lark bug (#489)
+        if loosen_grammar:
+            return self._loosen_parser_with_metadata.parse(code)
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -73,6 +78,22 @@ class Parser:
             start="start",
             propagate_positions=True,
         )
+
+    @cached_property
+    def _loosen_parser_with_metadata(self) -> Tree:
+        with open(os.path.join(self._directory, "gdscript.lark"), "r") as fh:
+            grammar_code = fh.read()
+            grammar_lines = grammar_code.splitlines()
+            grammar_code = "\n".join(
+                [re.sub(r"^!", "", line) for line in grammar_lines]
+            )
+            return Lark(
+                grammar_code,
+                postlex=Indenter(),
+                parser="lalr",
+                start="start",
+                propagate_positions=True,
+            )
 
 
 parser = Parser()
