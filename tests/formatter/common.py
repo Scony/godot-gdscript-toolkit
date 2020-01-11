@@ -32,7 +32,7 @@ def _comment_preservation_check(input_code_comments, formatted_code_comments):
 
 
 def _gather_comment_statistics_from_code(gdscript_code: str) -> dict:
-    stats = {}
+    stats = {}  # type: dict
     lines = gdscript_code.splitlines()
     for line in lines:
         comment_start = line.find("#")

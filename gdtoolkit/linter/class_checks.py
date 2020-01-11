@@ -1,6 +1,6 @@
 from functools import partial
 from types import MappingProxyType
-from typing import List
+from typing import Callable, List, Tuple
 
 from lark import Token, Tree
 
@@ -16,7 +16,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             "class-definitions-order",
             partial(_class_definitions_order_check, config["class-definitions-order"]),
         ),
-    ]
+    ]  # type: List[Tuple[str, Callable]]
     problem_clusters = map(
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
     )
@@ -74,11 +74,13 @@ def _class_definitions_order_check_for_class(
         "signal_stmt": "signals",
         "extends_stmt": "extends",
         "classname_stmt": "classnames",
-        "class_var_stmt": {"pub": "pubvars", "prv": "prvvars",},
         "const_stmt": "consts",
         "export_stmt": "exports",
-        "onready_stmt": {"pub": "onreadypubvars", "prv": "onreadyprvvars",},
         "enum_def": "enums",
+    }
+    visibility_dependent_stmt_to_section_mapping = {
+        "class_var_stmt": {"pub": "pubvars", "prv": "prvvars",},
+        "onready_stmt": {"pub": "onreadypubvars", "prv": "onreadyprvvars",},
     }
     problems = []
     current_section = order[0]
@@ -88,11 +90,11 @@ def _class_definitions_order_check_for_class(
         stmt = class_child.data
         if stmt == "class_var_stmt":
             visibility = _class_var_stmt_visibility(class_child)
-            section = stmt_to_section_mapping[stmt][visibility]
+            section = visibility_dependent_stmt_to_section_mapping[stmt][visibility]
         elif stmt == "onready_stmt":
             class_var_stmt = class_child.children[0]
             visibility = _class_var_stmt_visibility(class_var_stmt)
-            section = stmt_to_section_mapping[stmt][visibility]
+            section = visibility_dependent_stmt_to_section_mapping[stmt][visibility]
         else:
             section = stmt_to_section_mapping.get(stmt, "others")
         section_rank = order.index(section)
