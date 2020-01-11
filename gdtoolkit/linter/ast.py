@@ -19,8 +19,8 @@ class Class:
     def __init__(self, parse_tree: Tree):
         self.lark_node = parse_tree
         self.name = None
-        self.sub_classes = []
-        self.functions = []
+        self.sub_classes = []  # type: List[Class]
+        self.functions = []  # type: List[Function]
 
         if parse_tree.data == "start":
             start = parse_tree

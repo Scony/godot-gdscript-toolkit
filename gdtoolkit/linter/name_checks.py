@@ -1,6 +1,6 @@
 import re
 from functools import partial
-from typing import List
+from typing import Dict, List
 from types import MappingProxyType
 
 from lark import Tree
@@ -216,8 +216,8 @@ def _generic_name_check(
 
 def _gather_rule_name_tokens(
     parse_tree: Tree, rules, predicate=lambda _: True
-) -> List[Problem]:
-    name_tokens_per_rule = {rule: [] for rule in rules}
+) -> Dict[str, List[str]]:
+    name_tokens_per_rule = {rule: [] for rule in rules}  # type: Dict[str, List[str]]
     for node in parse_tree.iter_subtrees():
         if isinstance(node, Tree) and node.data in rules:
             rule_name = node.data

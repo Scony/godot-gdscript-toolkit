@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from lark import Tree, Token
 
@@ -10,7 +10,7 @@ class Enum:
     def __init__(self, enum_def: Tree):
         self.lark_node = enum_def
         self.name = self._load_name(enum_def)
-        self.elements = []
+        self.elements = []  # type: List[Tuple[str, str]]
         self.trailing_comma = self._check_trailing_comma(enum_def)
         self._load_elements()
 
@@ -39,7 +39,7 @@ class Enum:
         return False
 
 
-def format_enum(enum_def: Tree, context: Context) -> (List, int):
+def format_enum(enum_def: Tree, context: Context) -> Tuple[List, int]:
     enum = Enum(enum_def)
     if (
         enum.trailing_comma

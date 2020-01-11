@@ -1,5 +1,5 @@
 import re
-from typing import List, Union, Callable
+from typing import Callable, Iterator, List, Optional, Set, Tuple, Union
 
 from lark import Tree, Token
 
@@ -13,9 +13,12 @@ INLINE_COMMENT_OFFSET = 2
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
     parse_tree = parser.parse(gdscript_code, gather_metadata=True)
-    gdscript_code_lines = [None] + gdscript_code.splitlines()
+    gdscript_code_lines = [
+        None,
+        *gdscript_code.splitlines(),
+    ]  # type: List[Optional[str]]
     comments = _gather_comments_from_code(gdscript_code)
-    formatted_lines = []
+    formatted_lines = []  # type: List[Tuple[Union[None, int], str]]
     context = Context(
         indent=0,
         previously_processed_line_number=0,
@@ -27,14 +30,16 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         parse_tree.children, _format_class_statement, context
     )
     formatted_lines.append((None, ""))
-    formatted_lines = _add_inline_comments(formatted_lines, comments)
-    return "\n".join([line for _, line in formatted_lines])
+    formatted_lines_with_inlined_comments = _add_inline_comments(
+        formatted_lines, comments
+    )
+    return "\n".join([line for _, line in formatted_lines_with_inlined_comments])
 
 
 def _format_block(
     statements: List, statement_formatter: Callable, context: Context,
-) -> (List, int):
-    formatted_lines = []
+) -> Tuple[List, int]:
+    formatted_lines = []  # type: List
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
         blank_lines = _reconstruct_blank_lines_in_range(
@@ -61,7 +66,7 @@ def _format_block(
 
 def _format_class_statement(
     statement: Union[Tree, Token], context: Context
-) -> (List, int):
+) -> Tuple[List, int]:
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "tool_stmt":
@@ -96,7 +101,7 @@ def _format_class_statement(
 
 def _format_func_statement(
     statement: Union[Tree, Token], context: Context
-) -> (List, int):
+) -> Tuple[List, int]:
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "pass_stmt":
@@ -125,11 +130,13 @@ def _find_dedent_line_number(previously_processed_line_number: int, context: Con
 
 def _gather_comments_from_code(gdscript_code: str) -> List:
     lines = gdscript_code.splitlines()
-    comments = [None] * (len(lines) + 1)
-    for i, line in enumerate(lines):
+    comments = [None]  # type: List[Optional[str]]
+    for line in lines:
         comment_start = line.find("#")
         if comment_start >= 0:
-            comments[i + 1] = line[comment_start:]
+            comments.append(line[comment_start:])
+        else:
+            comments.append(None)
     return comments
 
 
@@ -167,8 +174,8 @@ def _remove_empty_strings_from_end(lst: List) -> List:
     return list(reversed(_remove_empty_strings_from_begin(list(reversed(lst)))))
 
 
-def _add_inline_comments(formatted_lines: List, comments: List) -> List:
-    added_comment_indexes = set()
+def _add_inline_comments(formatted_lines: List, comments: List) -> Iterator:
+    added_comment_indexes = set()  # type: Set[int]
 
     def _append_comment(line, line_number):
         if (
