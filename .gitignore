@@ -2,3 +2,4 @@ __pycache__
 misc/
 .tox
 gdtoolkit.egg-info/
+.mypy_cache/
