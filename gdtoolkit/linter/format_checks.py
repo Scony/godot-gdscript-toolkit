@@ -1,7 +1,7 @@
 import re
 from functools import partial
 from types import MappingProxyType
-from typing import List
+from typing import Callable, List, Tuple
 
 from .problem import Problem
 
@@ -16,7 +16,7 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
         ("max-file-lines", partial(_max_file_lines_check, config["max-file-lines"]),),
         ("trailing-whitespace", _trailing_ws_check,),
         ("mixed-tabs-and-spaces", _mixed_tabs_and_spaces_check,),
-    ]
+    ]  # type: List[Tuple[str, Callable]]
     problem_clusters = map(
         lambda x: x[1](gdscript_code) if x[0] not in disable else [],
         checks_to_run_w_code,

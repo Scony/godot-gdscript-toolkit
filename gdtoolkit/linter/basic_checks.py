@@ -1,5 +1,5 @@
 from types import MappingProxyType
-from typing import List
+from typing import Dict, List, Set
 
 from lark import Tree, Token
 
@@ -66,7 +66,7 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
 
 def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
     problems = []
-    loaded_strings = set()
+    loaded_strings = set()  # type: Set[str]
     for call in parse_tree.find_data("standalone_call"):
         name_token = call.children[0]
         callee_name = name_token.value
@@ -99,7 +99,7 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
             isinstance(func_def.children[1], Tree)
             and func_def.children[1].data == "func_args"
         ):
-            argument_definitions = {}
+            argument_definitions = {}  # type: Dict[str, int]
             argument_tokens = {}
             func_args = func_def.children[1]
             for func_arg in func_args.children:
@@ -109,7 +109,7 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
                     argument_definitions.get(arg_name, 0) + 1
                 )
                 argument_tokens[arg_name] = arg_name_token
-            name_occurances = {}
+            name_occurances = {}  # type: Dict[str, int]
             for xnode in func_def.iter_subtrees():
                 for node in xnode.children:
                     if isinstance(node, Token) and node.type == "NAME":
