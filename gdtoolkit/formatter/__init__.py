@@ -30,8 +30,9 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         parse_tree.children, _format_class_statement, context
     )
     formatted_lines.append((None, ""))
+    inline_comments = _gather_inline_comments_from_code(gdscript_code)
     formatted_lines_with_inlined_comments = _add_inline_comments(
-        formatted_lines, comments
+        formatted_lines, inline_comments
     )
     return "\n".join([line for _, line in formatted_lines_with_inlined_comments])
 
@@ -128,13 +129,25 @@ def _find_dedent_line_number(previously_processed_line_number: int, context: Con
     return line_no
 
 
-def _gather_comments_from_code(gdscript_code: str) -> List:
+def _gather_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
     lines = gdscript_code.splitlines()
     comments = [None]  # type: List[Optional[str]]
     for line in lines:
         comment_start = line.find("#")
         if comment_start >= 0:
             comments.append(line[comment_start:])
+        else:
+            comments.append(None)
+    return comments
+
+
+def _gather_inline_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
+    lines = gdscript_code.splitlines()
+    comments = [None]  # type: List[Optional[str]]
+    for line in lines:
+        match = re.search(r"\s*[^\s#]+\s*(#.*)$", line)
+        if match is not None:
+            comments.append(match.group(1))
         else:
             comments.append(None)
     return comments
@@ -175,23 +188,22 @@ def _remove_empty_strings_from_end(lst: List) -> List:
 
 
 def _add_inline_comments(formatted_lines: List, comments: List) -> Iterator:
-    added_comment_indexes = set()  # type: Set[int]
+    remaining_comments = comments[:]
+    postprocessed_lines = []
+    comment_offset = " " * INLINE_COMMENT_OFFSET
 
-    def _append_comment(line, line_number):
-        if (
-            line_number not in added_comment_indexes
-            and line_number is not None
-            and comments[line_number] is not None
-        ):
-            added_comment_indexes.add(line_number)
-            return "{}{}{}".format(
-                line, " " * INLINE_COMMENT_OFFSET, comments[line_number]
+    for line_no, line in reversed(formatted_lines):
+        if line_no is None:
+            postprocessed_lines.append((line_no, line))
+            continue
+        comments = remaining_comments[line_no:]
+        remaining_comments = remaining_comments[:line_no]
+        if comments != []:
+            new_line = comment_offset.join(
+                [line] + [c for c in comments if c is not None]
             )
-        return line
+            postprocessed_lines.append((line_no, new_line))
+        else:
+            postprocessed_lines.append((line_no, line))
 
-    return reversed(
-        [
-            (line_no, _append_comment(line, line_no))
-            for line_no, line in reversed(formatted_lines)
-        ]
-    )
+    return reversed(postprocessed_lines)

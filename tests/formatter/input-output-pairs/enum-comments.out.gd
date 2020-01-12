@@ -4,3 +4,4 @@ class X:
         A,
         B,
     }  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    enum Third { A }  # aaa  # bbb
