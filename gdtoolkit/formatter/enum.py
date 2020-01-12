@@ -1,8 +1,16 @@
 from typing import List, Tuple, Union, Optional
+from dataclasses import dataclass
 
 from lark import Tree, Token
 
 from .context import Context
+
+
+@dataclass
+class EnumElement:
+    name: str
+    value: Optional[str]
+    lark_node: Tree
 
 
 class Enum:
@@ -20,7 +28,7 @@ class Enum:
         return None
 
     @staticmethod
-    def _load_elements(enum_def: Tree) -> List[Tuple[str, Optional[str]]]:
+    def _load_elements(enum_def: Tree) -> List[EnumElement]:
         elements = []
         for enum_element in enum_def.find_data("enum_element"):
             name = enum_element.children[0].value
@@ -29,7 +37,7 @@ class Enum:
                 if len(enum_element.children) > 1
                 else None
             )
-            elements.append((name, value))
+            elements.append(EnumElement(name=name, value=value, lark_node=enum_element))
         return elements
 
     @staticmethod
@@ -57,7 +65,7 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
     keyword = 4
     space = 1
     curly_brackets = 2
-    inline_comment = context.comments[enum.lark_node.line]
+    inline_comment = context.inline_comments[enum.lark_node.line]
     comment = len(inline_comment) + 2 if inline_comment is not None else 0
     return (
         context.indent
@@ -76,8 +84,9 @@ def _calculate_single_line_elements_len(enum: Enum) -> int:
     return (
         sum(
             [
-                len(name) + (len(str(value)) + 3 if value is not None else 0)
-                for name, value in enum.elements
+                len(element.name)
+                + (len(str(element.value)) + 3 if element.value is not None else 0)
+                for element in enum.elements
             ]
         )
         + spaces
@@ -99,11 +108,11 @@ def _format_elements_to_single_line(enum: Enum) -> List[str]:
     fragments = []
     for i, element in enumerate(enum.elements):
         if i == 0:
-            fragments.append(" {}".format(element[0]))
+            fragments.append(" {}".format(element.name))
         else:
-            fragments.append(", {}".format(element[0]))
-        if element[1] is not None:
-            fragments.append(" = {}".format(element[1]))
+            fragments.append(", {}".format(element.name))
+        if element.value is not None:
+            fragments.append(" = {}".format(element.value))
     if len(enum.elements) > 0:
         fragments.append(" ")
     return fragments
@@ -123,16 +132,30 @@ def _format_to_multiple_lines(enum: Enum, context: Context) -> List:
     return enum_lines
 
 
-# TODO: take 4 spaces from context
 def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
     lines_w_elements = []
-    for name, value in enum.elements:
-        if value is None:
+    for element in enum.elements:
+        if element.value is None:
             lines_w_elements.append(
-                (None, "{}    {},".format(context.indent_string, name))
+                (
+                    None,
+                    "{}{}{},".format(
+                        context.indent_string,
+                        context.single_indent_string,
+                        element.name,
+                    ),
+                )
             )
         else:
             lines_w_elements.append(
-                (None, "{}    {} = {},".format(context.indent_string, name, value))
+                (
+                    None,
+                    "{}{}{} = {},".format(
+                        context.indent_string,
+                        context.single_indent_string,
+                        element.name,
+                        element.value,
+                    ),
+                )
             )
     return lines_w_elements
