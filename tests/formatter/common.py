@@ -1,4 +1,5 @@
 from typing import List
+import difflib
 
 from gdtoolkit.parser import parser
 from gdtoolkit.formatter import format_code
@@ -24,8 +25,12 @@ def _invariant_check(input_code_parse_tree, formatted_code_parse_tree):
 
 
 def _compare(formatted_code, expected_output_code):
-    """dummy function for better stack trace"""
-    assert formatted_code == expected_output_code
+    diff = "\n".join(
+        difflib.unified_diff(
+            expected_output_code.splitlines(), formatted_code.splitlines()
+        )
+    )
+    assert formatted_code == expected_output_code, diff
 
 
 def _comment_preservation_check(
