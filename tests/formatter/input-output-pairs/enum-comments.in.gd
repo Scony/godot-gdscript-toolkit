@@ -8,3 +8,6 @@ class X:
         A, # bbb
         B, # ccc
     } # ddd
+    enum Fifth {  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        A  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    }  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

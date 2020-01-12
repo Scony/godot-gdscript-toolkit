@@ -65,8 +65,7 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
     keyword = 4
     space = 1
     curly_brackets = 2
-    inline_comment = context.inline_comments[enum.lark_node.line]
-    comment = len(inline_comment) + 2 if inline_comment is not None else 0
+    inline_comments = _calculate_total_inline_comments_len(enum, context)
     return (
         context.indent
         + keyword
@@ -74,7 +73,19 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
         + (len(enum.name) + 1 if enum.name is not None else 0)
         + _calculate_single_line_elements_len(enum)
         + curly_brackets
-        + comment
+        + inline_comments
+    )
+
+
+def _calculate_total_inline_comments_len(enum: Enum, context: Context) -> int:
+    begin_line = enum.lark_node.line
+    end_line = enum.lark_node.children[0].children[-1].line
+    return sum(
+        [
+            len(comment) + 2
+            for comment in context.inline_comments[begin_line : end_line + 1]
+            if comment is not None
+        ]
     )
 
 
