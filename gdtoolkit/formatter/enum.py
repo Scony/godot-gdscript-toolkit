@@ -126,9 +126,8 @@ def _format_to_multiple_lines(enum: Enum, context: Context) -> List:
     line_fragments.append("{")
     enum_lines.append((enum.lark_node.line, "".join(line_fragments)))
     enum_lines += _format_elements_to_multiple_lines(enum, context)
-    enum_lines.append(
-        (enum.lark_node.children[-1].line, "{}}}".format(context.indent_string))
-    )
+    closing_brace_line = enum.lark_node.children[0].children[-1].line
+    enum_lines.append((closing_brace_line, "{}}}".format(context.indent_string)))
     return enum_lines
 
 
@@ -138,7 +137,7 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
         if element.value is None:
             lines_w_elements.append(
                 (
-                    None,
+                    element.lark_node.line,
                     "{}{}{},".format(
                         context.indent_string,
                         context.single_indent_string,
@@ -149,7 +148,7 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
         else:
             lines_w_elements.append(
                 (
-                    None,
+                    element.lark_node.line,
                     "{}{}{} = {},".format(
                         context.indent_string,
                         context.single_indent_string,

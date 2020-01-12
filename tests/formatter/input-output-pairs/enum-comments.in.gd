@@ -4,3 +4,7 @@ class X:
     enum Third { # aaa
         A # bbb
     }
+    enum Fourth { # aaa
+        A, # bbb
+        B, # ccc
+    } # ddd
