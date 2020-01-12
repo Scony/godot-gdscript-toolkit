@@ -1,38 +1,38 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 
 from lark import Tree, Token
 
 from .context import Context
 
 
-# TODO: turn methods into functions
 class Enum:
     def __init__(self, enum_def: Tree):
-        self.lark_node = enum_def
         self.name = self._load_name(enum_def)
-        self.elements = []  # type: List[Tuple[str, str]]
+        self.elements = self._load_elements(enum_def)
         self.trailing_comma = self._check_trailing_comma(enum_def)
-        self._load_elements()
 
-    # pylint: disable=no-self-use
-    def _load_name(self, enum_def: Tree) -> Union[str, None]:
+    @staticmethod
+    def _load_name(enum_def: Tree) -> Union[str, None]:
         node = enum_def.children[0].children[0]
         if isinstance(node, Token) and node.type == "NAME":
             return node.value
         return None
 
-    def _load_elements(self):
-        for enum_element in self.lark_node.find_data("enum_element"):
+    @staticmethod
+    def _load_elements(enum_def: Tree) -> List[Tuple[str, Optional[str]]]:
+        elements = []
+        for enum_element in enum_def.find_data("enum_element"):
             name = enum_element.children[0].value
             value = (
                 enum_element.children[1].value
                 if len(enum_element.children) > 1
                 else None
             )
-            self.elements.append((name, value))
+            elements.append((name, value))
+        return elements
 
-    # pylint: disable=no-self-use
-    def _check_trailing_comma(self, enum_def: Tree) -> bool:
+    @staticmethod
+    def _check_trailing_comma(enum_def: Tree) -> bool:
         node = enum_def.children[0].children[-2]
         if isinstance(node, Token) and node.type == "COMMA":
             return True
@@ -52,15 +52,17 @@ def format_enum(enum_def: Tree, context: Context) -> Tuple[List, int]:
     return lines, concrete_enum_def.children[-1].line
 
 
-# TODO: name magic numbers
 def _calculate_single_line_len(enum: Enum, context: Context) -> int:
+    keyword = 4
+    space = 1
+    curly_brackets = 2
     return (
         context.indent
-        + 4
-        + 1
+        + keyword
+        + space
         + (len(enum.name) + 1 if enum.name is not None else 0)
         + _calculate_single_line_elements_len(enum)
-        + 2
+        + curly_brackets
     )
 
 
