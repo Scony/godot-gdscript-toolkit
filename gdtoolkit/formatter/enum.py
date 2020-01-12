@@ -115,9 +115,11 @@ def _format_to_multiple_lines(enum: Enum, context: Context) -> List:
     if enum.name is not None:
         line_fragments.append("{} ".format(enum.name))
     line_fragments.append("{")
-    enum_lines.append((-1, "".join(line_fragments)))
+    enum_lines.append((enum.lark_node.line, "".join(line_fragments)))
     enum_lines += _format_elements_to_multiple_lines(enum, context)
-    enum_lines.append((-1, "{}}}".format(context.indent_string)))
+    enum_lines.append(
+        (enum.lark_node.children[-1].line, "{}}}".format(context.indent_string))
+    )
     return enum_lines
 
 
@@ -127,10 +129,10 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
     for name, value in enum.elements:
         if value is None:
             lines_w_elements.append(
-                (-1, "{}    {},".format(context.indent_string, name))
+                (None, "{}    {},".format(context.indent_string, name))
             )
         else:
             lines_w_elements.append(
-                (-1, "{}    {} = {},".format(context.indent_string, name, value))
+                (None, "{}    {} = {},".format(context.indent_string, name, value))
             )
     return lines_w_elements
