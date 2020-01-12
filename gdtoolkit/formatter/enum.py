@@ -7,6 +7,7 @@ from .context import Context
 
 class Enum:
     def __init__(self, enum_def: Tree):
+        self.lark_node = enum_def
         self.name = self._load_name(enum_def)
         self.elements = self._load_elements(enum_def)
         self.trailing_comma = self._check_trailing_comma(enum_def)
@@ -56,6 +57,8 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
     keyword = 4
     space = 1
     curly_brackets = 2
+    inline_comment = context.comments[enum.lark_node.line]
+    comment = len(inline_comment) + 2 if inline_comment is not None else 0
     return (
         context.indent
         + keyword
@@ -63,6 +66,7 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
         + (len(enum.name) + 1 if enum.name is not None else 0)
         + _calculate_single_line_elements_len(enum)
         + curly_brackets
+        + comment
     )
 
 
@@ -88,7 +92,7 @@ def _format_to_single_line(enum: Enum, context: Context) -> List:
     enum_fragments.append("{")
     enum_fragments += _format_elements_to_single_line(enum)
     enum_fragments.append("}")
-    return [(-1, "".join(enum_fragments))]
+    return [(enum.lark_node.line, "".join(enum_fragments))]
 
 
 def _format_elements_to_single_line(enum: Enum) -> List[str]:
