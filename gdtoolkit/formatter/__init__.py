@@ -17,22 +17,21 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         None,
         *gdscript_code.splitlines(),
     ]  # type: List[Optional[str]]
-    comments = _gather_comments_from_code(gdscript_code)
     formatted_lines = []  # type: List[Tuple[Union[None, int], str]]
     context = Context(
         indent=0,
         previously_processed_line_number=0,
         max_line_length=max_line_length,
         gdscript_code_lines=gdscript_code_lines,
-        comments=comments,
+        standalone_comments=_gather_standalone_comments_from_code(gdscript_code),
+        inline_comments=_gather_inline_comments_from_code(gdscript_code),
     )
     formatted_lines, _ = _format_block(
         parse_tree.children, _format_class_statement, context
     )
     formatted_lines.append((None, ""))
-    inline_comments = _gather_inline_comments_from_code(gdscript_code)
     formatted_lines_with_inlined_comments = _add_inline_comments(
-        formatted_lines, inline_comments
+        formatted_lines, context.inline_comments
     )
     return "\n".join([line for _, line in formatted_lines_with_inlined_comments])
 
@@ -129,23 +128,22 @@ def _find_dedent_line_number(previously_processed_line_number: int, context: Con
     return line_no
 
 
-def _gather_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
-    lines = gdscript_code.splitlines()
-    comments = [None]  # type: List[Optional[str]]
-    for line in lines:
-        comment_start = line.find("#")
-        if comment_start >= 0:
-            comments.append(line[comment_start:])
-        else:
-            comments.append(None)
-    return comments
+def _gather_standalone_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
+    return _gather_comments_from_code_by_regex(gdscript_code, r"\s*(#.*)$")
 
 
 def _gather_inline_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
+    return _gather_comments_from_code_by_regex(gdscript_code, r"\s*[^\s#]+\s*(#.*)$")
+
+
+def _gather_comments_from_code_by_regex(
+    gdscript_code: str, comment_regex: str
+) -> List[Optional[str]]:
     lines = gdscript_code.splitlines()
     comments = [None]  # type: List[Optional[str]]
+    regex = re.compile(comment_regex)
     for line in lines:
-        match = re.search(r"\s*[^\s#]+\s*(#.*)$", line)
+        match = regex.search(line)
         if match is not None:
             comments.append(match.group(1))
         else:
@@ -154,9 +152,8 @@ def _gather_inline_comments_from_code(gdscript_code: str) -> List[Optional[str]]
 
 
 def _reconstruct_blank_lines_in_range(begin: int, end: int, context: Context) -> List:
-    comments = context.comments
     prefix = " " * context.indent
-    comments_in_range = comments[begin + 1 : end]
+    comments_in_range = context.standalone_comments[begin + 1 : end]
     reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
     reconstructed_lines = _squeeze_lines(reconstructed_lines)
     reconstructed_lines = list(
