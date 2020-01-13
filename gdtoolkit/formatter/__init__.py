@@ -6,6 +6,7 @@ from lark import Tree, Token
 from ..parser import parser
 from .context import Context
 from .enum import format_enum
+from .constants import INDENT_SIZE
 
 
 INLINE_COMMENT_OFFSET = 2
@@ -70,11 +71,11 @@ def _format_class_statement(
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "tool_stmt":
-        formatted_lines.append((statement.line, "{}tool".format(" " * context.indent)))
+        formatted_lines.append((statement.line, "{}tool".format(context.indent_string)))
     elif statement.data == "class_def":
         name = statement.children[0].value
         formatted_lines.append(
-            (statement.line, "{}class {}:".format(" " * context.indent, name))
+            (statement.line, "{}class {}:".format(context.indent_string, name))
         )
         class_lines, last_processed_line_no = _format_block(
             statement.children[1:],
@@ -85,7 +86,7 @@ def _format_class_statement(
     elif statement.data == "func_def":
         name = statement.children[0].value
         formatted_lines.append(
-            (statement.line, "{}func {}():".format(" " * context.indent, name))
+            (statement.line, "{}func {}():".format(context.indent_string, name))
         )
         func_lines, last_processed_line_no = _format_block(
             statement.children[1:],
@@ -105,10 +106,11 @@ def _format_func_statement(
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "pass_stmt":
-        formatted_lines.append((statement.line, "{}pass".format(" " * context.indent)))
+        formatted_lines.append((statement.line, "{}pass".format(context.indent_string)))
     return (formatted_lines, last_processed_line_no)
 
 
+# TODO: indent detection & refactoring
 def _find_dedent_line_number(previously_processed_line_number: int, context: Context):
     if (
         previously_processed_line_number == len(context.gdscript_code_lines) - 1
@@ -117,7 +119,18 @@ def _find_dedent_line_number(previously_processed_line_number: int, context: Con
         return len(context.gdscript_code_lines)
     line_no = previously_processed_line_number + 1
     for line in context.gdscript_code_lines[previously_processed_line_number + 1 :]:
-        if re.search(r"^ {0,%d}[^ ]+" % (context.indent - 1), line) is not None:
+        if (
+            line.startswith(" ")
+            and re.search(r"^ {0,%d}[^ ]+" % (context.indent - 1), line) is not None
+        ):
+            break
+        if (
+            line.startswith("\t")
+            and re.search(
+                r"^\t{0,%d}[^\t]+" % ((context.indent / INDENT_SIZE) - 1), line
+            )
+            is not None
+        ):
             break
         line_no += 1
     for line in context.gdscript_code_lines[line_no - 1 :: -1]:
@@ -152,7 +165,7 @@ def _gather_comments_from_code_by_regex(
 
 
 def _reconstruct_blank_lines_in_range(begin: int, end: int, context: Context) -> List:
-    prefix = " " * context.indent
+    prefix = context.indent_string
     comments_in_range = context.standalone_comments[begin + 1 : end]
     reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
     reconstructed_lines = _squeeze_lines(reconstructed_lines)

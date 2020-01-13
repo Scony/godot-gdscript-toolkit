@@ -1,3 +1,3 @@
 class X:
-    enum {}
-    enum SomeEnumName {}
+	enum {}
+	enum SomeEnumName {}

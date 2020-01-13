@@ -1,4 +1,4 @@
 class X:
-    class Y:
-        class Z:
-            tool
+	class Y:
+		class Z:
+			tool

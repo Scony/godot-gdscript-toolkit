@@ -1,5 +1,7 @@
 from typing import List
 
+from .constants import INDENT_STRING, INDENT_SIZE
+
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
@@ -19,12 +21,11 @@ class Context:
         self.gdscript_code_lines = gdscript_code_lines
         self.standalone_comments = standalone_comments
         self.inline_comments = inline_comments
-        self.indent_string = " " * self.indent
-        self.single_indent_string = " " * 4
+        self.indent_string = INDENT_STRING * (self.indent // INDENT_SIZE)
 
     def create_child_context(self, previously_processed_line_number: int):
         return Context(
-            indent=self.indent + 4,
+            indent=self.indent + INDENT_SIZE,
             previously_processed_line_number=previously_processed_line_number,
             max_line_length=self.max_line_length,
             gdscript_code_lines=self.gdscript_code_lines,
