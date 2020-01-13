@@ -1,6 +1,7 @@
 # GDScript Toolkit
 [![](https://travis-ci.org/Scony/godot-gdscript-toolkit.svg?branch=master)](https://travis-ci.org/Scony/godot-gdscript-toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This project aims to create an end-to-end set of tools for daily work with `GDScript`. The goal is to provide the following tools:
 
