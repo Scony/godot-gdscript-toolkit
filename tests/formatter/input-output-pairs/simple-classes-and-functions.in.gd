@@ -1,9 +1,9 @@
 class X:
-    tool
+	tool
 
-    func foo():
-        pass
+	func foo():
+		pass
 
-    class Y:
-        func bar():
-            pass
+	class Y:
+		func bar():
+			pass

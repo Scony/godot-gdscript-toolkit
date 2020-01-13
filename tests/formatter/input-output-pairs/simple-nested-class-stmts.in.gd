@@ -1,17 +1,17 @@
 class X:
 
-    # aaa
-    tool
-    tool
-    # bbb
+	# aaa
+	tool
+	tool
+	# bbb
 
-    tool
+	tool
 
-    tool    # ccc
+	tool    # ccc
 
-    # ddd
-    tool
-    tool
-    # eee
+	# ddd
+	tool
+	tool
+	# eee
 
 

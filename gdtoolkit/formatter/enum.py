@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from lark import Tree, Token
 
 from .context import Context
+from .constants import INDENT_STRING
 
 
 @dataclass
@@ -150,9 +151,7 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
                 (
                     element.lark_node.line,
                     "{}{}{},".format(
-                        context.indent_string,
-                        context.single_indent_string,
-                        element.name,
+                        context.indent_string, INDENT_STRING, element.name,
                     ),
                 )
             )
@@ -162,7 +161,7 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
                     element.lark_node.line,
                     "{}{}{} = {},".format(
                         context.indent_string,
-                        context.single_indent_string,
+                        INDENT_STRING,
                         element.name,
                         element.value,
                     ),
