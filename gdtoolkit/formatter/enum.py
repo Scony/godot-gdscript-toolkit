@@ -1,10 +1,11 @@
-from typing import List, Tuple, Union, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 
 from lark import Tree, Token
 
 from .context import Context
 from .constants import INDENT_STRING
+from .types import Outcome
 
 
 @dataclass
@@ -22,7 +23,7 @@ class Enum:
         self.trailing_comma = self._check_trailing_comma(enum_def)
 
     @staticmethod
-    def _load_name(enum_def: Tree) -> Union[str, None]:
+    def _load_name(enum_def: Tree) -> Optional[str]:
         node = enum_def.children[0].children[0]
         if isinstance(node, Token) and node.type == "NAME":
             return node.value
@@ -49,7 +50,7 @@ class Enum:
         return False
 
 
-def format_enum(enum_def: Tree, context: Context) -> Tuple[List, int]:
+def format_enum(enum_def: Tree, context: Context) -> Outcome:
     enum = Enum(enum_def)
     if (
         enum.trailing_comma

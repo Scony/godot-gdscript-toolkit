@@ -1,5 +1,5 @@
 import re
-from typing import Callable, Iterator, List, Optional, Set, Tuple, Union
+from typing import Callable, Iterator, List, Optional, Set, Tuple
 
 from lark import Tree, Token
 
@@ -7,20 +7,17 @@ from ..parser import parser
 from .context import Context
 from .enum import format_enum
 from .expression import format_expression
-from .constants import INDENT_SIZE
-from .types import Prefix
-
-
-INLINE_COMMENT_OFFSET = 2
+from .constants import INDENT_SIZE, INLINE_COMMENT_OFFSET
+from .types import Prefix, Outcome, Node, FormattedLines
 
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
     parse_tree = parser.parse(gdscript_code, gather_metadata=True)
     gdscript_code_lines = [
-        None,
+        "",
         *gdscript_code.splitlines(),
-    ]  # type: List[Optional[str]]
-    formatted_lines = []  # type: List[Tuple[Union[None, int], str]]
+    ]  # type: List[str]
+    formatted_lines = []  # type: FormattedLines
     context = Context(
         indent=0,
         previously_processed_line_number=0,
@@ -40,8 +37,8 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
 
 
 def _format_block(
-    statements: List, statement_formatter: Callable, context: Context,
-) -> Tuple[List, int]:
+    statements: List[Node], statement_formatter: Callable, context: Context,
+) -> Outcome:
     formatted_lines = []  # type: List
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
@@ -67,9 +64,7 @@ def _format_block(
     return (formatted_lines, previously_processed_line_number)
 
 
-def _format_class_statement(
-    statement: Union[Tree, Token], context: Context
-) -> Tuple[List, int]:
+def _format_class_statement(statement: Node, context: Context) -> Outcome:
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "tool_stmt":
@@ -102,9 +97,7 @@ def _format_class_statement(
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_func_statement(
-    statement: Union[Tree, Token], context: Context
-) -> Tuple[List, int]:
+def _format_func_statement(statement: Node, context: Context) -> Outcome:
     formatted_lines = []
     last_processed_line_no = statement.line
     if statement.data == "pass_stmt":
@@ -123,7 +116,9 @@ def _format_func_statement(
 
 
 # TODO: indent detection & refactoring
-def _find_dedent_line_number(previously_processed_line_number: int, context: Context):
+def _find_dedent_line_number(
+    previously_processed_line_number: int, context: Context
+) -> int:
     if (
         previously_processed_line_number == len(context.gdscript_code_lines) - 1
         or context.indent == 0
