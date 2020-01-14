@@ -6,6 +6,7 @@ from lark import Tree, Token
 from ..parser import parser
 from .context import Context
 from .enum import format_enum
+from .expression import format_expression
 from .constants import INDENT_SIZE
 
 
@@ -107,6 +108,14 @@ def _format_func_statement(
     last_processed_line_no = statement.line
     if statement.data == "pass_stmt":
         formatted_lines.append((statement.line, "{}pass".format(context.indent_string)))
+    elif statement.data == "func_var_stmt":
+        concrete_var_stmt = statement.children[0]
+        if concrete_var_stmt.data == "var_assigned":
+            name = concrete_var_stmt.children[0].value
+            expr = concrete_var_stmt.children[1]
+            prefix = "{}var {} = ".format(context.indent_string, name)
+            lines, last_processed_line_no = format_expression(prefix, expr, context)
+            formatted_lines += lines
     return (formatted_lines, last_processed_line_no)
 
 
