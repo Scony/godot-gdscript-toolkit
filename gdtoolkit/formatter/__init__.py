@@ -8,6 +8,7 @@ from .context import Context
 from .enum import format_enum
 from .expression import format_expression
 from .constants import INDENT_SIZE
+from .types import Prefix
 
 
 INLINE_COMMENT_OFFSET = 2
@@ -113,7 +114,9 @@ def _format_func_statement(
         if concrete_var_stmt.data == "var_assigned":
             name = concrete_var_stmt.children[0].value
             expr = concrete_var_stmt.children[1]
-            prefix = "{}var {} = ".format(context.indent_string, name)
+            prefix = Prefix(
+                "{}var {} = ".format(context.indent_string, name), statement.line
+            )
             lines, last_processed_line_no = format_expression(prefix, expr, context)
             formatted_lines += lines
     return (formatted_lines, last_processed_line_no)

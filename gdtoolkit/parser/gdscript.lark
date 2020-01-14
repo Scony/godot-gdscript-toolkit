@@ -127,7 +127,6 @@ getattr: _call_expr ("." NAME)+
 ?atom: "(" test_expr ")" -> par_expr
      | array
      | dict
-     | "null" -> null
      | NAME
      | HEX
      | literal
