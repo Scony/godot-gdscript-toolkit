@@ -1,5 +1,5 @@
 import re
-from typing import Callable, Iterator, List, Optional, Set, Tuple
+from typing import Callable, List, Optional, Set, Tuple
 
 from lark import Tree, Token
 
@@ -173,16 +173,14 @@ def _gather_comments_from_code_by_regex(
     return comments
 
 
-def _reconstruct_blank_lines_in_range(begin: int, end: int, context: Context) -> List:
+def _reconstruct_blank_lines_in_range(
+    begin: int, end: int, context: Context
+) -> FormattedLines:
     prefix = context.indent_string
     comments_in_range = context.standalone_comments[begin + 1 : end]
     reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
     reconstructed_lines = _squeeze_lines(reconstructed_lines)
-    reconstructed_lines = list(
-        zip([None for _ in range(begin + 1, end)], reconstructed_lines)
-    )
-
-    return reconstructed_lines
+    return list(zip([None for _ in range(begin + 1, end)], reconstructed_lines))
 
 
 def _squeeze_lines(lines: List[str]) -> List[str]:
@@ -195,20 +193,22 @@ def _squeeze_lines(lines: List[str]) -> List[str]:
     return squeezed_lines
 
 
-def _remove_empty_strings_from_begin(lst: List) -> List:
-    for i, el in enumerate(lst):
-        if el[1] != "":
+def _remove_empty_strings_from_begin(lst: FormattedLines) -> FormattedLines:
+    for i, (_, line) in enumerate(lst):
+        if line != "":
             return lst[i:]
     return []
 
 
-def _remove_empty_strings_from_end(lst: List) -> List:
+def _remove_empty_strings_from_end(lst: FormattedLines) -> FormattedLines:
     return list(reversed(_remove_empty_strings_from_begin(list(reversed(lst)))))
 
 
-def _add_inline_comments(formatted_lines: List, comments: List) -> Iterator:
+def _add_inline_comments(
+    formatted_lines: FormattedLines, comments: List[Optional[str]]
+) -> FormattedLines:
     remaining_comments = comments[:]
-    postprocessed_lines = []
+    postprocessed_lines = []  # type: FormattedLines
     comment_offset = " " * INLINE_COMMENT_OFFSET
 
     for line_no, line in reversed(formatted_lines):
@@ -225,4 +225,4 @@ def _add_inline_comments(formatted_lines: List, comments: List) -> Iterator:
         else:
             postprocessed_lines.append((line_no, line))
 
-    return reversed(postprocessed_lines)
+    return list(reversed(postprocessed_lines))
