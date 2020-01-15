@@ -1,7 +1,7 @@
 from lark import Tree, Token
 
 from .context import Context
-from .types import Prefix, Node, Outcome
+from .types import Prefix, Node, Outcome, FormattedLines
 
 
 def format_expression(prefix: Prefix, expression: Tree, context: Context) -> Outcome:
@@ -45,10 +45,46 @@ def _is_foldable(expression: Node) -> bool:
 
 
 def _format_foldable(prefix: Prefix, expression: Node, context: Context) -> Outcome:
-    single_line = "{}{}{}".format(
-        context.indent_string, prefix.string, _foldable_to_str(expression),
+    single_line_expression = _foldable_to_str(expression)
+    single_line_length = (
+        context.indent + len(prefix.string) + len(single_line_expression)
     )
-    return ([(prefix.line, single_line)], prefix.line)
+    if single_line_length <= context.max_line_length:
+        single_line = "{}{}{}".format(
+            context.indent_string, prefix.string, _foldable_to_str(expression),
+        )
+        return ([(prefix.line, single_line)], prefix.line)
+    return _format_foldable_to_multiple_lines(prefix, expression, context)
+
+
+def _format_foldable_to_multiple_lines(
+    prefix: Prefix, expression: Node, context: Context
+) -> Outcome:
+    if expression.data != "array":
+        raise NotImplementedError
+    formatted_lines = [
+        (prefix.line, "{}{}[".format(context.indent_string, prefix.string))
+    ]  # type: FormattedLines
+    array_elements = [
+        child
+        for child in expression.children
+        if isinstance(child, Tree) or child.type != "COMMA"
+    ]
+    child_context = context.create_child_context(prefix.line)
+    for i, element in enumerate(array_elements):
+        suffix = "," if i != len(array_elements) - 1 else ""
+        formatted_lines.append(
+            (
+                element.line,
+                "{}{}{}".format(
+                    child_context.indent_string, _expression_to_str(element), suffix
+                ),
+            )
+        )
+    formatted_lines.append(
+        (expression.children[-1].line, "{}]".format(context.indent_string))
+    )
+    return (formatted_lines, expression.children[-1].line)
 
 
 def _expression_to_str(expression: Node) -> str:
