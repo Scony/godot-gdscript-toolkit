@@ -1,13 +1,15 @@
 from lark import Tree, Token
 
-from .context import Context
-from .types import Prefix, Node, Outcome, FormattedLines
+from .context import Context, ExpressionContext
+from .types import Node, Outcome, FormattedLines
 
 
-def format_expression(prefix: Prefix, expression: Tree, context: Context) -> Outcome:
+def format_expression(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
     concrete_expression = expression.children[0]
     concrete_expression = _remove_outer_parentheses(concrete_expression)
-    return _format_concrete_expression(prefix, concrete_expression, context)
+    return _format_concrete_expression(concrete_expression, expression_context, context)
 
 
 def _remove_outer_parentheses(expression: Node) -> Node:
@@ -17,22 +19,23 @@ def _remove_outer_parentheses(expression: Node) -> Node:
 
 
 def _format_concrete_expression(
-    prefix: Prefix, expression: Node, context: Context
+    expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     if _is_foldable(expression):
-        return _format_foldable(prefix, expression, context)
+        return _format_foldable(expression, expression_context, context)
     return (
         [
             (
-                prefix.line,
-                "{}{}{}".format(
+                expression_context.prefix_line,
+                "{}{}{}{}".format(
                     context.indent_string,
-                    prefix.string,
+                    expression_context.prefix_string,
                     _non_foldable_to_str(expression),
+                    expression_context.suffix_string,
                 ),
             )
         ],
-        prefix.line,
+        expression_context.prefix_line,
     )
 
 
@@ -44,45 +47,59 @@ def _is_foldable(expression: Node) -> bool:
     ]
 
 
-def _format_foldable(prefix: Prefix, expression: Node, context: Context) -> Outcome:
+def _format_foldable(
+    expression: Node, expression_context: ExpressionContext, context: Context
+) -> Outcome:
     single_line_expression = _foldable_to_str(expression)
     single_line_length = (
-        context.indent + len(prefix.string) + len(single_line_expression)
+        context.indent
+        + len(expression_context.prefix_string)
+        + len(single_line_expression)
+        + len(expression_context.suffix_string)
     )
     if single_line_length <= context.max_line_length:
-        single_line = "{}{}{}".format(
-            context.indent_string, prefix.string, _foldable_to_str(expression),
+        single_line = "{}{}{}{}".format(
+            context.indent_string,
+            expression_context.prefix_string,
+            _foldable_to_str(expression),
+            expression_context.suffix_string,
         )
-        return ([(prefix.line, single_line)], prefix.line)
-    return _format_foldable_to_multiple_lines(prefix, expression, context)
+        return (
+            [(expression_context.prefix_line, single_line)],
+            expression_context.prefix_line,
+        )
+    return _format_foldable_to_multiple_lines(expression, expression_context, context)
 
 
 def _format_foldable_to_multiple_lines(
-    prefix: Prefix, expression: Node, context: Context
+    expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     if expression.data != "array":
         raise NotImplementedError
     formatted_lines = [
-        (prefix.line, "{}{}[".format(context.indent_string, prefix.string))
+        (
+            expression_context.prefix_line,
+            "{}{}[".format(context.indent_string, expression_context.prefix_string),
+        )
     ]  # type: FormattedLines
     array_elements = [
         child
         for child in expression.children
         if isinstance(child, Tree) or child.type != "COMMA"
     ]
-    child_context = context.create_child_context(prefix.line)
+    child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(array_elements):
         suffix = "," if i != len(array_elements) - 1 else ""
-        formatted_lines.append(
-            (
-                element.line,
-                "{}{}{}".format(
-                    child_context.indent_string, _expression_to_str(element), suffix
-                ),
-            )
+        child_expression_context = ExpressionContext("", element.line, suffix)
+        lines, _ = _format_concrete_expression(
+            element, child_expression_context, child_context
         )
+        formatted_lines += lines
     formatted_lines.append(
-        (expression.children[-1].line, "{}]".format(context.indent_string))
+        (
+            expression.children[-1].line,
+            "{}]{}".format(context.indent_string, expression_context.suffix_string),
+        )
     )
     return (formatted_lines, expression.children[-1].line)
 
