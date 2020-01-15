@@ -107,9 +107,7 @@ def _format_func_statement(statement: Node, context: Context) -> Outcome:
         if concrete_var_stmt.data == "var_assigned":
             name = concrete_var_stmt.children[0].value
             expr = concrete_var_stmt.children[1]
-            prefix = Prefix(
-                "{}var {} = ".format(context.indent_string, name), statement.line
-            )
+            prefix = Prefix("var {} = ".format(name), statement.line)
             lines, last_processed_line_no = format_expression(prefix, expr, context)
             formatted_lines += lines
     return (formatted_lines, last_processed_line_no)
