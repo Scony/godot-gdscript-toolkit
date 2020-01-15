@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 
 from .constants import INDENT_STRING, INDENT_SIZE
 
@@ -32,3 +33,10 @@ class Context:
             standalone_comments=self.standalone_comments,
             inline_comments=self.inline_comments,
         )
+
+
+@dataclass
+class ExpressionContext:
+    prefix_string: str
+    prefix_line: int
+    suffix_string: str

@@ -4,11 +4,11 @@ from typing import Callable, Iterator, List, Optional, Set, Tuple
 from lark import Tree, Token
 
 from ..parser import parser
-from .context import Context
+from .context import Context, ExpressionContext
 from .enum import format_enum
 from .expression import format_expression
 from .constants import INDENT_SIZE, INLINE_COMMENT_OFFSET
-from .types import Prefix, Outcome, Node, FormattedLines
+from .types import Outcome, Node, FormattedLines
 
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
@@ -107,8 +107,12 @@ def _format_func_statement(statement: Node, context: Context) -> Outcome:
         if concrete_var_stmt.data == "var_assigned":
             name = concrete_var_stmt.children[0].value
             expr = concrete_var_stmt.children[1]
-            prefix = Prefix("var {} = ".format(name), statement.line)
-            lines, last_processed_line_no = format_expression(prefix, expr, context)
+            expression_context = ExpressionContext(
+                "var {} = ".format(name), statement.line, ""
+            )
+            lines, last_processed_line_no = format_expression(
+                expr, expression_context, context
+            )
             formatted_lines += lines
     return (formatted_lines, last_processed_line_no)
 
