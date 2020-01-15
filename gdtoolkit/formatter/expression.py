@@ -5,7 +5,15 @@ from .types import Prefix, Node, Outcome, FormattedLines
 
 
 def format_expression(prefix: Prefix, expression: Tree, context: Context) -> Outcome:
-    return _format_concrete_expression(prefix, expression.children[0], context)
+    concrete_expression = expression.children[0]
+    concrete_expression = _remove_outer_parentheses(concrete_expression)
+    return _format_concrete_expression(prefix, concrete_expression, context)
+
+
+def _remove_outer_parentheses(expression: Node) -> Node:
+    if isinstance(expression, Tree) and expression.data == "par_expr":
+        return _remove_outer_parentheses(expression.children[0])
+    return expression
 
 
 def _format_concrete_expression(

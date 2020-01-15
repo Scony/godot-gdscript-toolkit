@@ -87,6 +87,7 @@ class Parser:
             grammar_code = "\n".join(
                 [re.sub(r"^!", "", line) for line in grammar_lines]
             )
+            grammar_code = grammar_code.replace(" -> par_expr", "")
             return Lark(
                 grammar_code,
                 postlex=Indenter(),
