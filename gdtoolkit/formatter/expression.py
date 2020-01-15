@@ -1,4 +1,4 @@
-from lark import Tree
+from lark import Tree, Token
 
 from .context import Context
 from .types import Prefix, Node, Outcome, FormattedLines
@@ -13,13 +13,36 @@ def _format_concrete_expression(
 ) -> Outcome:
     assert context
     formatted_lines = []  # type: FormattedLines
-    formatted_lines.append(
-        (prefix.line, "{}{}".format(prefix.string, _format_atom(expression)))
-    )
+    if not _is_foldable(expression):
+        formatted_lines.append(
+            (
+                prefix.line,
+                "{}{}{}".format(
+                    context.indent_string,
+                    prefix.string,
+                    _format_non_foldable(expression),
+                ),
+            )
+        )
     return (formatted_lines, expression.line)
 
 
-def _format_atom(atom: Node) -> str:
-    if isinstance(atom, Tree):
-        return atom.children[0].value
-    return atom.value
+def _is_foldable(expression: Node) -> bool:
+    return not isinstance(expression, Token) and expression.data not in [
+        "string",
+        "node_path",
+        "get_node",
+    ]
+
+
+def _format_non_foldable(expression: Node) -> str:
+    if isinstance(expression, Tree):
+        if expression.data == "string":
+            return expression.children[0].value
+        if expression.data == "node_path":
+            return "{}{}".format("@", _format_non_foldable(expression.children[0]))
+        if expression.data == "get_node":
+            return "{}{}".format("$", _format_non_foldable(expression.children[0]))
+        if expression.data == "path":
+            return "/".join([name_token.value for name_token in expression.children])
+    return expression.value
