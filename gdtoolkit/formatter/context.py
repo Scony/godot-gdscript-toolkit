@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 
 from .constants import INDENT_STRING, INDENT_SIZE
@@ -12,9 +12,9 @@ class Context:
         indent: int,
         previously_processed_line_number: int,
         max_line_length: int,
-        gdscript_code_lines: List,
-        standalone_comments: List,
-        inline_comments: List,
+        gdscript_code_lines: List[str],
+        standalone_comments: List[Optional[str]],
+        inline_comments: List[Optional[str]],
     ):
         self.indent = indent
         self.previously_processed_line_number = previously_processed_line_number
