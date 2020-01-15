@@ -1,7 +1,7 @@
 from lark import Tree, Token
 
 from .context import Context
-from .types import Prefix, Node, Outcome, FormattedLines
+from .types import Prefix, Node, Outcome
 
 
 def format_expression(prefix: Prefix, expression: Tree, context: Context) -> Outcome:
@@ -19,20 +19,21 @@ def _remove_outer_parentheses(expression: Node) -> Node:
 def _format_concrete_expression(
     prefix: Prefix, expression: Node, context: Context
 ) -> Outcome:
-    assert context
-    formatted_lines = []  # type: FormattedLines
-    if not _is_foldable(expression):
-        formatted_lines.append(
+    if _is_foldable(expression):
+        return _format_foldable(prefix, expression, context)
+    return (
+        [
             (
                 prefix.line,
                 "{}{}{}".format(
                     context.indent_string,
                     prefix.string,
-                    _format_non_foldable(expression),
+                    _non_foldable_to_str(expression),
                 ),
             )
-        )
-    return (formatted_lines, expression.line)
+        ],
+        prefix.line,
+    )
 
 
 def _is_foldable(expression: Node) -> bool:
@@ -43,14 +44,38 @@ def _is_foldable(expression: Node) -> bool:
     ]
 
 
-def _format_non_foldable(expression: Node) -> str:
+def _format_foldable(prefix: Prefix, expression: Node, context: Context) -> Outcome:
+    single_line = "{}{}{}".format(
+        context.indent_string, prefix.string, _foldable_to_str(expression),
+    )
+    return ([(prefix.line, single_line)], prefix.line)
+
+
+def _expression_to_str(expression: Node) -> str:
+    if _is_foldable(expression):
+        return _foldable_to_str(expression)
+    return _non_foldable_to_str(expression)
+
+
+def _foldable_to_str(expression: Node) -> str:
+    if expression.data == "array":
+        array_elements = [
+            _expression_to_str(child)
+            for child in expression.children
+            if isinstance(child, Tree) or child.type != "COMMA"
+        ]
+        return "[{}]".format(", ".join(array_elements))
+    return ""
+
+
+def _non_foldable_to_str(expression: Node) -> str:
     if isinstance(expression, Tree):
         if expression.data == "string":
             return expression.children[0].value
         if expression.data == "node_path":
-            return "{}{}".format("@", _format_non_foldable(expression.children[0]))
+            return "{}{}".format("@", _non_foldable_to_str(expression.children[0]))
         if expression.data == "get_node":
-            return "{}{}".format("$", _format_non_foldable(expression.children[0]))
+            return "{}{}".format("$", _non_foldable_to_str(expression.children[0]))
         if expression.data == "path":
             return "/".join([name_token.value for name_token in expression.children])
     return expression.value
