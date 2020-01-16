@@ -28,3 +28,5 @@ enum State {STATE_IDLE, STATE_JUMP = 5, STATE_SHOOT}
 enum {}
 
 enum Name {}
+
+enum WithNegativeElement { POS, NEG = -1 }
