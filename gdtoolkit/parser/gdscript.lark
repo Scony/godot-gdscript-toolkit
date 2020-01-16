@@ -138,7 +138,8 @@ HEX.2: /0x[a-fA-F0-9]+/
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
-array: "[" [test_expr ("," test_expr)* [","]] "]"
+array: "[" [test_expr ("," test_expr)* [trailing_comma]] "]"
+trailing_comma: ","
 dict: "{" [_kv_pair ("," _kv_pair)* [","]] "}"
 _kv_pair: (test_expr ":" test_expr | NAME "=" test_expr)
 
