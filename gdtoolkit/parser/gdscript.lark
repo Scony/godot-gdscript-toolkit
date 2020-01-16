@@ -160,4 +160,4 @@ LINE_CONT: /\\[\t \f]*\r?\n/
 
 %import common.WS_INLINE
 %import common.CNAME -> NAME
-%import common.NUMBER
+%import common.SIGNED_NUMBER -> NUMBER
