@@ -50,6 +50,10 @@ def _is_foldable(expression: Node) -> bool:
 def _format_foldable(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
+    if _is_expression_forcing_multiple_lines(expression):
+        return _format_foldable_to_multiple_lines(
+            expression, expression_context, context
+        )
     single_line_expression = _foldable_to_str(expression)
     single_line_length = (
         context.indent
@@ -71,6 +75,24 @@ def _format_foldable(
     return _format_foldable_to_multiple_lines(expression, expression_context, context)
 
 
+def _is_expression_forcing_multiple_lines(expression: Node) -> bool:
+    if _has_trailing_comma(expression):
+        return True
+    for child in expression.children:
+        if _has_trailing_comma(child):
+            return True
+    return False
+
+
+def _has_trailing_comma(expression: Node) -> bool:
+    return (
+        isinstance(expression, Tree)
+        and len(expression.children) > 0
+        and isinstance(expression.children[-1], Tree)
+        and expression.children[-1].data == "trailing_comma"
+    )
+
+
 def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
@@ -83,13 +105,15 @@ def _format_foldable_to_multiple_lines(
         )
     ]  # type: FormattedLines
     array_elements = [
-        child
-        for child in expression.children
-        if isinstance(child, Tree) or child.type != "COMMA"
+        child for child in expression.children if not _is_any_comma(child)
     ]
     child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(array_elements):
-        suffix = "," if i != len(array_elements) - 1 else ""
+        suffix = (
+            ","
+            if i != len(array_elements) - 1
+            else ("," if _has_trailing_comma(expression) else "")
+        )
         child_expression_context = ExpressionContext("", element.line, suffix)
         lines, _ = _format_concrete_expression(
             element, child_expression_context, child_context
@@ -132,3 +156,9 @@ def _non_foldable_to_str(expression: Node) -> str:
         if expression.data == "path":
             return "/".join([name_token.value for name_token in expression.children])
     return expression.value
+
+
+def _is_any_comma(expression: Node) -> bool:
+    return (isinstance(expression, Tree) and expression.data == "trailing_comma") or (
+        isinstance(expression, Token) and expression.type == "COMMA"
+    )
