@@ -142,7 +142,18 @@ def _foldable_to_str(expression: Node) -> str:
             if isinstance(child, Tree) or child.type != "COMMA"
         ]
         return "[{}]".format(", ".join(array_elements))
+    if expression.data == "dict":
+        elements = [_dict_element_to_str(child) for child in expression.children]
+        return "{{{}}}".format(", ".join(elements))
     return ""
+
+
+def _dict_element_to_str(dict_element: Tree) -> str:
+    template = "{}: {}" if dict_element.data == "c_dict_element" else "{} = {}"
+    return template.format(
+        _expression_to_str(dict_element.children[0]),
+        _expression_to_str(dict_element.children[1]),
+    )
 
 
 def _non_foldable_to_str(expression: Node) -> str:
