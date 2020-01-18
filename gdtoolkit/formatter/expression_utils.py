@@ -54,3 +54,14 @@ def is_any_comma(expression: Node) -> bool:
     return (isinstance(expression, Tree) and expression.data == "trailing_comma") or (
         isinstance(expression, Token) and expression.type == "COMMA"
     )
+
+
+def is_any_parentheses(expression: Node) -> bool:
+    return isinstance(expression, Token) and expression.type in ["LPAR", "RPAR"]
+
+
+def has_leading_dot(expression: Node) -> bool:
+    return (
+        isinstance(expression.children[0], Token)
+        and expression.children[0].type == "DOT"
+    )
