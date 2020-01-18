@@ -1,27 +1,28 @@
-from lark import Tree, Token
+from lark import Tree
 
 from .context import Context, ExpressionContext
 from .types import Node, Outcome, FormattedLines
+from .expression_utils import (
+    remove_outer_parentheses,
+    is_foldable,
+    is_expression_forcing_multiple_lines,
+    is_any_comma,
+    has_trailing_comma,
+)
 
 
 def format_expression(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     concrete_expression = expression.children[0]
-    concrete_expression = _remove_outer_parentheses(concrete_expression)
+    concrete_expression = remove_outer_parentheses(concrete_expression)
     return _format_concrete_expression(concrete_expression, expression_context, context)
-
-
-def _remove_outer_parentheses(expression: Node) -> Node:
-    if isinstance(expression, Tree) and expression.data == "par_expr":
-        return _remove_outer_parentheses(expression.children[0])
-    return expression
 
 
 def _format_concrete_expression(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    if _is_foldable(expression):
+    if is_foldable(expression):
         return _format_foldable(expression, expression_context, context)
     return (
         [
@@ -39,29 +40,10 @@ def _format_concrete_expression(
     )
 
 
-def _is_foldable(expression: Node) -> bool:
-    if _is_multiline_string(expression):
-        return True
-    return not isinstance(expression, Token) and expression.data not in [
-        "string",
-        "node_path",
-        "get_node",
-    ]
-
-
-def _is_multiline_string(expression: Node) -> bool:
-    return (
-        isinstance(expression, Tree)
-        and expression.data == "string"
-        and expression.children[0].type == "LONG_STRING"
-        and len(expression.children[0].value.splitlines()) > 1
-    )
-
-
 def _format_foldable(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    if _is_expression_forcing_multiple_lines(expression):
+    if is_expression_forcing_multiple_lines(expression):
         return _format_foldable_to_multiple_lines(
             expression, expression_context, context
         )
@@ -86,28 +68,6 @@ def _format_foldable(
     return _format_foldable_to_multiple_lines(expression, expression_context, context)
 
 
-def _is_expression_forcing_multiple_lines(expression: Node) -> bool:
-    if _has_trailing_comma(expression):
-        return True
-    if _is_multiline_string(expression):
-        return True
-    if isinstance(expression, Token):
-        return False
-    for child in expression.children:
-        if _is_expression_forcing_multiple_lines(child):
-            return True
-    return False
-
-
-def _has_trailing_comma(expression: Node) -> bool:
-    return (
-        isinstance(expression, Tree)
-        and len(expression.children) > 0
-        and isinstance(expression.children[-1], Tree)
-        and expression.children[-1].data == "trailing_comma"
-    )
-
-
 def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
@@ -128,13 +88,13 @@ def _format_array_to_multiple_lines(
             "{}{}[".format(context.indent_string, expression_context.prefix_string),
         )
     ]  # type: FormattedLines
-    array_elements = [child for child in array.children if not _is_any_comma(child)]
+    array_elements = [child for child in array.children if not is_any_comma(child)]
     child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(array_elements):
         suffix = (
             ","
             if i != len(array_elements) - 1
-            else ("," if _has_trailing_comma(array) else "")
+            else ("," if has_trailing_comma(array) else "")
         )
         child_expression_context = ExpressionContext("", element.line, suffix)
         lines, _ = _format_concrete_expression(
@@ -162,7 +122,7 @@ def _format_dict_to_multiple_lines(
         )
     ]  # type: FormattedLines
     child_context = context.create_child_context(expression_context.prefix_line)
-    elements = [child for child in a_dict.children if not _is_any_comma(child)]
+    elements = [child for child in a_dict.children if not is_any_comma(child)]
     for i, element in enumerate(elements):
         key = element.children[0]
         value = element.children[1]
@@ -171,7 +131,7 @@ def _format_dict_to_multiple_lines(
         single_line_expression = "{}{}{}".format(
             _expression_to_str(key), infix, _expression_to_str(value),
         )
-        comma = 0 if is_last_element and not _has_trailing_comma(a_dict) else 1
+        comma = 0 if is_last_element and not has_trailing_comma(a_dict) else 1
         single_line_length = len(single_line_expression) + child_context.indent + comma
         if single_line_length <= context.max_line_length:
             suffix = "," * comma
@@ -222,7 +182,7 @@ def _format_string_to_multiple_lines(
 
 
 def _expression_to_str(expression: Node) -> str:
-    if _is_foldable(expression):
+    if is_foldable(expression):
         return _foldable_to_str(expression)
     return _non_foldable_to_str(expression)
 
@@ -260,9 +220,3 @@ def _non_foldable_to_str(expression: Node) -> str:
         if expression.data == "path":
             return "/".join([name_token.value for name_token in expression.children])
     return expression.value
-
-
-def _is_any_comma(expression: Node) -> bool:
-    return (isinstance(expression, Tree) and expression.data == "trailing_comma") or (
-        isinstance(expression, Token) and expression.type == "COMMA"
-    )
