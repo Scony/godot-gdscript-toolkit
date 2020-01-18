@@ -9,14 +9,17 @@ from .expression_utils import is_any_comma, is_any_parentheses, has_leading_dot
 def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Tree):
         return {
+            "bitw_or": _operator_chain_based_expression_to_str,
+            "bitw_xor": _operator_chain_based_expression_to_str,
+            "bitw_and": _operator_chain_based_expression_to_str,
+            "shift_expr": _operator_chain_based_expression_to_str,
+            "subtr_expr": _operator_chain_based_expression_to_str,
+            "addn_expr": _operator_chain_based_expression_to_str,
+            "mdr_expr": _operator_chain_based_expression_to_str,
             "neg_expr": lambda e: "-{}".format(expression_to_str(e.children[1])),
             "bitw_not": lambda e: "~{}".format(expression_to_str(e.children[1])),
-            "type_test": lambda e: " is ".join(
-                [expression_to_str(c) for c in e.children]
-            ),
-            "type_cast": lambda e: " as ".join(
-                [expression_to_str(c) for c in e.children]
-            ),
+            "type_test": _operator_chain_based_expression_to_str,
+            "type_cast": _operator_chain_based_expression_to_str,
             "standalone_call": _standalone_call_to_str,
             "getattr_call": _getattr_call_to_str,
             "getattr": lambda e: ".".join([expression_to_str(c) for c in e.children]),
@@ -31,6 +34,13 @@ def expression_to_str(expression: Node) -> str:
             "path": lambda e: "/".join([name_token.value for name_token in e.children]),
         }[expression.data](expression)
     return expression.value
+
+
+def _operator_chain_based_expression_to_str(expression: Tree) -> str:
+    operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
+    chain = [" {} {}".format(operator, expr) for operator, expr in operator_expr_chain]
+    first_expr = expression.children[0]
+    return "{}{}".format(first_expr, "".join(chain))
 
 
 def _standalone_call_to_str(call: Tree) -> str:
