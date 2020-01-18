@@ -9,6 +9,14 @@ from .expression_utils import is_any_comma, is_any_parentheses, has_leading_dot
 def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Tree):
         return {
+            "test_expr": _operator_chain_based_expression_to_str,
+            "or_test": _operator_chain_based_expression_to_str,
+            "and_test": _operator_chain_based_expression_to_str,
+            "not_test": lambda e: "{} {}".format(
+                expression_to_str(e.children[0]), expression_to_str(e.children[1])
+            ),
+            "content_test": _operator_chain_based_expression_to_str,
+            "comparison": _operator_chain_based_expression_to_str,
             "bitw_or": _operator_chain_based_expression_to_str,
             "bitw_xor": _operator_chain_based_expression_to_str,
             "bitw_and": _operator_chain_based_expression_to_str,
@@ -24,6 +32,7 @@ def expression_to_str(expression: Node) -> str:
             "getattr_call": _getattr_call_to_str,
             "getattr": lambda e: ".".join([expression_to_str(c) for c in e.children]),
             "subscr_expr": _subscription_to_str,
+            "par_expr": lambda e: "({})".format(expression_to_str(e.children[0])),
             "array": _array_to_str,
             "dict": _dict_to_str,
             "c_dict_element": _dict_element_to_str,
@@ -38,9 +47,12 @@ def expression_to_str(expression: Node) -> str:
 
 def _operator_chain_based_expression_to_str(expression: Tree) -> str:
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
-    chain = [" {} {}".format(operator, expr) for operator, expr in operator_expr_chain]
+    chain = [
+        " {} {}".format(expression_to_str(operator), expression_to_str(expr))
+        for operator, expr in operator_expr_chain
+    ]
     first_expr = expression.children[0]
-    return "{}{}".format(first_expr, "".join(chain))
+    return "{}{}".format(expression_to_str(first_expr), "".join(chain))
 
 
 def _standalone_call_to_str(call: Tree) -> str:

@@ -76,6 +76,7 @@ def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     handlers = {
+        "comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_and": _format_operator_chain_based_expression_to_multiple_lines,
