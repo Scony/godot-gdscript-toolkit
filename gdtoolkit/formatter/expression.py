@@ -96,23 +96,28 @@ def _has_trailing_comma(expression: Node) -> bool:
 def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    if expression.data != "array":
-        raise NotImplementedError
+    if expression.data == "dict":
+        return _format_dict_to_multiple_lines(expression, expression_context, context)
+    assert expression.data == "array"
+    return _format_array_to_multiple_lines(expression, expression_context, context)
+
+
+def _format_array_to_multiple_lines(
+    array: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
     formatted_lines = [
         (
             expression_context.prefix_line,
             "{}{}[".format(context.indent_string, expression_context.prefix_string),
         )
     ]  # type: FormattedLines
-    array_elements = [
-        child for child in expression.children if not _is_any_comma(child)
-    ]
+    array_elements = [child for child in array.children if not _is_any_comma(child)]
     child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(array_elements):
         suffix = (
             ","
             if i != len(array_elements) - 1
-            else ("," if _has_trailing_comma(expression) else "")
+            else ("," if _has_trailing_comma(array) else "")
         )
         child_expression_context = ExpressionContext("", element.line, suffix)
         lines, _ = _format_concrete_expression(
@@ -121,11 +126,61 @@ def _format_foldable_to_multiple_lines(
         formatted_lines += lines
     formatted_lines.append(
         (
-            expression.children[-1].line,
+            array.children[-1].line,
             "{}]{}".format(context.indent_string, expression_context.suffix_string),
         )
     )
-    return (formatted_lines, expression.children[-1].line)
+    return (formatted_lines, array.children[-1].line)
+
+
+# TOOD: refactor
+# pylint: disable=too-many-locals
+def _format_dict_to_multiple_lines(
+    a_dict: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}{{".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    child_context = context.create_child_context(expression_context.prefix_line)
+    elements = [child for child in a_dict.children if not _is_any_comma(child)]
+    for i, element in enumerate(elements):
+        key = element.children[0]
+        value = element.children[1]
+        is_last_element = i == len(elements) - 1
+        infix = ": " if element.data == "c_dict_element" else " = "
+        single_line_expression = "{}{}{}".format(
+            _expression_to_str(key), infix, _expression_to_str(value),
+        )
+        comma = 0 if is_last_element and not _has_trailing_comma(a_dict) else 1
+        single_line_length = len(single_line_expression) + child_context.indent + comma
+        if single_line_length <= context.max_line_length:
+            suffix = "," * comma
+            single_line = "{}{}{}".format(
+                child_context.indent_string, single_line_expression, suffix
+            )
+            formatted_lines.append((element.line, single_line))
+        else:
+            key_expression_context = ExpressionContext("", key.line, infix[:-1])
+            key_lines, _ = _format_concrete_expression(
+                key, key_expression_context, child_context
+            )
+            formatted_lines += key_lines
+            value_expression_context = ExpressionContext("", value.line, "," * comma)
+            value_lines, _ = _format_concrete_expression(
+                value, value_expression_context, child_context
+            )
+            formatted_lines += value_lines
+
+    formatted_lines.append(
+        (
+            a_dict.children[-1].line,
+            "{}}}{}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return (formatted_lines, a_dict.children[-1].line)
 
 
 def _expression_to_str(expression: Node) -> str:
