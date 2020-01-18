@@ -72,12 +72,13 @@ def _format_foldable(
 def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    if expression.data == "dict":
-        return _format_dict_to_multiple_lines(expression, expression_context, context)
-    if expression.data == "string":
-        return _format_string_to_multiple_lines(expression, expression_context, context)
-    assert expression.data == "array"
-    return _format_array_to_multiple_lines(expression, expression_context, context)
+    return {
+        "dict": _format_dict_to_multiple_lines,
+        "string": _format_string_to_multiple_lines,
+        "array": _format_array_to_multiple_lines,
+        "type_cast": _format_type_cast_to_multiple_lines,
+        "type_test": _format_type_test_to_multiple_lines,
+    }[expression.data](expression, expression_context, context)
 
 
 def _format_array_to_multiple_lines(
@@ -180,3 +181,62 @@ def _format_string_to_multiple_lines(
         (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
     )
     return (formatted_lines, string.line)
+
+
+def _format_type_cast_to_multiple_lines(
+    type_cast: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}(".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    child_context = context.create_child_context(expression_context.prefix_line)
+    value = type_cast.children[0]
+    lines, _ = _format_concrete_expression(
+        value, ExpressionContext("", value.line, ""), child_context
+    )
+    formatted_lines += lines
+    for child in type_cast.children[1:]:
+        lines, _ = _format_concrete_expression(
+            child, ExpressionContext("as ", child.line, ""), child_context
+        )
+        formatted_lines += lines
+    formatted_lines.append(
+        (
+            type_cast.children[-1].line,
+            "{}){}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return (formatted_lines, type_cast.children[-1].line)
+
+
+# TODO: unify
+def _format_type_test_to_multiple_lines(
+    type_test: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}(".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    child_context = context.create_child_context(expression_context.prefix_line)
+    value = type_test.children[0]
+    lines, _ = _format_concrete_expression(
+        value, ExpressionContext("", value.line, ""), child_context
+    )
+    formatted_lines += lines
+    for child in type_test.children[1:]:
+        lines, _ = _format_concrete_expression(
+            child, ExpressionContext("is ", child.line, ""), child_context
+        )
+        formatted_lines += lines
+    formatted_lines.append(
+        (
+            type_test.children[-1].line,
+            "{}){}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return (formatted_lines, type_test.children[-1].line)
