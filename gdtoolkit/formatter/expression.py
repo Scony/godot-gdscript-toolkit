@@ -1,3 +1,6 @@
+from functools import partial
+from typing import Dict, Callable
+
 from lark import Tree
 
 from .context import Context, ExpressionContext
@@ -72,13 +75,16 @@ def _format_foldable(
 def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    return {
+    handlers = {
         "dict": _format_dict_to_multiple_lines,
         "string": _format_string_to_multiple_lines,
         "array": _format_array_to_multiple_lines,
         "type_cast": _format_type_cast_to_multiple_lines,
         "type_test": _format_type_test_to_multiple_lines,
-    }[expression.data](expression, expression_context, context)
+        "bitw_not": partial(_append_to_expression_context_and_pass, "~"),
+        "neg_expr": partial(_append_to_expression_context_and_pass, "-"),
+    }  # type: Dict[str, Callable]
+    return handlers[expression.data](expression, expression_context, context)
 
 
 def _format_array_to_multiple_lines(
@@ -240,3 +246,19 @@ def _format_type_test_to_multiple_lines(
         )
     )
     return (formatted_lines, type_test.children[-1].line)
+
+
+def _append_to_expression_context_and_pass(
+    str_to_append: str,
+    expression: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> Outcome:
+    new_expression_context = ExpressionContext(
+        "{}{}".format(expression_context.prefix_string, str_to_append),
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+    )
+    return _format_concrete_expression(
+        expression.children[1], new_expression_context, context
+    )
