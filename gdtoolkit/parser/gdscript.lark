@@ -140,7 +140,7 @@ get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" [test_expr ("," test_expr)* [trailing_comma]] "]"
 trailing_comma: ","
-dict: "{" [_kv_pair ("," _kv_pair)* [","]] "}"
+dict: "{" [_kv_pair ("," _kv_pair)* [trailing_comma]] "}"
 _kv_pair: (c_dict_element | eq_dict_element)
 c_dict_element: test_expr ":" test_expr
 eq_dict_element: NAME "=" test_expr
