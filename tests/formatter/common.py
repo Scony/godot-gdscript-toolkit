@@ -12,6 +12,9 @@ def format_and_compare(input_code, expected_output_code):
     formatted_code = format_code(input_code, max_line_length=MAX_LINE_LENGTH)
     _compare(formatted_code, expected_output_code)
 
+    code_formatted_again = format_code(formatted_code, max_line_length=MAX_LINE_LENGTH)
+    _compare(code_formatted_again, formatted_code)
+
     input_code_parse_tree = parser.parse(input_code, loosen_grammar=True)
     formatted_code_parse_tree = parser.parse(formatted_code, loosen_grammar=True)
     _invariant_check(input_code_parse_tree, formatted_code_parse_tree)

@@ -20,7 +20,12 @@ def format_expression(
 ) -> Outcome:
     concrete_expression = expression.children[0]
     concrete_expression = remove_outer_parentheses(concrete_expression)
-    return _format_concrete_expression(concrete_expression, expression_context, context)
+    return (
+        _format_concrete_expression(concrete_expression, expression_context, context)[
+            0
+        ],  # TODO: make those to not return last processed line (at the very end)
+        expression.end_line,
+    )
 
 
 def _format_concrete_expression(
@@ -185,6 +190,11 @@ def _format_dict_to_multiple_lines(
 def _format_parentheses_to_multiple_lines(
     par_expr: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
+    child_expr = par_expr.children[0]
+    if isinstance(child_expr, Tree) and child_expr.data == "par_expr":
+        return _format_parentheses_to_multiple_lines(
+            child_expr, expression_context, context
+        )  # TODO: rethink that hack
     formatted_lines = [
         (
             expression_context.prefix_line,
@@ -204,7 +214,9 @@ def _format_parentheses_to_multiple_lines(
             "{}){}".format(context.indent_string, expression_context.suffix_string),
         )
     )
+    # import pdb;pdb.set_trace()
     return (formatted_lines, par_expr.children[-1].line)
+    # return (formatted_lines, par_expr.end_line)
 
 
 def _format_string_to_multiple_lines(
