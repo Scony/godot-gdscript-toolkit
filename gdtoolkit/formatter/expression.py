@@ -9,6 +9,11 @@ from .expression_utils import (
     is_any_comma,
     has_trailing_comma,
 )
+from .expression_to_str import (
+    expression_to_str,
+    foldable_to_str,
+    non_foldable_to_str,
+)
 
 
 def format_expression(
@@ -31,7 +36,7 @@ def _format_concrete_expression(
                 "{}{}{}{}".format(
                     context.indent_string,
                     expression_context.prefix_string,
-                    _non_foldable_to_str(expression),
+                    non_foldable_to_str(expression),
                     expression_context.suffix_string,
                 ),
             )
@@ -47,7 +52,7 @@ def _format_foldable(
         return _format_foldable_to_multiple_lines(
             expression, expression_context, context
         )
-    single_line_expression = _foldable_to_str(expression)
+    single_line_expression = foldable_to_str(expression)
     single_line_length = (
         context.indent
         + len(expression_context.prefix_string)
@@ -58,7 +63,7 @@ def _format_foldable(
         single_line = "{}{}{}{}".format(
             context.indent_string,
             expression_context.prefix_string,
-            _foldable_to_str(expression),
+            foldable_to_str(expression),
             expression_context.suffix_string,
         )
         return (
@@ -129,7 +134,7 @@ def _format_dict_to_multiple_lines(
         is_last_element = i == len(elements) - 1
         infix = ": " if element.data == "c_dict_element" else " = "
         single_line_expression = "{}{}{}".format(
-            _expression_to_str(key), infix, _expression_to_str(value),
+            expression_to_str(key), infix, expression_to_str(value),
         )
         comma = 0 if is_last_element and not has_trailing_comma(a_dict) else 1
         single_line_length = len(single_line_expression) + child_context.indent + comma
@@ -179,44 +184,3 @@ def _format_string_to_multiple_lines(
         (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
     )
     return (formatted_lines, string.line)
-
-
-def _expression_to_str(expression: Node) -> str:
-    if is_foldable(expression):
-        return _foldable_to_str(expression)
-    return _non_foldable_to_str(expression)
-
-
-def _foldable_to_str(expression: Node) -> str:
-    if expression.data == "array":
-        array_elements = [
-            _expression_to_str(child)
-            for child in expression.children
-            if isinstance(child, Tree) or child.type != "COMMA"
-        ]
-        return "[{}]".format(", ".join(array_elements))
-    if expression.data == "dict":
-        elements = [_dict_element_to_str(child) for child in expression.children]
-        return "{{{}}}".format(", ".join(elements))
-    return ""
-
-
-def _dict_element_to_str(dict_element: Tree) -> str:
-    template = "{}: {}" if dict_element.data == "c_dict_element" else "{} = {}"
-    return template.format(
-        _expression_to_str(dict_element.children[0]),
-        _expression_to_str(dict_element.children[1]),
-    )
-
-
-def _non_foldable_to_str(expression: Node) -> str:
-    if isinstance(expression, Tree):
-        if expression.data == "string":
-            return expression.children[0].value
-        if expression.data == "node_path":
-            return "{}{}".format("@", _non_foldable_to_str(expression.children[0]))
-        if expression.data == "get_node":
-            return "{}{}".format("$", _non_foldable_to_str(expression.children[0]))
-        if expression.data == "path":
-            return "/".join([name_token.value for name_token in expression.children])
-    return expression.value
