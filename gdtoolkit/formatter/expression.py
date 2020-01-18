@@ -40,11 +40,22 @@ def _format_concrete_expression(
 
 
 def _is_foldable(expression: Node) -> bool:
+    if _is_multiline_string(expression):
+        return True
     return not isinstance(expression, Token) and expression.data not in [
         "string",
         "node_path",
         "get_node",
     ]
+
+
+def _is_multiline_string(expression: Node) -> bool:
+    return (
+        isinstance(expression, Tree)
+        and expression.data == "string"
+        and expression.children[0].type == "LONG_STRING"
+        and len(expression.children[0].value.splitlines()) > 1
+    )
 
 
 def _format_foldable(
@@ -78,8 +89,12 @@ def _format_foldable(
 def _is_expression_forcing_multiple_lines(expression: Node) -> bool:
     if _has_trailing_comma(expression):
         return True
+    if _is_multiline_string(expression):
+        return True
+    if isinstance(expression, Token):
+        return False
     for child in expression.children:
-        if _has_trailing_comma(child):
+        if _is_expression_forcing_multiple_lines(child):
             return True
     return False
 
@@ -98,6 +113,8 @@ def _format_foldable_to_multiple_lines(
 ) -> Outcome:
     if expression.data == "dict":
         return _format_dict_to_multiple_lines(expression, expression_context, context)
+    if expression.data == "string":
+        return _format_string_to_multiple_lines(expression, expression_context, context)
     assert expression.data == "array"
     return _format_array_to_multiple_lines(expression, expression_context, context)
 
@@ -181,6 +198,27 @@ def _format_dict_to_multiple_lines(
         )
     )
     return (formatted_lines, a_dict.children[-1].line)
+
+
+def _format_string_to_multiple_lines(
+    string: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    long_string = string.children[0]
+    lines = long_string.value.splitlines()
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}{}".format(
+                context.indent_string, expression_context.prefix_string, lines[0]
+            ),
+        )
+    ]  # type: FormattedLines
+    for middle_line in lines[1:-1]:
+        formatted_lines.append((string.line, middle_line))
+    formatted_lines.append(
+        (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
+    )
+    return (formatted_lines, string.line)
 
 
 def _expression_to_str(expression: Node) -> str:
