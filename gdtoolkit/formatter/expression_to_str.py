@@ -21,6 +21,11 @@ def foldable_to_str(expression: Node) -> str:
     if expression.data == "dict":
         elements = [_dict_element_to_str(child) for child in expression.children]
         return "{{{}}}".format(", ".join(elements))
+    if expression.data == "subscr_expr":
+        return "{}[{}]".format(
+            expression_to_str(expression.children[0]),
+            expression_to_str(expression.children[1]),
+        )
     return ""
 
 
