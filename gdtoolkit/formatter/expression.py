@@ -9,11 +9,7 @@ from .expression_utils import (
     is_any_comma,
     has_trailing_comma,
 )
-from .expression_to_str import (
-    expression_to_str,
-    foldable_to_str,
-    non_foldable_to_str,
-)
+from .expression_to_str import expression_to_str
 
 
 def format_expression(
@@ -36,7 +32,7 @@ def _format_concrete_expression(
                 "{}{}{}{}".format(
                     context.indent_string,
                     expression_context.prefix_string,
-                    non_foldable_to_str(expression),
+                    expression_to_str(expression),
                     expression_context.suffix_string,
                 ),
             )
@@ -52,7 +48,7 @@ def _format_foldable(
         return _format_foldable_to_multiple_lines(
             expression, expression_context, context
         )
-    single_line_expression = foldable_to_str(expression)
+    single_line_expression = expression_to_str(expression)
     single_line_length = (
         context.indent
         + len(expression_context.prefix_string)
@@ -63,7 +59,7 @@ def _format_foldable(
         single_line = "{}{}{}{}".format(
             context.indent_string,
             expression_context.prefix_string,
-            foldable_to_str(expression),
+            expression_to_str(expression),
             expression_context.suffix_string,
         )
         return (
