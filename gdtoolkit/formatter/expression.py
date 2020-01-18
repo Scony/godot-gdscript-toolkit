@@ -76,6 +76,12 @@ def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     handlers = {
+        "par_expr": _format_parentheses_to_multiple_lines,
+        "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        "or_test": _format_operator_chain_based_expression_to_multiple_lines,
+        "and_test": _format_operator_chain_based_expression_to_multiple_lines,
+        "not_test": partial(_append_to_expression_context_and_pass, " "),
+        "content_test": _format_operator_chain_based_expression_to_multiple_lines,
         "comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
@@ -84,8 +90,8 @@ def _format_foldable_to_multiple_lines(
         "subtr_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "addn_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        "neg_expr": partial(_append_to_expression_context_and_pass, "-"),
-        "bitw_not": partial(_append_to_expression_context_and_pass, "~"),
+        "neg_expr": partial(_append_to_expression_context_and_pass, ""),
+        "bitw_not": partial(_append_to_expression_context_and_pass, ""),
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "array": _format_array_to_multiple_lines,
@@ -176,6 +182,31 @@ def _format_dict_to_multiple_lines(
     return (formatted_lines, a_dict.children[-1].line)
 
 
+def _format_parentheses_to_multiple_lines(
+    par_expr: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}(".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    child_context = context.create_child_context(expression_context.prefix_line)
+    lines, _ = _format_concrete_expression(
+        par_expr.children[0],
+        ExpressionContext("", par_expr.children[0].line, ""),
+        child_context,
+    )
+    formatted_lines += lines
+    formatted_lines.append(
+        (
+            par_expr.children[-1].line,
+            "{}){}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return (formatted_lines, par_expr.children[-1].line)
+
+
 def _format_string_to_multiple_lines(
     string: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
@@ -230,13 +261,14 @@ def _format_operator_chain_based_expression_to_multiple_lines(
 
 
 def _append_to_expression_context_and_pass(
-    str_to_append: str,
+    spacing: str,
     expression: Tree,
     expression_context: ExpressionContext,
     context: Context,
 ) -> Outcome:
+    str_to_append = expression_to_str(expression.children[0])
     new_expression_context = ExpressionContext(
-        "{}{}".format(expression_context.prefix_string, str_to_append),
+        "{}{}{}".format(expression_context.prefix_string, str_to_append, spacing),
         expression_context.prefix_line,
         expression_context.suffix_string,
     )

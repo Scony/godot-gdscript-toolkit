@@ -114,6 +114,18 @@ def _format_func_statement(statement: Node, context: Context) -> Outcome:
                 expr, expression_context, context
             )
             formatted_lines += lines
+        elif concrete_var_stmt.data == "var_empty":
+            name = concrete_var_stmt.children[0].value
+            formatted_lines.append(
+                (statement.line, "{}var {}".format(context.indent_string, name))
+            )
+    elif statement.data == "expr_stmt":
+        expr = statement.children[0]
+        expression_context = ExpressionContext("", statement.line, "")
+        lines, last_processed_line_no = format_expression(
+            expr, expression_context, context
+        )
+        formatted_lines += lines
     return (formatted_lines, last_processed_line_no)
 
 

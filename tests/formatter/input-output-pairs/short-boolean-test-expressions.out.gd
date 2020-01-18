@@ -1,10 +1,6 @@
 class X:
 	func foo():
 		var a = 1 > 2
-		var b = (
-			"xxxxxxxxxxxxxxxxxxxxxxxxxxx"
-			> "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
-		)
 		var c = [1, 2] in [[1, 2], [3]]
 		var d = not not not true
 		var e = true and true && true

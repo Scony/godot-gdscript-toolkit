@@ -93,8 +93,8 @@ enum_element: NAME ["=" NUMBER]
 
 expr: test_expr
     | assnmnt_expr
-assnmnt_expr: attr_expr assnmnt_op test_expr
-assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
+assnmnt_expr: attr_expr _assnmnt_op test_expr
+!_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
 !?test_expr: or_test ["if" or_test "else" test_expr]
 !?or_test: and_test (("or" | "||") and_test)*
 !?and_test: not_test (("and" | "&&") not_test)*
