@@ -95,17 +95,17 @@ expr: test_expr
     | assnmnt_expr
 assnmnt_expr: attr_expr assnmnt_op test_expr
 assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
-?test_expr: or_test ["if" or_test "else" test_expr]
-?or_test: and_test (("or" | "||") and_test)*
-?and_test: not_test (("and" | "&&") not_test)*
-?not_test: ("not" | "!") not_test | content_test
-?content_test: comparison ("in" comparison)*
-?comparison: bitw_or (comp_op bitw_or)?
-comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
+!?test_expr: or_test ["if" or_test "else" test_expr]
+!?or_test: and_test (("or" | "||") and_test)*
+!?and_test: not_test (("and" | "&&") not_test)*
+!?not_test: ("not" | "!") not_test | content_test
+!?content_test: comparison ("in" comparison)*
+?comparison: bitw_or [_comp_op bitw_or]
+!_comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
 !?bitw_or: bitw_xor ("|" bitw_xor)*
 !?bitw_xor: bitw_and ("^" bitw_and)*
 !?bitw_and: shift_expr ("&" shift_expr)*
-!?shift_expr: subtr_expr (("<<"|">>") subtr_expr)*
+!?shift_expr: subtr_expr (("<<" | ">>") subtr_expr)*
 !?subtr_expr: addn_expr ("-" addn_expr)*
 !?addn_expr: mdr_expr ("+" mdr_expr)*
 !?mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
