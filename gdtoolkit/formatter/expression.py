@@ -76,13 +76,20 @@ def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     handlers = {
-        "dict": _format_dict_to_multiple_lines,
-        "string": _format_string_to_multiple_lines,
-        "array": _format_array_to_multiple_lines,
-        "type_cast": _format_type_cast_to_multiple_lines,
-        "type_test": _format_type_test_to_multiple_lines,
-        "bitw_not": partial(_append_to_expression_context_and_pass, "~"),
+        "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
+        "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
+        "bitw_and": _format_operator_chain_based_expression_to_multiple_lines,
+        "shift_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        "subtr_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        "addn_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        "mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "neg_expr": partial(_append_to_expression_context_and_pass, "-"),
+        "bitw_not": partial(_append_to_expression_context_and_pass, "~"),
+        "type_test": _format_operator_chain_based_expression_to_multiple_lines,
+        "type_cast": _format_operator_chain_based_expression_to_multiple_lines,
+        "array": _format_array_to_multiple_lines,
+        "string": _format_string_to_multiple_lines,
+        "dict": _format_dict_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -189,8 +196,8 @@ def _format_string_to_multiple_lines(
     return (formatted_lines, string.line)
 
 
-def _format_type_cast_to_multiple_lines(
-    type_cast: Tree, expression_context: ExpressionContext, context: Context
+def _format_operator_chain_based_expression_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     formatted_lines = [
         (
@@ -199,53 +206,26 @@ def _format_type_cast_to_multiple_lines(
         )
     ]  # type: FormattedLines
     child_context = context.create_child_context(expression_context.prefix_line)
-    value = type_cast.children[0]
+    value = expression.children[0]
     lines, _ = _format_concrete_expression(
         value, ExpressionContext("", value.line, ""), child_context
     )
     formatted_lines += lines
-    for child in type_cast.children[1:]:
+    operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
+    for operator, child in operator_expr_chain:
         lines, _ = _format_concrete_expression(
-            child, ExpressionContext("as ", child.line, ""), child_context
+            child,
+            ExpressionContext("{} ".format(operator.value), child.line, ""),
+            child_context,
         )
         formatted_lines += lines
     formatted_lines.append(
         (
-            type_cast.children[-1].line,
+            expression.children[-1].line,
             "{}){}".format(context.indent_string, expression_context.suffix_string),
         )
     )
-    return (formatted_lines, type_cast.children[-1].line)
-
-
-# TODO: unify
-def _format_type_test_to_multiple_lines(
-    type_test: Tree, expression_context: ExpressionContext, context: Context
-) -> Outcome:
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}(".format(context.indent_string, expression_context.prefix_string),
-        )
-    ]  # type: FormattedLines
-    child_context = context.create_child_context(expression_context.prefix_line)
-    value = type_test.children[0]
-    lines, _ = _format_concrete_expression(
-        value, ExpressionContext("", value.line, ""), child_context
-    )
-    formatted_lines += lines
-    for child in type_test.children[1:]:
-        lines, _ = _format_concrete_expression(
-            child, ExpressionContext("is ", child.line, ""), child_context
-        )
-        formatted_lines += lines
-    formatted_lines.append(
-        (
-            type_test.children[-1].line,
-            "{}){}".format(context.indent_string, expression_context.suffix_string),
-        )
-    )
-    return (formatted_lines, type_test.children[-1].line)
+    return (formatted_lines, expression.children[-1].line)
 
 
 def _append_to_expression_context_and_pass(
