@@ -9,6 +9,12 @@ from .expression_utils import is_any_comma, is_any_parentheses, has_leading_dot
 def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Tree):
         return {
+            "type_test": lambda e: " is ".join(
+                [expression_to_str(c) for c in e.children]
+            ),
+            "type_cast": lambda e: " as ".join(
+                [expression_to_str(c) for c in e.children]
+            ),
             "standalone_call": _standalone_call_to_str,
             "getattr_call": _getattr_call_to_str,
             "getattr": lambda e: ".".join([expression_to_str(c) for c in e.children]),
