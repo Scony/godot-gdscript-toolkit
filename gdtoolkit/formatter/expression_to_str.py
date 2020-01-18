@@ -1,6 +1,7 @@
 from lark import Tree
 
 from .types import Node
+from .expression_utils import is_any_comma
 
 
 def expression_to_str(expression: Node) -> str:
@@ -21,9 +22,7 @@ def expression_to_str(expression: Node) -> str:
 
 def _array_to_str(array: Tree) -> str:
     elements = [
-        expression_to_str(child)
-        for child in array.children
-        if isinstance(child, Tree) or child.type != "COMMA"
+        expression_to_str(child) for child in array.children if not is_any_comma(child)
     ]
     return "[{}]".format(", ".join(elements))
 
