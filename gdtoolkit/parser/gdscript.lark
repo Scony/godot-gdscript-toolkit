@@ -109,8 +109,10 @@ comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
 ?subtr_expr: addn_expr ("-" addn_expr)*
 ?addn_expr: mdr_expr ("+" mdr_expr)*
 ?mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
-?neg_expr: "-" neg_expr | bitw_not
-?bitw_not: "~" bitw_not | type_test
+!?neg_expr: "-" neg_expr
+          | bitw_not
+!?bitw_not: "~" bitw_not
+          | type_test
 ?type_test: type_cast ("is" type_cast)*
 ?type_cast: _call_expr ("as" TYPE)* // TODO: fix precedence (same as "is" probably(!))
 _call_expr: standalone_call
