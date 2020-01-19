@@ -27,7 +27,8 @@ def main():
     if arguments["<file>"] == ["-"]:
         code = sys.stdin.read()
         print(format_code(gdscript_code=code, max_line_length=100), end="")
-    raise NotImplementedError
+    else:
+        raise NotImplementedError
 
 
 if __name__ == "__main__":
