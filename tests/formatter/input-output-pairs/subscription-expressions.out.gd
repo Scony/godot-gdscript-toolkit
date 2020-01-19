@@ -1,4 +1,5 @@
 class X:
 	func foo():
-		var x = x[0]
-		# TODO: foldables
+		var p
+		var x = p[0][[1, 2, 3]]
+		var y = p[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]][[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
