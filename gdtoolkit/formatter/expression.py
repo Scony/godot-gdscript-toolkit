@@ -11,6 +11,7 @@ from .expression_utils import (
     is_expression_forcing_multiple_lines,
     is_any_comma,
     has_trailing_comma,
+    has_leading_dot,
 )
 from .expression_to_str import expression_to_str
 
@@ -81,7 +82,7 @@ def _format_foldable_to_multiple_lines(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     handlers = {
-        "par_expr": _format_parentheses_to_multiple_lines,
+        "assnmnt_expr": _format_assignment_expression_to_multiline_line,
         "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
         "and_test": _format_operator_chain_based_expression_to_multiple_lines,
@@ -99,6 +100,9 @@ def _format_foldable_to_multiple_lines(
         "bitw_not": partial(_append_to_expression_context_and_pass, ""),
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "type_cast": _format_operator_chain_based_expression_to_multiple_lines,
+        "standalone_call": _format_call_expression_to_multiline_line,
+        "getattr_call": _format_call_expression_to_multiline_line,
+        "par_expr": _format_parentheses_to_multiple_lines,
         "array": _format_array_to_multiple_lines,
         "string": _format_string_to_multiple_lines,
         "dict": _format_dict_to_multiple_lines,
@@ -214,9 +218,7 @@ def _format_parentheses_to_multiple_lines(
             "{}){}".format(context.indent_string, expression_context.suffix_string),
         )
     )
-    # import pdb;pdb.set_trace()
     return (formatted_lines, par_expr.children[-1].line)
-    # return (formatted_lines, par_expr.end_line)
 
 
 def _format_string_to_multiple_lines(
@@ -238,6 +240,53 @@ def _format_string_to_multiple_lines(
         (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
     )
     return (formatted_lines, string.line)
+
+
+def _format_assignment_expression_to_multiline_line(
+    expression: Tree, expression_context: ExpressionContext, context: Context,
+) -> Outcome:
+    new_expression_context = ExpressionContext(
+        "{}{} = ".format(
+            expression_context.prefix_string, expression_to_str(expression.children[0])
+        ),
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+    )
+    return _format_concrete_expression(
+        expression.children[2], new_expression_context, context
+    )
+
+
+def _format_call_expression_to_multiline_line(
+    expression: Tree, expression_context: ExpressionContext, context: Context,
+) -> Outcome:
+    dot = "." if has_leading_dot(expression) else ""
+    offset = 1 if has_leading_dot(expression) else 0
+    callee = expression_to_str(expression.children[0 + offset])
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}{}{}(".format(
+                context.indent_string, expression_context.prefix_string, dot, callee
+            ),
+        )
+    ]  # type: FormattedLines
+    elements = expression.children[2 + offset :: 2]
+    child_context = context.create_child_context(expression_context.prefix_line)
+    for i, element in enumerate(elements):
+        suffix = "," if i != len(elements) - 1 else ""
+        child_expression_context = ExpressionContext("", element.line, suffix)
+        lines, _ = _format_concrete_expression(
+            element, child_expression_context, child_context
+        )
+        formatted_lines += lines
+    formatted_lines.append(
+        (
+            expression.children[-1].line,
+            "{}){}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return (formatted_lines, expression.children[-1].line)
 
 
 def _format_operator_chain_based_expression_to_multiple_lines(

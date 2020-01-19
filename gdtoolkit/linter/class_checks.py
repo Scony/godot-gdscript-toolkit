@@ -30,7 +30,7 @@ def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
         _getattr = getattr_call.children[0]
         callee_name_token = _getattr.children[-1]
         callee_name = callee_name_token.value
-        called = _getattr.children[-2]
+        called = _getattr.children[-3]
         if (
             isinstance(called, Token)
             and called.type == "NAME"

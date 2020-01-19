@@ -1,4 +1,5 @@
 class X:
 	func foo():
-		var x = x.y.z
-		# TODO: foldables
+		var xxxxxxxxxxx
+		var x = xxxxxxxxxxx.y.z
+		var y = xxxxxxxxxxx.yyyyyyyyyyyy.zzzzzzzzzzz.qqqqqqqqqqqqq.wwwwwwwwww.eeeeeeeeeeee.rrrrrrrrrrrrr
