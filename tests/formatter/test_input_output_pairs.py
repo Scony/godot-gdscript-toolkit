@@ -11,32 +11,15 @@ DATA_DIR = "./input-output-pairs"
 GODOT_SERVER = "godot-server"
 EXCEPTIONS = set(  # TODO: fix wherever possible
     [
-        "simple-nested-class-stmts.out.gd",
-        "comment-corner-case.out.gd",
-        "simple-atom-expressions.in.gd",
-        "force-multiline-dict.in.gd",
-        "negation-n-bitwise-not-expressions.out.gd",
-        "type-test-expressions.out.gd",
-        "long-dict-expressions.in.gd",
-        "type-cast-expressions.out.gd",
-        "comment-corner-case.in.gd",
-        "call-expressions.in.gd",
-        "short-dict-expressions.out.gd",
-        "type-test-expressions.in.gd",
-        "simple-atom-expressions.out.gd",
-        "class-stmt-chain.out.gd",
-        "class-stmt-chain.in.gd",
-        "short-dict-expressions.in.gd",
-        "force-multiline-dict.out.gd",
-        "simple-class-stmts.in.gd",
-        "long-dict-expressions.out.gd",
-        "type-cast-expressions.in.gd",
-        "simple-class-stmts.out.gd",
-        "simple-nested-class-stmts.in.gd",
-        "call-expressions.out.gd",
-        "negation-n-bitwise-not-expressions.in.gd",
-        "simple-function-statements.in.gd",
-        "simple-function-statements.out.gd",
+        "call-expressions.in.gd",  # cannot provide callee definitions for now
+        "call-expressions.out.gd",  # cannot provide callee definitions for now
+        "force-multiline-dict.out.gd",  # godot bug
+        "negation-n-bitwise-not-expressions.in.gd",  # Invalid operand ("Array") to unary operator "~"
+        "negation-n-bitwise-not-expressions.out.gd",  # Invalid operand ("Array") to unary operator "~"
+        "simple-function-statements.in.gd",  # break & continue in function scope
+        "simple-function-statements.out.gd",  # break & continue in function scope
+        "type-cast-expressions.in.gd",  # godot bug
+        "type-cast-expressions.out.gd",  # godot bug
     ]
 )
 

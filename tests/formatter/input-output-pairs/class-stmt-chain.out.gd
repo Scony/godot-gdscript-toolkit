@@ -1,3 +1,2 @@
-tool
-tool
-tool
+var x
+var y
