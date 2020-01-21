@@ -69,6 +69,22 @@ def _format_class_statement(statement: Node, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     if statement.data == "tool_stmt":
         formatted_lines.append((statement.line, "{}tool".format(context.indent_string)))
+    elif statement.data == "class_var_stmt":
+        concrete_var_stmt = statement.children[0]
+        if concrete_var_stmt.data == "var_empty":
+            name = concrete_var_stmt.children[0].value
+            formatted_lines.append(
+                (statement.line, "{}var {}".format(context.indent_string, name))
+            )
+    elif statement.data == "extends_stmt":
+        formatted_lines.append(
+            (
+                statement.line,
+                "{}extends {}".format(
+                    context.indent_string, statement.children[0].value
+                ),
+            )
+        )
     elif statement.data == "class_def":
         name = statement.children[0].value
         formatted_lines.append(

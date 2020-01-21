@@ -1,6 +1,7 @@
 class X:
 	func foo():
-		var x = ~x
+		var e
+		var x = ~e
 		var y = ~[
 			1,
 			1,

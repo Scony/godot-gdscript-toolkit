@@ -1,14 +1,14 @@
 class X:
 	# aaa
 	tool
-	tool
+	var x
 	# bbb
 
-	tool
+	var y
 
-	tool  # ccc
+	var z  # ccc
 
 	# ddd
-	tool
-	tool
+	var q
+	var w
 	# eee

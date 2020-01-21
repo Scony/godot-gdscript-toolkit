@@ -1,3 +1,2 @@
-tool
-tool
-tool  # xxx
+var x
+var y  # xxx
