@@ -78,7 +78,10 @@ func_var_stmt: _var_stmt
 break_stmt.2: "break"
 continue_stmt.2: "continue"
 expr_stmt: expr
-if_stmt: "if" expr ":" _func_suite (_NL? "elif" expr ":" _func_suite)* [_NL? "else" ":" _func_suite]
+if_stmt: if_branch (_NL? elif_branch)* [_NL? else_branch]
+if_branch: "if" expr ":" _func_suite
+elif_branch: "elif" expr ":" _func_suite
+else_branch: "else" ":" _func_suite
 while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
 match_stmt: "match" expr ":" match_body
