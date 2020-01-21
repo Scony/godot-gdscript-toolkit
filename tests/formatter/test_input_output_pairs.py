@@ -35,6 +35,8 @@ EXCEPTIONS = set(  # TODO: fix wherever possible
         "simple-nested-class-stmts.in.gd",
         "call-expressions.out.gd",
         "negation-n-bitwise-not-expressions.in.gd",
+        "simple-function-statements.in.gd",
+        "simple-function-statements.out.gd",
     ]
 )
 

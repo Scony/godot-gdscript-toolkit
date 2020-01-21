@@ -126,6 +126,26 @@ def _format_func_statement(statement: Node, context: Context) -> Outcome:
             expr, expression_context, context
         )
         formatted_lines += lines
+    elif statement.data == "return_stmt":
+        if len(statement.children) == 0:
+            formatted_lines.append(
+                (statement.line, "{}return".format(context.indent_string))
+            )
+        else:
+            expr = statement.children[0]
+            expression_context = ExpressionContext("return ", statement.line, "")
+            lines, last_processed_line_no = format_expression(
+                expr, expression_context, context
+            )
+            formatted_lines += lines
+    elif statement.data == "break_stmt":
+        formatted_lines.append(
+            (statement.line, "{}break".format(context.indent_string))
+        )
+    elif statement.data == "continue_stmt":
+        formatted_lines.append(
+            (statement.line, "{}continue".format(context.indent_string))
+        )
     return (formatted_lines, last_processed_line_no)
 
 
