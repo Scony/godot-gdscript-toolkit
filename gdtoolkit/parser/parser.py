@@ -67,6 +67,7 @@ class Parser:
             postlex=Indenter(),
             parser="lalr",
             start="start",
+            maybe_placeholders=False,
         )
 
     @cached_property
@@ -77,6 +78,7 @@ class Parser:
             parser="lalr",
             start="start",
             propagate_positions=True,
+            maybe_placeholders=False,
         )
 
     @cached_property
@@ -94,6 +96,7 @@ class Parser:
                 parser="lalr",
                 start="start",
                 propagate_positions=True,
+                maybe_placeholders=False,
             )
 
 
