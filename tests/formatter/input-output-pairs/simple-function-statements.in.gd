@@ -5,6 +5,7 @@ class X:
 		var x
 		var y = 1
 		var z: int = 1
-		# TODO: more vars
+		var q: int
+		var w := 1
 		return
 		return 1
