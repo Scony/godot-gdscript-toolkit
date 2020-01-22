@@ -140,4 +140,4 @@ func foo21():
 """,
 ])
 def test_max_public_methods_nok(code):
-    simple_nok_check(code, 'max-public-methods')
+    simple_nok_check(code, 'max-public-methods', line=1)
