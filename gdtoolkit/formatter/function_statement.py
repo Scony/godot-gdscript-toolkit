@@ -5,16 +5,17 @@ from .context import Context, ExpressionContext
 from .types import Outcome, Node, FormattedLines
 from .expression import format_expression
 from .block import format_block
+from .statement_utils import format_simple_statement
 
 
 def format_func_statement(statement: Node, context: Context) -> Outcome:
     handlers = {
-        "pass_stmt": partial(_format_simple_statement, "pass"),
+        "pass_stmt": partial(format_simple_statement, "pass"),
         "func_var_stmt": _format_func_var_statement,
         "expr_stmt": _format_expr_statement,
         "return_stmt": _format_return_statement,
-        "break_stmt": partial(_format_simple_statement, "break"),
-        "continue_stmt": partial(_format_simple_statement, "continue"),
+        "break_stmt": partial(format_simple_statement, "break"),
+        "continue_stmt": partial(format_simple_statement, "continue"),
         "if_stmt": _format_if_statement,
         "while_stmt": partial(_format_branch, "while ", ":", 0),
         "for_stmt": _format_for_statement,
@@ -35,13 +36,13 @@ def _format_func_var_statement(statement: Node, context: Context) -> Outcome:
 
 
 def _format_var_empty_statement(statement: Node, context: Context) -> Outcome:
-    return _format_simple_statement(
+    return format_simple_statement(
         "var {}".format(statement.children[0].value), statement, context
     )
 
 
 def _format_var_typed_statement(statement: Node, context: Context) -> Outcome:
-    return _format_simple_statement(
+    return format_simple_statement(
         "var {}: {}".format(statement.children[0].value, statement.children[1].value),
         statement,
         context,
@@ -82,19 +83,10 @@ def _format_expr_statement(statement: Node, context: Context) -> Outcome:
 
 def _format_return_statement(statement: Node, context: Context) -> Outcome:
     if len(statement.children) == 0:
-        return _format_simple_statement("return", statement, context)
+        return format_simple_statement("return", statement, context)
     expr = statement.children[0]
     expression_context = ExpressionContext("return ", statement.line, "")
     return format_expression(expr, expression_context, context)
-
-
-def _format_simple_statement(
-    statement_name: str, statement: Node, context: Context
-) -> Outcome:
-    return (
-        [(statement.line, "{}{}".format(context.indent_string, statement_name))],
-        statement.line,
-    )
 
 
 def _format_if_statement(statement: Node, context: Context) -> Outcome:
