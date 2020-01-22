@@ -23,25 +23,33 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
 
 
 def _format_func_var_statement(statement: Node, context: Context) -> Outcome:
-    formatted_lines = []  # type: FormattedLines
-    last_processed_line_no = statement.line
     concrete_var_stmt = statement.children[0]
-    if concrete_var_stmt.data == "var_assigned":
-        name = concrete_var_stmt.children[0].value
-        expr = concrete_var_stmt.children[1]
-        expression_context = ExpressionContext(
-            "var {} = ".format(name), statement.line, ""
-        )
-        lines, last_processed_line_no = format_expression(
-            expr, expression_context, context
-        )
-        formatted_lines += lines
-    elif concrete_var_stmt.data == "var_empty":
-        name = concrete_var_stmt.children[0].value
-        formatted_lines.append(
-            (statement.line, "{}var {}".format(context.indent_string, name))
-        )
-    return (formatted_lines, last_processed_line_no)
+    handlers = {
+        "var_assigned": _format_var_assigned_statement,
+        "var_empty": partial(
+            _format_simple_statement,
+            "var {}".format(concrete_var_stmt.children[0].value),
+        ),
+        "var_typed_assgnd": _format_var_typed_assigned_statement,
+    }  # type: Dict[str, Callable]
+    return handlers[concrete_var_stmt.data](concrete_var_stmt, context)
+
+
+def _format_var_assigned_statement(statement: Node, context: Context) -> Outcome:
+    name = statement.children[0].value
+    expr = statement.children[1]
+    expression_context = ExpressionContext("var {} = ".format(name), statement.line, "")
+    return format_expression(expr, expression_context, context)
+
+
+def _format_var_typed_assigned_statement(statement: Node, context: Context) -> Outcome:
+    var_name = statement.children[0].value
+    type_name = statement.children[1].value
+    expr = statement.children[2]
+    expression_context = ExpressionContext(
+        "var {}: {} = ".format(var_name, type_name), statement.line, ""
+    )
+    return format_expression(expr, expression_context, context)
 
 
 def _format_expr_statement(statement: Node, context: Context) -> Outcome:
