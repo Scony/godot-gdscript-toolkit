@@ -6,12 +6,13 @@ from .types import Outcome, Node, FormattedLines
 from .expression import format_expression
 from .block import format_block
 from .statement_utils import format_simple_statement
+from .var_statement import format_var_statement
 
 
 def format_func_statement(statement: Node, context: Context) -> Outcome:
     handlers = {
         "pass_stmt": partial(format_simple_statement, "pass"),
-        "func_var_stmt": _format_func_var_statement,
+        "func_var_stmt": format_var_statement,
         "expr_stmt": _format_expr_statement,
         "return_stmt": _format_return_statement,
         "break_stmt": partial(format_simple_statement, "break"),
@@ -21,58 +22,6 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
         "for_stmt": _format_for_statement,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
-
-
-def _format_func_var_statement(statement: Node, context: Context) -> Outcome:
-    concrete_var_stmt = statement.children[0]
-    handlers = {
-        "var_empty": _format_var_empty_statement,
-        "var_assigned": _format_var_assigned_statement,
-        "var_typed": _format_var_typed_statement,
-        "var_typed_assgnd": _format_var_typed_assigned_statement,
-        "var_inf": _format_var_inferred_statement,
-    }  # type: Dict[str, Callable]
-    return handlers[concrete_var_stmt.data](concrete_var_stmt, context)
-
-
-def _format_var_empty_statement(statement: Node, context: Context) -> Outcome:
-    return format_simple_statement(
-        "var {}".format(statement.children[0].value), statement, context
-    )
-
-
-def _format_var_typed_statement(statement: Node, context: Context) -> Outcome:
-    return format_simple_statement(
-        "var {}: {}".format(statement.children[0].value, statement.children[1].value),
-        statement,
-        context,
-    )
-
-
-def _format_var_assigned_statement(statement: Node, context: Context) -> Outcome:
-    name = statement.children[0].value
-    expr = statement.children[1]
-    expression_context = ExpressionContext("var {} = ".format(name), statement.line, "")
-    return format_expression(expr, expression_context, context)
-
-
-def _format_var_inferred_statement(statement: Node, context: Context) -> Outcome:
-    name = statement.children[0].value
-    expr = statement.children[1]
-    expression_context = ExpressionContext(
-        "var {} := ".format(name), statement.line, ""
-    )
-    return format_expression(expr, expression_context, context)
-
-
-def _format_var_typed_assigned_statement(statement: Node, context: Context) -> Outcome:
-    var_name = statement.children[0].value
-    type_name = statement.children[1].value
-    expr = statement.children[2]
-    expression_context = ExpressionContext(
-        "var {}: {} = ".format(var_name, type_name), statement.line, ""
-    )
-    return format_expression(expr, expression_context, context)
 
 
 def _format_expr_statement(statement: Node, context: Context) -> Outcome:
