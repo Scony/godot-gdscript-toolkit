@@ -7,25 +7,19 @@ from .block import format_block
 from .function_statement import format_func_statement
 from .enum import format_enum
 from .statement_utils import format_simple_statement
+from .var_statement import format_var_statement
 
 
 def format_class_statement(statement: Node, context: Context) -> Outcome:
     handlers = {
         "tool_stmt": partial(format_simple_statement, "tool"),
-        "class_var_stmt": _format_class_var_statement,
+        "class_var_stmt": format_var_statement,
         "extends_stmt": _format_extends_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
         "enum_def": format_enum,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
-
-
-def _format_class_var_statement(statement: Node, context: Context) -> Outcome:
-    concrete_var_stmt = statement.children[0]
-    return format_simple_statement(
-        "var {}".format(concrete_var_stmt.children[0].value), concrete_var_stmt, context
-    )
 
 
 def _format_extends_statement(statement: Node, context: Context) -> Outcome:
