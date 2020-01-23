@@ -1,1 +1,1 @@
-from .parser import parser
+from .parser import parser  # noqa: F401

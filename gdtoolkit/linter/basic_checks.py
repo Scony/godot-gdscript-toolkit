@@ -56,7 +56,9 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
             problems.append(
                 Problem(
                     name="expression-not-assigned",
-                    description="expression is not asigned, and hence it can be removed",
+                    description=(
+                        "expression is not asigned, and hence it can be removed"
+                    ),
                     line=child.line,
                     column=child.column,
                 )

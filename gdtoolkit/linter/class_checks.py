@@ -79,8 +79,8 @@ def _class_definitions_order_check_for_class(
         "enum_def": "enums",
     }
     visibility_dependent_stmt_to_section_mapping = {
-        "class_var_stmt": {"pub": "pubvars", "prv": "prvvars",},
-        "onready_stmt": {"pub": "onreadypubvars", "prv": "onreadyprvvars",},
+        "class_var_stmt": {"pub": "pubvars", "prv": "prvvars"},
+        "onready_stmt": {"pub": "onreadypubvars", "prv": "onreadyprvvars"},
     }
     problems = []
     current_section = order[0]

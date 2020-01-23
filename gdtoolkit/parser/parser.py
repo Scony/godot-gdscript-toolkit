@@ -1,6 +1,7 @@
 """
 Initializes and caches the GDScript parsers, using Lark.
-Provides a function to parse GDScript code and get an intermediate representation as a Lark Tree.
+Provides a function to parse GDScript code
+and to get an intermediate representation as a Lark Tree.
 """
 import os
 import re
@@ -48,8 +49,8 @@ class Parser:
         self, code: str, gather_metadata: bool = False, loosen_grammar: bool = False
     ) -> Tree:
         """Parses GDScript code and returns an intermediate representation as a Lark Tree.
-        If gather_metadata is True, parsing is slower but the returned Tree comes with line
-        and column numbers for statements and rules.
+        If gather_metadata is True, parsing is slower but the returned Tree comes with
+        line and column numbers for statements and rules.
         """
         code += "\n"  # to overcome lark bug (#489)
         if loosen_grammar:

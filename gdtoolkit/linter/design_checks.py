@@ -73,8 +73,10 @@ def _max_public_methods_check(threshold: int, ast: AbstractSyntaxTree) -> List[P
             problems.append(
                 Problem(
                     name="max-public-methods",
-                    description='"{}" has more than {} public methods (functions)'.format(
-                        class_name, threshold
+                    description=(
+                        '"{}" has more than {} public methods (functions)'.format(
+                            class_name, threshold
+                        )
                     ),
                     line=a_class.lark_node.line,
                     column=a_class.lark_node.column,
