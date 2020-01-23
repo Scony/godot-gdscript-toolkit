@@ -1,4 +1,6 @@
 class X:
+	signal some
+	signal some2()
 	tool
 	var x
 	var y = 1
