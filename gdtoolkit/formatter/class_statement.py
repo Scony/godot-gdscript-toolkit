@@ -2,13 +2,14 @@ from typing import Dict, Callable
 from functools import partial
 
 from .types import Outcome, Node
-from .context import Context
+from .context import Context, ExpressionContext
 from .block import format_block
 from .function_statement import format_func_statement
 from .enum import format_enum
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
+from .expression import format_comma_separated_list
 
 
 def format_class_statement(statement: Node, context: Context) -> Outcome:
@@ -20,8 +21,25 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "func_def": _format_func_statement,
         "enum_def": format_enum,
         "classname_stmt": _format_classname_statement,
+        "signal_stmt": _format_signal_statement,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
+
+
+def _format_signal_statement(statement: Node, context: Context) -> Outcome:
+    if len(statement.children) == 1:
+        return format_simple_statement(
+            "signal {}".format(statement.children[0].value), statement, context
+        )
+    expression_context = ExpressionContext(
+        "signal {}(".format(statement.children[0].value), statement.line, ")"
+    )
+    return (
+        format_comma_separated_list(
+            statement.children[1:], expression_context, context
+        ),
+        statement.end_line,
+    )
 
 
 def _format_classname_statement(statement: Node, context: Context) -> Outcome:

@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Dict, Callable
+from typing import Dict, Callable, List
 
 from lark import Tree
 
@@ -27,6 +27,47 @@ def format_expression(
         ],  # TODO: make those to not return last processed line (at the very end)
         expression.end_line,
     )
+
+
+def format_comma_separated_list(
+    a_list: List[Node], expression_context: ExpressionContext, context: Context
+) -> FormattedLines:
+    elements = [node for node in a_list if not is_any_comma(node)]
+    if True:  # pylint: disable=using-constant-test # TODO: no trailing comma
+        strings_to_join = map(expression_to_str, elements)
+        single_line_expression = "{}{}{}{}".format(
+            context.indent_string,
+            expression_context.prefix_string,
+            ", ".join(strings_to_join),
+            expression_context.suffix_string,
+        )
+        single_line_length = len(single_line_expression)  # TODO: calculate
+        if single_line_length <= context.max_line_length:
+            return [(expression_context.prefix_line, single_line_expression)]
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    child_context = context.create_child_context(expression_context.prefix_line)
+    for i, element in enumerate(elements):
+        suffix = "," if i != len(elements) - 1 else ""
+        formatted_lines.append(
+            (
+                element.line,
+                "{}{}{}".format(
+                    child_context.indent_string, expression_to_str(element), suffix
+                ),
+            )
+        )
+    formatted_lines.append(
+        (
+            a_list[-1].line,
+            "{}{}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return formatted_lines
 
 
 def _format_concrete_expression(
