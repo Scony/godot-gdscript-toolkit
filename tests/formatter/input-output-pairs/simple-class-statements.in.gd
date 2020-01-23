@@ -5,3 +5,6 @@ class X:
 	var z: int = 1
 	var q: int
 	var w := 1
+	# TODO: fix newline issue
+class Y:
+	extends X
