@@ -14,7 +14,8 @@ class Function:
 
 
 class Class:
-    """Abstract representation of class. Since it contains sub-classes, it forms a tree"""
+    """Abstract representation of class.
+    Since it contains sub-classes, it forms a tree"""
 
     def __init__(self, parse_tree: Tree):
         self.lark_node = parse_tree

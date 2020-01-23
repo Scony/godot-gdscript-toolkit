@@ -1,7 +1,5 @@
 import re
-from typing import List, Optional, Set
-
-from lark import Tree, Token
+from typing import List, Optional
 
 from ..parser import parser
 from .context import Context
