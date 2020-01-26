@@ -26,6 +26,12 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "signal_stmt": _format_signal_statement,
         "docstr_stmt": _format_docstring_statement,
         "const_stmt": _format_const_statement,
+        "export_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="export "
+        ),
+        "onready_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="onready "
+        ),
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
