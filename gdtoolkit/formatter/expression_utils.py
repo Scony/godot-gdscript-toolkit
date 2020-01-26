@@ -39,6 +39,10 @@ def has_trailing_comma(expression: Node) -> bool:
     )
 
 
+def is_trailing_comma(expression: Node) -> bool:
+    return isinstance(expression, Tree) and expression.data == "trailing_comma"
+
+
 def is_expression_forcing_multiple_lines(expression: Node) -> bool:
     if has_trailing_comma(expression):
         return True

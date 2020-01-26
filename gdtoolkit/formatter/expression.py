@@ -11,6 +11,7 @@ from .expression_utils import (
     is_expression_forcing_multiple_lines,
     is_any_comma,
     has_trailing_comma,
+    is_trailing_comma,
     has_leading_dot,
 )
 from .expression_to_str import expression_to_str
@@ -33,7 +34,8 @@ def format_comma_separated_list(
     a_list: List[Node], expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     elements = [node for node in a_list if not is_any_comma(node)]
-    if True:  # pylint: disable=using-constant-test # TODO: no trailing comma
+    trailing_comma_present = is_trailing_comma(a_list[-1])
+    if not trailing_comma_present:
         strings_to_join = map(expression_to_str, elements)
         single_line_expression = "{}{}{}{}".format(
             context.indent_string,
@@ -52,7 +54,9 @@ def format_comma_separated_list(
     ]  # type: FormattedLines
     child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(elements):
-        suffix = "," if i != len(elements) - 1 else ""
+        suffix = (
+            "," if i != len(elements) - 1 else ("," if trailing_comma_present else "")
+        )
         formatted_lines.append(
             (
                 element.line,
