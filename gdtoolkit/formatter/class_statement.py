@@ -1,6 +1,8 @@
 from typing import Dict, Callable
 from functools import partial
 
+from lark import Tree
+
 from .types import Outcome, Node
 from .context import Context, ExpressionContext
 from .block import format_block
@@ -9,7 +11,7 @@ from .enum import format_enum
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
-from .expression import format_comma_separated_list
+from .expression import format_comma_separated_list, format_expression
 
 
 def format_class_statement(statement: Node, context: Context) -> Outcome:
@@ -22,8 +24,30 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "enum_def": format_enum,
         "classname_stmt": _format_classname_statement,
         "signal_stmt": _format_signal_statement,
+        "docstr_stmt": _format_docstring_statement,
+        "const_stmt": _format_const_statement,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
+
+
+def _format_const_statement(statement: Tree, context: Context) -> Outcome:
+    if len(statement.children) == 4:
+        prefix = "const {} = ".format(statement.children[1].value)
+    elif len(statement.children) == 5:
+        prefix = "const {} := ".format(statement.children[1].value)
+    elif len(statement.children) == 6:
+        prefix = "const {}: {} = ".format(
+            statement.children[1].value, statement.children[3].value
+        )
+    else:
+        raise NotImplementedError
+    expression_context = ExpressionContext(prefix, statement.line, "")
+    return format_expression(statement.children[-1], expression_context, context)
+
+
+def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
+    expression_context = ExpressionContext("", statement.line, "")
+    return format_expression(statement.children[0], expression_context, context)
 
 
 def _format_signal_statement(statement: Node, context: Context) -> Outcome:

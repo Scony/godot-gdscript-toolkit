@@ -11,4 +11,7 @@ class X:
 		hhhhhhhh,
 		iiiiiiii
 	)
-	signal c(x, y)
+	signal c(
+		x,
+		y,
+	)
