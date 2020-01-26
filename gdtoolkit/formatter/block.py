@@ -9,6 +9,7 @@ from .constants import INDENT_SIZE
 def format_block(
     statements: List[Node], statement_formatter: Callable, context: Context,
 ) -> Outcome:
+    print(len(statements))
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
@@ -56,6 +57,13 @@ def _find_dedent_line_number(
                 r"^\t{0,%d}[^\t]+" % ((context.indent / INDENT_SIZE) - 1), line
             )
             is not None
+        ):
+            break
+        if (
+            context.indent > 0
+            and len(line) > 0
+            and not line.startswith(" ")
+            and not line.startswith("\t")
         ):
             break
         line_no += 1
