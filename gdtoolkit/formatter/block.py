@@ -9,7 +9,6 @@ from .constants import INDENT_SIZE
 def format_block(
     statements: List[Node], statement_formatter: Callable, context: Context,
 ) -> Outcome:
-    print(len(statements))
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
