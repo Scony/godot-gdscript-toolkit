@@ -146,16 +146,52 @@ def _format_class_statement(statement: Node, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_func_statement(statement: Node, context: Context) -> Outcome:
-    last_processed_line_no = statement.line
-    name = statement.children[0].value
-    formatted_lines = [
-        (statement.line, "{}func {}():".format(context.indent_string, name))
-    ]
+def _format_func_statement(statement: Tree, context: Context) -> Outcome:
+    def _has_func_args(statement):
+        return len(statement.children) > 1 and statement.children[1].data == "func_args"
+
+    def _has_parent_call(statement):
+        return (
+            len(statement.children) > 1 and statement.children[1].data == "parent_call"
+        ) or (
+            len(statement.children) > 2
+            and "parent_call"
+            in [statement.children[1].data, statement.children[2].data]
+        )
+
+    first_statement_offset = 1
+    first_statement_offset = (
+        first_statement_offset + 1
+        if _has_func_args(statement)
+        else first_statement_offset
+    )
+    first_statement_offset = (
+        first_statement_offset + 1
+        if _has_parent_call(statement)
+        else first_statement_offset
+    )
+    formatted_lines, last_processed_line_no = _format_func_header(statement, context)
     func_lines, last_processed_line_no = format_block(
-        statement.children[1:],
+        statement.children[first_statement_offset:],
         format_func_statement,
         context.create_child_context(last_processed_line_no),
     )
     formatted_lines += func_lines
     return (formatted_lines, last_processed_line_no)
+
+
+def _format_func_header(statement: Tree, context: Context) -> Outcome:
+    name = statement.children[0].value
+    if statement.children[1].data not in ["func_args", "parent_call"]:
+        return (
+            [(statement.line, "{}func {}():".format(context.indent_string, name))],
+            statement.line,
+        )
+    func_args = statement.children[1]
+    expression_context = ExpressionContext(
+        "func {}(".format(name), statement.line, "):"
+    )
+    return (
+        format_comma_separated_list(func_args.children, expression_context, context),
+        statement.end_line,
+    )
