@@ -45,7 +45,7 @@ setget: "setget" [NAME] ["," NAME]
 onready_stmt: "onready" class_var_stmt
 docstr_stmt: string
 
-class_def: "class" NAME ["extends" NAME] ":" (_class_body | _class_stmt)
+class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT _class_stmt+ _DEDENT
 
 func_def: "func" NAME "(" [func_args] ")" ["." _call_arglist] ["->" TYPE] ":" _func_suite
