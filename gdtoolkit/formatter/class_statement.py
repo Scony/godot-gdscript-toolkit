@@ -31,8 +31,41 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "onready_stmt": lambda s, c: format_var_statement(
             s.children[0], c, prefix="onready "
         ),
+        "static_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="static "
+        ),
+        "remote_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="remote "
+        ),
+        "remotesync_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="remotesync "
+        ),
+        "master_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="master "
+        ),
+        "puppet_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="puppet "
+        ),
+        "sync_func_def": partial(_format_child_and_prepend_to_outcome, prefix="sync "),
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
+
+
+def _format_child_and_prepend_to_outcome(
+    statement: Node, context: Context, prefix: str
+) -> Outcome:
+    lines, last_processed_line = format_class_statement(statement.children[0], context)
+    first_line_no, first_line = lines[0]
+    return (
+        [
+            (
+                first_line_no,
+                "{}{}{}".format(context.indent_string, prefix, first_line.strip()),
+            )
+        ]
+        + lines[1:],
+        last_processed_line,
+    )
 
 
 def _format_export_statement(statement: Tree, context: Context) -> Outcome:
