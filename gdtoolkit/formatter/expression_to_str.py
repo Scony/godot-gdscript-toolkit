@@ -43,6 +43,7 @@ def expression_to_str(expression: Node) -> str:
             "node_path": lambda e: "@{}".format(expression_to_str(e.children[0])),
             "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
             "path": lambda e: "/".join([name_token.value for name_token in e.children]),
+            # fake expressions:
             "func_arg_regular": lambda e: "{}{}".format(
                 e.children[0].value,
                 " = {}".format(expression_to_str(e.children[1]))
