@@ -24,3 +24,11 @@ class X:
 
 	func _init (a,b:=1,c:int=1).(a,b,c):
 		pass
+
+	func bab (a,var b:int=1,c:=1) -> int:
+		return 1
+
+class Z:
+	extends Y
+	func _init (a,b:=1,c:int=1).(a,b,c) -> void:
+		pass
