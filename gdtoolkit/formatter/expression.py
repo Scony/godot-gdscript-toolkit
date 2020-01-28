@@ -30,6 +30,8 @@ def format_expression(
     )
 
 
+# TOOD: refactor
+# pylint: disable=too-many-locals
 def format_comma_separated_list(
     a_list: List[Node], expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
@@ -57,14 +59,11 @@ def format_comma_separated_list(
         suffix = (
             "," if i != len(elements) - 1 else ("," if trailing_comma_present else "")
         )
-        formatted_lines.append(
-            (
-                element.line,
-                "{}{}{}".format(
-                    child_context.indent_string, expression_to_str(element), suffix
-                ),
-            )
+        child_expression_context = ExpressionContext("", element.line, suffix)
+        lines, _ = _format_concrete_expression(
+            element, child_expression_context, child_context
         )
+        formatted_lines += lines
     formatted_lines.append(
         (
             a_list[-1].line,
@@ -151,6 +150,10 @@ def _format_foldable_to_multiple_lines(
         "array": _format_array_to_multiple_lines,
         "string": _format_string_to_multiple_lines,
         "dict": _format_dict_to_multiple_lines,
+        # fake expressions:
+        "func_arg_regular": _format_func_arg_to_multiple_lines,
+        "func_arg_inf": _format_func_arg_to_multiple_lines,
+        "func_arg_typed": _format_func_arg_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -186,7 +189,7 @@ def _format_array_to_multiple_lines(
     return (formatted_lines, array.children[-1].line)
 
 
-# TOOD: refactor
+# TODO: refactor
 # pylint: disable=too-many-locals
 def _format_dict_to_multiple_lines(
     a_dict: Tree, expression_context: ExpressionContext, context: Context
@@ -300,6 +303,36 @@ def _format_assignment_expression_to_multiline_line(
     return _format_concrete_expression(
         expression.children[2], new_expression_context, context
     )
+
+
+def _format_func_arg_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context,
+) -> Outcome:
+    if expression.data == "func_arg_regular" and len(expression.children) == 1:
+        return _format_concrete_expression(
+            expression.children[0], expression_context, context
+        )
+    if expression.data == "func_arg_typed" and len(expression.children) == 2:
+        return (
+            [
+                (
+                    expression.children[1].line,
+                    "{}{}".format(context.indent_string, expression_to_str(expression)),
+                )
+            ],
+            expression.children[1].line,
+        )
+    template = {
+        "func_arg_regular": "{} = ",
+        "func_arg_inf": "{} := ",
+        "func_arg_typed": "{{}}: {} = ".format(expression.children[1]),
+    }[expression.data]
+    new_expression_context = ExpressionContext(
+        template.format(expression.children[0].value),
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+    )
+    return format_expression(expression.children[-1], new_expression_context, context)
 
 
 def _format_call_expression_to_multiline_line(
