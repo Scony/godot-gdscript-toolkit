@@ -1,7 +1,7 @@
 from typing import Dict, Callable
 from functools import partial
 
-from lark import Tree
+from lark import Tree, Token
 
 from .types import Outcome, Node
 from .context import Context, ExpressionContext
@@ -149,15 +149,29 @@ def _format_class_statement(statement: Node, context: Context) -> Outcome:
 
 def _format_func_statement(statement: Tree, context: Context) -> Outcome:
     def _has_func_args(statement):
-        return len(statement.children) > 1 and statement.children[1].data == "func_args"
+        return (
+            len(statement.children) > 1
+            and isinstance(statement.children[1], Tree)
+            and statement.children[1].data == "func_args"
+        )
 
     def _has_parent_call(statement):
         return (
-            len(statement.children) > 1 and statement.children[1].data == "parent_call"
+            len(statement.children) > 1
+            and isinstance(statement.children[1], Tree)
+            and statement.children[1].data == "parent_call"
         ) or (
             len(statement.children) > 2
-            and "parent_call"
-            in [statement.children[1].data, statement.children[2].data]
+            and isinstance(statement.children[2], Tree)
+            and statement.children[2].data == "parent_call"
+        )
+
+    def _has_return_type(statement):
+        return any(
+            [
+                isinstance(c, Token) and c.type == "TYPE"
+                for c in statement.children[1 : (3 + 1)]
+            ]
         )
 
     first_statement_offset = 1
@@ -169,6 +183,11 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
     first_statement_offset = (
         first_statement_offset + 1
         if _has_parent_call(statement)
+        else first_statement_offset
+    )
+    first_statement_offset = (
+        first_statement_offset + 1
+        if _has_return_type(statement)
         else first_statement_offset
     )
     formatted_lines, last_processed_line_no = _format_func_header(statement, context)
@@ -185,11 +204,6 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
 def _format_func_header(statement: Tree, context: Context) -> Outcome:
     name_token = statement.children[0]
     name = name_token.value
-    if statement.children[1].data not in ["func_args", "parent_call"]:
-        return (
-            [(statement.line, "{}func {}():".format(context.indent_string, name))],
-            statement.line,
-        )
     func_args = (
         statement.children[1]
         if isinstance(statement.children[1], Tree)
@@ -223,12 +237,45 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     if parent_call is not None:
         last_line_no, last_line = formatted_lines[-1]
         expression_context = ExpressionContext(
-            "{}.(".format(last_line.strip()), last_line_no, "):"  # type: ignore
+            "{}.(".format(last_line.strip()), last_line_no, ")"  # type: ignore
         )
         elements = [e for e in parent_call.children[1:-1] if not is_any_comma(e)]
         formatted_lines = formatted_lines[:-1] + format_comma_separated_list(
             elements, expression_context, context
         )
+    return_type = (
+        statement.children[1]
+        if isinstance(statement.children[1], Token)
+        and statement.children[1].type == "TYPE"
+        else None
+    )
+    return_type = (
+        statement.children[2]
+        if len(statement.children) > 2
+        and isinstance(statement.children[2], Token)
+        and statement.children[2].type == "TYPE"
+        else return_type
+    )
+    return_type = (
+        statement.children[3]
+        if len(statement.children) > 3
+        and isinstance(statement.children[3], Token)
+        and statement.children[3].type == "TYPE"
+        else return_type
+    )
+    if return_type is not None:
+        last_line_no, last_line = formatted_lines[-1]
+        expression_context = ExpressionContext(
+            "{} -> ".format(last_line.strip()), last_line_no, ":"  # type: ignore
+        )
+        formatted_lines = formatted_lines[:-1] + [
+            (
+                last_line_no,
+                "{}{} -> {}:".format(
+                    context.indent_string, last_line.strip(), return_type.value
+                ),
+            )
+        ]
     else:
         last_line_no, last_line = formatted_lines[-1]  # type: ignore
         formatted_lines = formatted_lines[:-1] + [
@@ -236,5 +283,5 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         ]
     return (
         formatted_lines,
-        statement.end_line,
+        statement.line,
     )
