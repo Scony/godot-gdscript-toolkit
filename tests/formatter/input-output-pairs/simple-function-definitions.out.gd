@@ -1,4 +1,9 @@
+class Y:
+	func _init(a, b, c):
+		pass
+
 class X:
+	extends Y
 	func foo(a):
 		pass
 
@@ -17,4 +22,5 @@ class X:
 	func bav(a, b: int = 1):
 		pass
 
-	# TODO: parent calls
+	func _init(a, b := 1, c: int = 1).(a, b, c):
+		pass
