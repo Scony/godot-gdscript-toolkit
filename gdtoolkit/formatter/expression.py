@@ -212,32 +212,23 @@ def _format_kv_pair_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     concrete_expression = expression.children[0]
-    infix = ":" if concrete_expression.data == "c_dict_element" else " = "
+    infix = ": " if concrete_expression.data == "c_dict_element" else " = "
     key_expression_context = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, infix
+        expression_context.prefix_string, expression_context.prefix_line, ""
     )
     key_lines, _ = _format_concrete_expression(
         concrete_expression.children[0], key_expression_context, context
     )
+    last_key_line_no, last_key_line = key_lines[-1]
     value_expression_context = ExpressionContext(
-        "", -1, expression_context.suffix_string
+        "{}{}".format(last_key_line.strip(), infix),
+        last_key_line_no,  # type: ignore
+        expression_context.suffix_string,
     )
     value_lines, last_processed_line_no = _format_concrete_expression(
         concrete_expression.children[1], value_expression_context, context
     )
-    if concrete_expression.data == "c_dict_element":
-        return (key_lines + value_lines, last_processed_line_no)
-    formatted_lines = (
-        key_lines[:-1]
-        + [
-            (
-                value_lines[0][0],
-                "{}{}".format(key_lines[-1][1], value_lines[0][1].strip()),
-            )
-        ]
-        + value_lines[1:]
-    )
-    return (formatted_lines, last_processed_line_no)
+    return (key_lines[:-1] + value_lines, last_processed_line_no)
 
 
 def _format_parentheses_to_multiple_lines(
