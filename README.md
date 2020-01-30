@@ -14,7 +14,9 @@ This project aims to create an end-to-end set of tools for daily work with `GDSc
 
 The parser and the language grammar are ready to use, although they may have minor bugs. If you find any, please [open an issue](https://github.com/Scony/godot-gdscript-toolkit/issues/new).
 
-The linter is currently a work-in-progress. Some useful tests are already available.
+The linter is currently a work-in-progress, however, some useful tests are already available.
+
+The formatter is close to being complete, however, it's still a work-in-progress.
 
 ## Installation
 
@@ -93,6 +95,10 @@ start
 ```
 
 If the program parses your file sucessfully, it will return the exit code `0`.
+
+## Formatting with gdformat
+
+Coming mid February 2020.
 
 ## Running tests
 
