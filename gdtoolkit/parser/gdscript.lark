@@ -40,7 +40,7 @@ _var_typed: "var" NAME ":" TYPE
 var_typed: _var_typed
 var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":=" expr
-setget: "setget" [NAME] ["," NAME]
+!setget: "setget" (NAME ["," NAME] | "," NAME)
 !const_stmt: "const" NAME [":" [TYPE]] "=" expr
 onready_stmt: "onready" class_var_stmt
 docstr_stmt: string
