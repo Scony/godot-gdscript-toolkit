@@ -8,6 +8,5 @@ class X:
 		var y = {
 			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]:
 			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-			xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx =
-			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		}
