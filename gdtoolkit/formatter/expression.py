@@ -10,7 +10,6 @@ from .expression_utils import (
     is_foldable,
     is_expression_forcing_multiple_lines,
     is_any_comma,
-    has_trailing_comma,
     is_trailing_comma,
     has_leading_dot,
 )
@@ -36,8 +35,9 @@ def format_comma_separated_list(
     a_list: List[Node], expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     elements = [node for node in a_list if not is_any_comma(node)]
-    trailing_comma_present = is_trailing_comma(a_list[-1])
-    if not trailing_comma_present:
+    fake_expression = Tree("fake", a_list)
+    multiline_mode_forced = is_expression_forcing_multiple_lines(fake_expression)
+    if not multiline_mode_forced:
         strings_to_join = map(expression_to_str, elements)
         single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
@@ -58,6 +58,7 @@ def format_comma_separated_list(
             "{}{}".format(context.indent_string, expression_context.prefix_string),
         )
     ]  # type: FormattedLines
+    trailing_comma_present = is_trailing_comma(a_list[-1])
     child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(elements):
         suffix = (
@@ -166,32 +167,15 @@ def _format_foldable_to_multiple_lines(
 def _format_array_to_multiple_lines(
     array: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}[".format(context.indent_string, expression_context.prefix_string),
-        )
-    ]  # type: FormattedLines
-    array_elements = [child for child in array.children if not is_any_comma(child)]
-    child_context = context.create_child_context(expression_context.prefix_line)
-    for i, element in enumerate(array_elements):
-        suffix = (
-            ","
-            if i != len(array_elements) - 1
-            else ("," if has_trailing_comma(array) else "")
-        )
-        child_expression_context = ExpressionContext("", element.line, suffix)
-        lines, _ = _format_concrete_expression(
-            element, child_expression_context, child_context
-        )
-        formatted_lines += lines
-    formatted_lines.append(
-        (
-            array.children[-1].line,
-            "{}]{}".format(context.indent_string, expression_context.suffix_string),
-        )
+    new_expression_context = ExpressionContext(
+        "{}[".format(expression_context.prefix_string),
+        expression_context.prefix_line,
+        "]{}".format(expression_context.suffix_string),
     )
-    return (formatted_lines, array.children[-1].line)
+    return (
+        format_comma_separated_list(array.children, new_expression_context, context),
+        array.end_line,
+    )
 
 
 def _format_dict_to_multiple_lines(
