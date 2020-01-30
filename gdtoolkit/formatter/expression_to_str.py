@@ -37,6 +37,7 @@ def expression_to_str(expression: Node) -> str:
             "par_expr": lambda e: "({})".format(expression_to_str(e.children[0])),
             "array": _array_to_str,
             "dict": _dict_to_str,
+            "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
             "c_dict_element": _dict_element_to_str,
             "eq_dict_element": _dict_element_to_str,
             "string": lambda e: e.children[0].value,

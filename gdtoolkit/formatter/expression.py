@@ -39,15 +39,19 @@ def format_comma_separated_list(
     trailing_comma_present = is_trailing_comma(a_list[-1])
     if not trailing_comma_present:
         strings_to_join = map(expression_to_str, elements)
-        single_line_expression = "{}{}{}{}".format(
-            context.indent_string,
+        single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
             ", ".join(strings_to_join),
             expression_context.suffix_string,
         )
-        single_line_length = len(single_line_expression)  # TODO: calculate
+        single_line_length = len(single_line_expression) + context.indent
         if single_line_length <= context.max_line_length:
-            return [(expression_context.prefix_line, single_line_expression)]
+            return [
+                (
+                    expression_context.prefix_line,
+                    "{}{}".format(context.indent_string, single_line_expression),
+                )
+            ]
     formatted_lines = [
         (
             expression_context.prefix_line,
@@ -150,6 +154,7 @@ def _format_foldable_to_multiple_lines(
         "array": _format_array_to_multiple_lines,
         "string": _format_string_to_multiple_lines,
         "dict": _format_dict_to_multiple_lines,
+        "kv_pair": _format_kv_pair_to_multiple_lines,
         # fake expressions:
         "func_arg_regular": _format_func_arg_to_multiple_lines,
         "func_arg_inf": _format_func_arg_to_multiple_lines,
@@ -189,54 +194,50 @@ def _format_array_to_multiple_lines(
     return (formatted_lines, array.children[-1].line)
 
 
-# TODO: refactor
-# pylint: disable=too-many-locals
 def _format_dict_to_multiple_lines(
     a_dict: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}{{".format(context.indent_string, expression_context.prefix_string),
-        )
-    ]  # type: FormattedLines
-    child_context = context.create_child_context(expression_context.prefix_line)
-    elements = [child for child in a_dict.children if not is_any_comma(child)]
-    for i, element in enumerate(elements):
-        key = element.children[0]
-        value = element.children[1]
-        is_last_element = i == len(elements) - 1
-        infix = ": " if element.data == "c_dict_element" else " = "
-        single_line_expression = "{}{}{}".format(
-            expression_to_str(key), infix, expression_to_str(value),
-        )
-        comma = 0 if is_last_element and not has_trailing_comma(a_dict) else 1
-        single_line_length = len(single_line_expression) + child_context.indent + comma
-        if single_line_length <= context.max_line_length:
-            suffix = "," * comma
-            single_line = "{}{}{}".format(
-                child_context.indent_string, single_line_expression, suffix
-            )
-            formatted_lines.append((element.line, single_line))
-        else:
-            key_expression_context = ExpressionContext("", key.line, infix[:-1])
-            key_lines, _ = _format_concrete_expression(
-                key, key_expression_context, child_context
-            )
-            formatted_lines += key_lines
-            value_expression_context = ExpressionContext("", value.line, "," * comma)
-            value_lines, _ = _format_concrete_expression(
-                value, value_expression_context, child_context
-            )
-            formatted_lines += value_lines
-
-    formatted_lines.append(
-        (
-            a_dict.children[-1].line,
-            "{}}}{}".format(context.indent_string, expression_context.suffix_string),
-        )
+    new_expression_context = ExpressionContext(
+        "{}{{".format(expression_context.prefix_string),
+        expression_context.prefix_line,
+        "}}{}".format(expression_context.suffix_string),
     )
-    return (formatted_lines, a_dict.children[-1].line)
+    return (
+        format_comma_separated_list(a_dict.children, new_expression_context, context),
+        a_dict.end_line,
+    )
+
+
+def _format_kv_pair_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    concrete_expression = expression.children[0]
+    infix = ":" if concrete_expression.data == "c_dict_element" else " = "
+    key_expression_context = ExpressionContext(
+        expression_context.prefix_string, expression_context.prefix_line, infix
+    )
+    key_lines, _ = _format_concrete_expression(
+        concrete_expression.children[0], key_expression_context, context
+    )
+    value_expression_context = ExpressionContext(
+        "", -1, expression_context.suffix_string
+    )
+    value_lines, last_processed_line_no = _format_concrete_expression(
+        concrete_expression.children[1], value_expression_context, context
+    )
+    if concrete_expression.data == "c_dict_element":
+        return (key_lines + value_lines, last_processed_line_no)
+    formatted_lines = (
+        key_lines[:-1]
+        + [
+            (
+                value_lines[0][0],
+                "{}{}".format(key_lines[-1][1], value_lines[0][1].strip()),
+            )
+        ]
+        + value_lines[1:]
+    )
+    return (formatted_lines, last_processed_line_no)
 
 
 def _format_parentheses_to_multiple_lines(
