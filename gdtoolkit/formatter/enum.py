@@ -83,11 +83,9 @@ def _calculate_total_inline_comments_len(enum: Enum, context: Context) -> int:
     begin_line = enum.lark_node.line
     end_line = enum.lark_node.children[0].children[-1].line
     return sum(
-        [
-            len(comment) + 2
-            for comment in context.inline_comments[begin_line : end_line + 1]
-            if comment is not None
-        ]
+        len(comment) + 2
+        for comment in context.inline_comments[begin_line : end_line + 1]
+        if comment is not None
     )
 
 
@@ -96,11 +94,9 @@ def _calculate_single_line_elements_len(enum: Enum) -> int:
     separators = (len(enum.elements) - 1) * 2 if len(enum.elements) > 1 else 0
     return (
         sum(
-            [
-                len(element.name)
-                + (len(str(element.value)) + 3 if element.value is not None else 0)
-                for element in enum.elements
-            ]
+            len(element.name)
+            + (len(str(element.value)) + 3 if element.value is not None else 0)
+            for element in enum.elements
         )
         + spaces
         + separators
