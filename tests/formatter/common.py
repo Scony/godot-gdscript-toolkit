@@ -8,11 +8,27 @@ from gdtoolkit.formatter import format_code
 MAX_LINE_LENGTH = 100
 
 
-def format_with_checks(input_code, check_tree_invariant=False):
+def format_with_checks(
+    input_code,
+    check_comment_persistence=False,
+    check_tree_invariant=False,
+    check_formatting_stability=False,
+):
     formatted_code = format_code(input_code, max_line_length=MAX_LINE_LENGTH)
+
+    if check_comment_persistence:
+        input_code_comment_stats = _gather_comment_statistics_from_code(input_code)
+        formatted_code_comments = _gather_comments_from_code(formatted_code)
+        _comment_preservation_check(input_code_comment_stats, formatted_code_comments)
 
     if check_tree_invariant:
         _tree_invariant_check(input_code, formatted_code)
+
+    if check_formatting_stability:
+        code_formatted_again = format_code(
+            formatted_code, max_line_length=MAX_LINE_LENGTH
+        )
+        _compare_again(code_formatted_again, formatted_code)
 
 
 def format_and_compare(input_code, expected_output_code):

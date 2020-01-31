@@ -20,4 +20,9 @@ def test_real_world_script(test_name):
     input_file_path = os.path.join(this_dir, DATA_DIR, test_name)
     with open(input_file_path, "r") as input_fh:
         input_code = input_fh.read()
-        format_with_checks(input_code, check_tree_invariant=True)
+        format_with_checks(
+            input_code,
+            check_comment_persistence=True,
+            check_tree_invariant=True,
+            check_formatting_stability=True,
+        )
