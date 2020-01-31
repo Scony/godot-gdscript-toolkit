@@ -27,17 +27,27 @@ def main():
             pkg_resources.get_distribution("gdtoolkit").version
         ),
     )
-    if arguments["<file>"] == ["-"]:
+    files = arguments["<file>"]
+    if files == ["-"]:
         code = sys.stdin.read()
         formatted_code = format_code(gdscript_code=code, max_line_length=100)
         check_formatting_safety(code, formatted_code, max_line_length=100)
         print(formatted_code, end="")
     elif arguments["--check"]:
         formattable_files = set()
-        for file_path in arguments["<file>"]:
+        for file_path in files:
             with open(file_path, "r") as fh:
                 code = fh.read()
-                formatted_code = format_code(gdscript_code=code, max_line_length=100)
+                try:
+                    formatted_code = format_code(
+                        gdscript_code=code, max_line_length=100
+                    )
+                except Exception as e:
+                    print(
+                        "exception during formatting of {}".format(file_path),
+                        file=sys.stderr,
+                    )
+                    raise e
                 if code != formatted_code:
                     print("would reformat {}".format(file_path), file=sys.stderr)
                     check_formatting_safety(code, formatted_code, max_line_length=100)
@@ -45,8 +55,7 @@ def main():
         if len(formattable_files) == 0:
             print(
                 "{} file{} would be left unchanged".format(
-                    len(arguments["<file>"]),
-                    "s" if len(arguments["<file>"]) != 1 else "",
+                    len(files), "s" if len(files) != 1 else "",
                 )
             )
             sys.exit(0)
@@ -54,8 +63,8 @@ def main():
             "{} file{} would be reformatted, {} file{} would be left unchanged.".format(
                 len(formattable_files),
                 "s" if len(formattable_files) != 1 else "",
-                len(arguments["<file>"]),
-                "s" if len(arguments["<file>"]) != 1 else "",
+                len(files),
+                "s" if len(files) != 1 else "",
             ),
             file=sys.stderr,
         )
