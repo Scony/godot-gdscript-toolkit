@@ -201,10 +201,8 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
 
     def _has_return_type(statement):
         return any(
-            [
-                isinstance(c, Token) and c.type == "TYPE"
-                for c in statement.children[1 : (3 + 1)]
-            ]
+            isinstance(c, Token) and c.type == "TYPE"
+            for c in statement.children[1 : (3 + 1)]
         )
 
     first_statement_offset = 1
