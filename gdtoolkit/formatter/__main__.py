@@ -6,6 +6,8 @@ Usage:
   gdformat <file>... [options]
 
 Options:
+  -c --check                 Don't write the files back,
+                             just check if formatting is possible.
   -h --help                  Show this screen.
   --version                  Show version.
 """
@@ -15,6 +17,7 @@ import pkg_resources
 from docopt import docopt
 
 from gdtoolkit.formatter import format_code
+from gdtoolkit.formatter import check_formatting_safety
 
 
 def main():
@@ -26,7 +29,37 @@ def main():
     )
     if arguments["<file>"] == ["-"]:
         code = sys.stdin.read()
-        print(format_code(gdscript_code=code, max_line_length=100), end="")
+        formatted_code = format_code(gdscript_code=code, max_line_length=100)
+        check_formatting_safety(code, formatted_code, max_line_length=100)
+        print(formatted_code, end="")
+    elif arguments["--check"]:
+        formattable_files = set()
+        for file_path in arguments["<file>"]:
+            with open(file_path, "r") as fh:
+                code = fh.read()
+                formatted_code = format_code(gdscript_code=code, max_line_length=100)
+                if code != formatted_code:
+                    print("would reformat {}".format(file_path), file=sys.stderr)
+                    check_formatting_safety(code, formatted_code, max_line_length=100)
+                    formattable_files.add(file_path)
+        if len(formattable_files) == 0:
+            print(
+                "{} file{} would be left unchanged".format(
+                    len(arguments["<file>"]),
+                    "s" if len(arguments["<file>"]) != 1 else "",
+                )
+            )
+            sys.exit(0)
+        print(
+            "{} file{} would be reformatted, {} file{} would be left unchanged.".format(
+                len(formattable_files),
+                "s" if len(formattable_files) != 1 else "",
+                len(arguments["<file>"]),
+                "s" if len(arguments["<file>"]) != 1 else "",
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(1)
     else:
         raise NotImplementedError
 
