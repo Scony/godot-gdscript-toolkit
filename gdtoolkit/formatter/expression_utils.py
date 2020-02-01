@@ -13,7 +13,6 @@ def is_foldable(expression: Node) -> bool:
     if _is_multiline_string(expression):
         return True
     return not isinstance(expression, Token) and expression.data not in [
-        "getattr",
         "string",
         "node_path",
         "get_node",

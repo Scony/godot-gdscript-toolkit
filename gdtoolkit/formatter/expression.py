@@ -152,6 +152,7 @@ def _format_foldable_to_multiple_lines(
         "type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiline_line,
         "getattr_call": _format_call_expression_to_multiline_line,
+        "getattr": _format_attribute_expression_to_multiple_lines,
         "subscr_expr": _format_subscription_to_multiple_lines,
         "par_expr": _format_parentheses_to_multiple_lines,
         "array": _format_array_to_multiple_lines,
@@ -348,6 +349,19 @@ def _format_subscription_to_multiple_lines(
         subscript, subscript_expression_context, context
     )
     return (subscriptee_lines[:-1] + subscript_lines, expression.end_line)
+
+
+def _format_attribute_expression_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context,
+) -> Outcome:
+    suffix = ".".join(expression.children[2::2])
+    base_expression_context = ExpressionContext(
+        expression_context.prefix_string,
+        expression_context.prefix_line,
+        ".{}{}".format(suffix, expression_context.suffix_string),
+    )
+    base = expression.children[0]
+    return _format_concrete_expression(base, base_expression_context, context)
 
 
 def _format_operator_chain_based_expression_to_multiple_lines(
