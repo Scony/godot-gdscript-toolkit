@@ -20,6 +20,9 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
         "if_stmt": _format_if_statement,
         "while_stmt": partial(_format_branch, "while ", ":", 0),
         "for_stmt": _format_for_statement,
+        "match_stmt": _format_match_statement,
+        # fake statements:
+        "match_branch": _format_match_branch,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
@@ -60,6 +63,20 @@ def _format_for_statement(statement: Node, context: Context) -> Outcome:
     prefix = "for {} in ".format(statement.children[0].value)
     suffix = ":"
     expr_position = 1
+    return _format_branch(prefix, suffix, expr_position, statement, context)
+
+
+def _format_match_statement(statement: Node, context: Context) -> Outcome:
+    prefix = "match "
+    suffix = ":"
+    expr_position = 0
+    return _format_branch(prefix, suffix, expr_position, statement, context)
+
+
+def _format_match_branch(statement: Node, context: Context) -> Outcome:
+    prefix = ""
+    suffix = ":"
+    expr_position = 0
     return _format_branch(prefix, suffix, expr_position, statement, context)
 
 
