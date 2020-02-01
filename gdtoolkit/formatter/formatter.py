@@ -35,11 +35,11 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
 
 
 def _gather_standalone_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
-    return _gather_comments_from_code_by_regex(gdscript_code, r"\s*(#.*)$")
+    return _gather_comments_from_code_by_regex(gdscript_code, r"^\s*(#.*)$")
 
 
 def _gather_inline_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
-    return _gather_comments_from_code_by_regex(gdscript_code, r"\s*[^\s#]+\s*(#.*)$")
+    return _gather_comments_from_code_by_regex(gdscript_code, r"^\s*[^\s#]+[^#]*(#.*)$")
 
 
 def _gather_comments_from_code_by_regex(
