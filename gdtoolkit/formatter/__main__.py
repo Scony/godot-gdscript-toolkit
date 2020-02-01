@@ -20,6 +20,8 @@ from gdtoolkit.formatter import format_code
 from gdtoolkit.formatter import check_formatting_safety
 
 
+# TODO: refa & tests
+# pylint: disable=too-many-statements
 def main():
     arguments = docopt(
         __doc__,
@@ -88,7 +90,9 @@ def main():
                     raise e
                 if code != formatted_code:
                     try:
-                        check_formatting_safety(code, formatted_code, max_line_length=100)
+                        check_formatting_safety(
+                            code, formatted_code, max_line_length=100
+                        )
                     except Exception as e:
                         print(
                             "exception during formatting of {}".format(file_path),
