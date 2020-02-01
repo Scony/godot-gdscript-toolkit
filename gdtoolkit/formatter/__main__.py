@@ -59,18 +59,57 @@ def main():
                 )
             )
             sys.exit(0)
+        formattable_num = len(formattable_files)
+        left_unchanged_num = len(files) - formattable_num
         print(
             "{} file{} would be reformatted, {} file{} would be left unchanged.".format(
-                len(formattable_files),
-                "s" if len(formattable_files) != 1 else "",
-                len(files),
-                "s" if len(files) != 1 else "",
+                formattable_num,
+                "s" if formattable_num != 1 else "",
+                left_unchanged_num,
+                "s" if left_unchanged_num != 1 else "",
             ),
             file=sys.stderr,
         )
         sys.exit(1)
     else:
-        raise NotImplementedError
+        formatted_files = set()
+        for file_path in files:
+            with open(file_path, "r+") as fh:
+                code = fh.read()
+                try:
+                    formatted_code = format_code(
+                        gdscript_code=code, max_line_length=100
+                    )
+                except Exception as e:
+                    print(
+                        "exception during formatting of {}".format(file_path),
+                        file=sys.stderr,
+                    )
+                    raise e
+                if code != formatted_code:
+                    try:
+                        check_formatting_safety(code, formatted_code, max_line_length=100)
+                    except Exception as e:
+                        print(
+                            "exception during formatting of {}".format(file_path),
+                            file=sys.stderr,
+                        )
+                        raise e
+                    print("reformatted {}".format(file_path))
+                    formatted_files.add(file_path)
+                    fh.seek(0)
+                    fh.truncate(0)
+                    fh.write(formatted_code)
+        reformatted_num = len(formatted_files)
+        left_unchanged_num = len(files) - reformatted_num
+        print(
+            "{} file{} reformatted, {} file{} left unchanged.".format(
+                reformatted_num,
+                "s" if reformatted_num != 1 else "",
+                left_unchanged_num,
+                "s" if left_unchanged_num != 1 else "",
+            )
+        )
 
 
 if __name__ == "__main__":
