@@ -86,13 +86,49 @@ while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
 match_stmt: "match" expr ":" match_body
 match_body: _NL _INDENT match_branch+ _DEDENT
-match_branch: (expr | "_") ":" _NL _INDENT func_stmt+ _DEDENT // TODO: extend
+match_branch: pattern ":" _NL _INDENT func_stmt+ _DEDENT
 
 enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" _enum_body
 enum_named: "enum" NAME _enum_body
 !_enum_body: "{" [enum_element ("," enum_element)* [","]] "}"
 enum_element: NAME ["=" NUMBER]
+
+pattern: list_pattern
+?list_pattern: test_pattern ("," test_pattern)*
+!?test_pattern: or_pattern ["if" or_pattern "else" test_pattern]
+!?or_pattern: and_pattern (("or" | "||") and_pattern)*
+!?and_pattern: not_pattern (("and" | "&&") not_pattern)*
+!?not_pattern: ("not" | "!") not_pattern | comp_pattern
+?comp_pattern: bitw_or_pattern [_comp_op bitw_or_pattern]
+!?bitw_or_pattern: bitw_xor_pattern ("|" bitw_xor_pattern)*
+!?bitw_xor_pattern: bitw_and_pattern ("^" bitw_and_pattern)*
+!?bitw_and_pattern: shift_pattern ("&" shift_pattern)*
+!?shift_pattern: subtr_pattern (("<<" | ">>") subtr_pattern)*
+!?subtr_pattern: addn_pattern ("-" addn_pattern)*
+!?addn_pattern: mdr_pattern ("+" mdr_pattern)*
+!?mdr_pattern: neg_pattern (("*" | "/" | "%") neg_pattern)*
+!?neg_pattern: "-" neg_pattern
+             | bitw_not_pattern
+!?bitw_not_pattern: "~" bitw_not_pattern
+                  | attr_pattern
+!?attr_pattern: atom_pattern ("." atom_pattern)*
+atom_pattern: "(" test_pattern ")" -> par_pattern
+            | "var" NAME -> var_capture_pattern
+            | ".." -> etc_pattern
+            | "_" -> wildcard_pattern
+            | array_pattern
+            | dict_pattern
+            | NAME
+            | HEX
+            | literal
+array_pattern: "[" [test_pattern ("," test_pattern)* [trailing_comma]] "]"
+dict_pattern: "{" [dict_pattern_element ("," dict_pattern_element)* [trailing_comma]] "}"
+dict_pattern_element: kv_pair_pattern
+                    | atom_pattern
+kv_pair_pattern: (c_dict_pattern_element | eq_dict_pattern_element)
+c_dict_pattern_element: test_pattern ":" test_pattern
+eq_dict_pattern_element: NAME "=" test_pattern
 
 expr: test_expr
     | assnmnt_expr
