@@ -268,8 +268,10 @@ def _format_assignment_expression_to_multiline_line(
     expression: Tree, expression_context: ExpressionContext, context: Context,
 ) -> Outcome:
     new_expression_context = ExpressionContext(
-        "{}{} = ".format(
-            expression_context.prefix_string, expression_to_str(expression.children[0])
+        "{}{} {} ".format(
+            expression_context.prefix_string,
+            expression_to_str(expression.children[0]),
+            expression_to_str(expression.children[1]),
         ),
         expression_context.prefix_line,
         expression_context.suffix_string,
