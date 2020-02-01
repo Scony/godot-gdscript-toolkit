@@ -7,5 +7,7 @@ class X:
 				pass
 			x:
 				pass
+			x.aaa.bbb:
+				pass
 			_:
 				pass
