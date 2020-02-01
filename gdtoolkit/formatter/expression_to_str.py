@@ -1,70 +1,75 @@
 from typing import List
 
-from lark import Tree
+from lark import Tree, Token
 
 from .types import Node
-from .expression_utils import is_any_comma, is_any_parentheses, has_leading_dot
+from .expression_utils import (
+    is_any_comma,
+    is_any_parentheses,
+    has_leading_dot,
+    remove_outer_parentheses,
+)
 
 
 def expression_to_str(expression: Node) -> str:
-    if isinstance(expression, Tree):
-        return {
-            "expr": lambda e: expression_to_str(e.children[0]),
-            "assnmnt_expr": _operator_chain_based_expression_to_str,
-            "test_expr": _operator_chain_based_expression_to_str,
-            "or_test": _operator_chain_based_expression_to_str,
-            "and_test": _operator_chain_based_expression_to_str,
-            "not_test": lambda e: "{} {}".format(
-                expression_to_str(e.children[0]), expression_to_str(e.children[1])
-            ),
-            "content_test": _operator_chain_based_expression_to_str,
-            "comparison": _operator_chain_based_expression_to_str,
-            "bitw_or": _operator_chain_based_expression_to_str,
-            "bitw_xor": _operator_chain_based_expression_to_str,
-            "bitw_and": _operator_chain_based_expression_to_str,
-            "shift_expr": _operator_chain_based_expression_to_str,
-            "subtr_expr": _operator_chain_based_expression_to_str,
-            "addn_expr": _operator_chain_based_expression_to_str,
-            "mdr_expr": _operator_chain_based_expression_to_str,
-            "neg_expr": lambda e: "-{}".format(expression_to_str(e.children[1])),
-            "bitw_not": lambda e: "~{}".format(expression_to_str(e.children[1])),
-            "type_test": _operator_chain_based_expression_to_str,
-            "type_cast": _operator_chain_based_expression_to_str,
-            "standalone_call": _standalone_call_to_str,
-            "getattr_call": _getattr_call_to_str,
-            "getattr": lambda e: "".join([expression_to_str(c) for c in e.children]),
-            "subscr_expr": _subscription_to_str,
-            "par_expr": lambda e: "({})".format(expression_to_str(e.children[0])),
-            "array": _array_to_str,
-            "dict": _dict_to_str,
-            "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
-            "c_dict_element": _dict_element_to_str,
-            "eq_dict_element": _dict_element_to_str,
-            "string": lambda e: e.children[0].value,
-            "node_path": lambda e: "@{}".format(expression_to_str(e.children[0])),
-            "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
-            "path": lambda e: "/".join([name_token.value for name_token in e.children]),
-            # fake expressions:
-            "func_arg_regular": lambda e: "{}{}".format(
-                e.children[0].value,
-                " = {}".format(expression_to_str(e.children[1]))
-                if len(e.children) > 1
-                else "",
-            ),
-            "func_arg_inf": lambda e: "{} := {}".format(
-                e.children[0].value, expression_to_str(e.children[1])
-            ),
-            "func_arg_typed": lambda e: "{}: {}{}".format(
-                e.children[0].value,
-                e.children[1].value,
-                " = {}".format(expression_to_str(e.children[2]))
-                if len(e.children) > 2
-                else "",
-            ),
-            # patterns (fake expressions):
-            "wildcard_pattern": lambda _: "_",
-        }[expression.data](expression)
-    return expression.value
+    if isinstance(expression, Token):
+        return expression.value
+    return {
+        "expr": lambda e: expression_to_str(e.children[0]),
+        "assnmnt_expr": _operator_chain_based_expression_to_str,
+        "test_expr": _operator_chain_based_expression_to_str,
+        "or_test": _operator_chain_based_expression_to_str,
+        "and_test": _operator_chain_based_expression_to_str,
+        "not_test": lambda e: "{} {}".format(
+            expression_to_str(e.children[0]), expression_to_str(e.children[1])
+        ),
+        "content_test": _operator_chain_based_expression_to_str,
+        "comparison": _operator_chain_based_expression_to_str,
+        "bitw_or": _operator_chain_based_expression_to_str,
+        "bitw_xor": _operator_chain_based_expression_to_str,
+        "bitw_and": _operator_chain_based_expression_to_str,
+        "shift_expr": _operator_chain_based_expression_to_str,
+        "subtr_expr": _operator_chain_based_expression_to_str,
+        "addn_expr": _operator_chain_based_expression_to_str,
+        "mdr_expr": _operator_chain_based_expression_to_str,
+        "neg_expr": lambda e: "-{}".format(expression_to_str(e.children[1])),
+        "bitw_not": lambda e: "~{}".format(expression_to_str(e.children[1])),
+        "type_test": _operator_chain_based_expression_to_str,
+        "type_cast": _operator_chain_based_expression_to_str,
+        "standalone_call": _standalone_call_to_str,
+        "getattr_call": _getattr_call_to_str,
+        "getattr": lambda e: "".join([expression_to_str(c) for c in e.children]),
+        "subscr_expr": _subscription_to_str,
+        "par_expr": lambda e: "({})".format(expression_to_str(e.children[0])),
+        "array": _array_to_str,
+        "dict": _dict_to_str,
+        "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
+        "c_dict_element": _dict_element_to_str,
+        "eq_dict_element": _dict_element_to_str,
+        "string": lambda e: e.children[0].value,
+        "node_path": lambda e: "@{}".format(expression_to_str(e.children[0])),
+        "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
+        "path": lambda e: "/".join([name_token.value for name_token in e.children]),
+        # fake expressions:
+        "func_arg_regular": lambda e: "{}{}".format(
+            e.children[0].value,
+            " = {}".format(expression_to_str(e.children[1]))
+            if len(e.children) > 1
+            else "",
+        ),
+        "func_arg_inf": lambda e: "{} := {}".format(
+            e.children[0].value, expression_to_str(e.children[1])
+        ),
+        "func_arg_typed": lambda e: "{}: {}{}".format(
+            e.children[0].value,
+            e.children[1].value,
+            " = {}".format(expression_to_str(e.children[2]))
+            if len(e.children) > 2
+            else "",
+        ),
+        # patterns (fake expressions):
+        "wildcard_pattern": lambda _: "_",
+    }[expression.data](expression)
 
 
 def _operator_chain_based_expression_to_str(expression: Tree) -> str:
@@ -99,7 +104,7 @@ def _getattr_call_to_str(call: Tree) -> str:
 def _arguments_to_str(arguments: List[Node]) -> str:
     return ", ".join(
         [
-            expression_to_str(argument)
+            expression_to_str(remove_outer_parentheses(argument))
             for argument in arguments
             if not is_any_parentheses(argument) and not is_any_comma(argument)
         ]
@@ -108,7 +113,9 @@ def _arguments_to_str(arguments: List[Node]) -> str:
 
 def _array_to_str(array: Tree) -> str:
     elements = [
-        expression_to_str(child) for child in array.children if not is_any_comma(child)
+        expression_to_str(remove_outer_parentheses(child))
+        for child in array.children
+        if not is_any_comma(child)
     ]
     return "[{}]".format(", ".join(elements))
 
@@ -128,6 +135,6 @@ def _subscription_to_str(subscription: Tree) -> str:
 def _dict_element_to_str(dict_element: Tree) -> str:
     template = "{}: {}" if dict_element.data == "c_dict_element" else "{} = {}"
     return template.format(
-        expression_to_str(dict_element.children[0]),
-        expression_to_str(dict_element.children[1]),
+        expression_to_str(remove_outer_parentheses(dict_element.children[0])),
+        expression_to_str(remove_outer_parentheses(dict_element.children[1])),
     )
