@@ -61,6 +61,8 @@ def expression_to_str(expression: Node) -> str:
                 if len(e.children) > 2
                 else "",
             ),
+            # patterns (fake expressions):
+            "wildcard_pattern": lambda _: "_",
         }[expression.data](expression)
     return expression.value
 

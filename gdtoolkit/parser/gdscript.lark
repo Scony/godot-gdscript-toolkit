@@ -84,9 +84,9 @@ elif_branch: "elif" expr ":" _func_suite
 else_branch: "else" ":" _func_suite
 while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
-match_stmt: "match" expr ":" match_body
-match_body: _NL _INDENT match_branch+ _DEDENT
-match_branch: pattern ":" _NL _INDENT func_stmt+ _DEDENT
+match_stmt: "match" expr ":" _match_body
+_match_body: _NL _INDENT match_branch+ _DEDENT
+match_branch: pattern ":" _NL _INDENT func_stmt+ _DEDENT // TODO: _func_body
 
 enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" _enum_body
@@ -113,15 +113,15 @@ pattern: list_pattern
 !?bitw_not_pattern: "~" bitw_not_pattern
                   | attr_pattern
 !?attr_pattern: atom_pattern ("." atom_pattern)*
-atom_pattern: "(" test_pattern ")" -> par_pattern
-            | "var" NAME -> var_capture_pattern
-            | ".." -> etc_pattern
-            | "_" -> wildcard_pattern
-            | array_pattern
-            | dict_pattern
-            | NAME
-            | HEX
-            | literal
+?atom_pattern: "(" test_pattern ")" -> par_pattern
+             | "var" NAME -> var_capture_pattern
+             | ".." -> etc_pattern
+             | "_" -> wildcard_pattern
+             | array_pattern
+             | dict_pattern
+             | NAME
+             | HEX
+             | literal
 array_pattern: "[" [test_pattern ("," test_pattern)* [trailing_comma]] "]"
 dict_pattern: "{" [dict_pattern_element ("," dict_pattern_element)* [trailing_comma]] "}"
 dict_pattern_element: kv_pair_pattern
