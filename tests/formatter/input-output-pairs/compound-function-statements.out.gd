@@ -22,6 +22,5 @@ class X:
 			pass
 			pass
 		for i in range(10):
-			pass
-			pass
-		# TODO: match
+			break
+			continue
