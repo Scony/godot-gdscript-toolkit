@@ -3,20 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This project aims to create an end-to-end set of tools for daily work with `GDScript`. The goal is to provide the following tools:
+This project provides a set of tools for daily work with `GDScript`. At the moment it provides:
 
 - A parser that produces a parse tree for debugging and educational purposes.
-- A compiler to create an easy to use Intermediate Representation of the code (IR).
 - A linter that performs a static analysis according to some predefined configuration.
-- A formatter to format the code according to some predefined rules.
-
-## Current progress
-
-The parser and the language grammar are ready to use, although they may have minor bugs. If you find any, please [open an issue](https://github.com/Scony/godot-gdscript-toolkit/issues/new).
-
-The linter is currently a work-in-progress, however, some useful tests are already available.
-
-The formatter is almost complete - it should work in practice, but some features are still ongoing.
+- A formatter that formats the code according to some predefined rules.
 
 ## Installation
 
@@ -25,7 +16,7 @@ To install this project you need `python3` and `pip`.
 Use this command in your terminal to install from this git repository:
 
 ```
-pip3 install git+https://github.com/Scony/godot-gdscript-toolkit
+pip3 install godot-gdscript-toolkit
 ```
 
 ## Linting with gdlint
