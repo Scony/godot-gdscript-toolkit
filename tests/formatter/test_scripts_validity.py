@@ -9,13 +9,6 @@ DATA_DIR = "./input-output-pairs"
 GODOT_SERVER = "godot-server"
 EXCEPTIONS = set(  # TODO: fix wherever possible
     [
-        "call-expressions.in.gd",  # cannot provide callee definitions for now
-        "call-expressions.out.gd",  # cannot provide callee definitions for now
-        "force-multiline-dict.out.gd",  # godot bug
-        "negation-n-bitwise-not-expressions.in.gd",  # Invalid operand ("Array") to unary operator "~"
-        "negation-n-bitwise-not-expressions.out.gd",  # Invalid operand ("Array") to unary operator "~"
-        "simple-function-statements.in.gd",  # break & continue in function scope
-        "simple-function-statements.out.gd",  # break & continue in function scope
         "type-cast-expressions.in.gd",  # godot bug
         "type-cast-expressions.out.gd",  # godot bug
     ]
