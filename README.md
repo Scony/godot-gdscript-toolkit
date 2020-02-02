@@ -16,7 +16,7 @@ To install this project you need `python3` and `pip`.
 Use this command in your terminal to install from this git repository:
 
 ```
-pip3 install godot-gdscript-toolkit
+pip3 install gdtoolkit
 ```
 
 ## Linting with gdlint

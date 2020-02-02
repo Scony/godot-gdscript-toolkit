@@ -3,3 +3,4 @@ misc/
 .tox
 gdtoolkit.egg-info/
 .mypy_cache/
+dist/
