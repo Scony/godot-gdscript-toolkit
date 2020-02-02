@@ -8,6 +8,8 @@ Usage:
 Options:
   -c --check                 Don't write the files back,
                              just check if formatting is possible.
+  -l --line-length=<int>     How many characters per line to allow.
+                             [default: 100]
   -h --help                  Show this screen.
   --version                  Show version.
 """
@@ -30,10 +32,11 @@ def main():
         ),
     )
     files = arguments["<file>"]
+    line_length = int(arguments["--line-length"])
     if files == ["-"]:
         code = sys.stdin.read()
-        formatted_code = format_code(gdscript_code=code, max_line_length=100)
-        check_formatting_safety(code, formatted_code, max_line_length=100)
+        formatted_code = format_code(gdscript_code=code, max_line_length=line_length)
+        check_formatting_safety(code, formatted_code, max_line_length=line_length)
         print(formatted_code, end="")
     elif arguments["--check"]:
         formattable_files = set()
@@ -42,7 +45,7 @@ def main():
                 code = fh.read()
                 try:
                     formatted_code = format_code(
-                        gdscript_code=code, max_line_length=100
+                        gdscript_code=code, max_line_length=line_length
                     )
                 except Exception as e:
                     print(
@@ -52,7 +55,16 @@ def main():
                     raise e
                 if code != formatted_code:
                     print("would reformat {}".format(file_path), file=sys.stderr)
-                    check_formatting_safety(code, formatted_code, max_line_length=100)
+                    try:
+                        check_formatting_safety(
+                            code, formatted_code, max_line_length=line_length
+                        )
+                    except Exception as e:
+                        print(
+                            "exception during formatting of {}".format(file_path),
+                            file=sys.stderr,
+                        )
+                        raise e
                     formattable_files.add(file_path)
         if len(formattable_files) == 0:
             print(
@@ -80,7 +92,7 @@ def main():
                 code = fh.read()
                 try:
                     formatted_code = format_code(
-                        gdscript_code=code, max_line_length=100
+                        gdscript_code=code, max_line_length=line_length
                     )
                 except Exception as e:
                     print(
@@ -91,7 +103,7 @@ def main():
                 if code != formatted_code:
                     try:
                         check_formatting_safety(
-                            code, formatted_code, max_line_length=100
+                            code, formatted_code, max_line_length=line_length
                         )
                     except Exception as e:
                         print(
