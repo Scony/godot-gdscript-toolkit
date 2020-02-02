@@ -9,7 +9,8 @@ class X:
 		ffffffff,
 		ggggggggg,
 		hhhhhhhh,
-		iiiiiiii
+		iiiiiiii,
+		jjjjjjjjjjj
 	)
 	signal c(
 		x,

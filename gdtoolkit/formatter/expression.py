@@ -34,11 +34,14 @@ def format_expression(
 def format_comma_separated_list(
     a_list: List[Node], expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
-    elements = [node for node in a_list if not is_any_comma(node)]
+    elements = [
+        remove_outer_parentheses(node) for node in a_list if not is_any_comma(node)
+    ]
+    child_context = context.create_child_context(expression_context.prefix_line)
     fake_expression = Tree("fake", a_list)
     multiline_mode_forced = is_expression_forcing_multiple_lines(fake_expression)
     if not multiline_mode_forced:
-        strings_to_join = map(expression_to_str, elements)
+        strings_to_join = list(map(expression_to_str, elements))
         single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
             ", ".join(strings_to_join),
@@ -52,6 +55,31 @@ def format_comma_separated_list(
                     "{}{}".format(context.indent_string, single_line_expression),
                 )
             ]
+        indented_single_line_expression = ", ".join(strings_to_join)
+        if (
+            len(indented_single_line_expression) + child_context.indent
+            <= context.max_line_length
+        ):
+            return [
+                (
+                    expression_context.prefix_line,
+                    "{}{}".format(
+                        context.indent_string, expression_context.prefix_string
+                    ),
+                ),
+                (
+                    a_list[-1].end_line,
+                    "{}{}".format(
+                        child_context.indent_string, indented_single_line_expression
+                    ),
+                ),
+                (
+                    a_list[-1].end_line,
+                    "{}{}".format(
+                        context.indent_string, expression_context.suffix_string
+                    ),
+                ),
+            ]
     formatted_lines = [
         (
             expression_context.prefix_line,
@@ -59,7 +87,6 @@ def format_comma_separated_list(
         )
     ]  # type: FormattedLines
     trailing_comma_present = is_trailing_comma(a_list[-1])
-    child_context = context.create_child_context(expression_context.prefix_line)
     for i, element in enumerate(elements):
         suffix = (
             "," if i != len(elements) - 1 else ("," if trailing_comma_present else "")
