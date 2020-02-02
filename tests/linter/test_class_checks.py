@@ -34,16 +34,16 @@ def test_private_method_call_nok(code):
 @pytest.mark.parametrize('code', [
 """
 tool
-extends Node
 class_name Foo
+extends Node
+signal s
 enum { A, B, C }
 const X = 1
-signal s
 export var k = 1
-onready var y = null
 var x = 1
-onready var _y = null
 var _x = 1
+onready var y = null
+onready var _y = null
 class Z:
     tool
     extends Node
