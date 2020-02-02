@@ -1,14 +1,22 @@
 import re
+from types import MappingProxyType
 from typing import List, Callable
 
 from .types import Outcome, Node, FormattedLines
 from .context import Context
-from .constants import INDENT_SIZE
+from .constants import (
+    INDENT_SIZE,
+    DEFAULT_SURROUNDING_EMPTY_LINES_TABLE as DEFAULT_SURROUNDINGS_TABLE,
+)
 
 
 def format_block(
-    statements: List[Node], statement_formatter: Callable, context: Context,
+    statements: List[Node],
+    statement_formatter: Callable,
+    context: Context,
+    surrounding_empty_lines_table: MappingProxyType = DEFAULT_SURROUNDINGS_TABLE,
 ) -> Outcome:
+    previous_statement_name = None
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
@@ -17,11 +25,21 @@ def format_block(
         )
         if previously_processed_line_number == context.previously_processed_line_number:
             blank_lines = _remove_empty_strings_from_begin(blank_lines)
+        else:
+            blank_lines = _add_extra_blanks_due_to_previous_statement(
+                blank_lines,
+                previous_statement_name,  # type: ignore
+                surrounding_empty_lines_table,
+            )
+            blank_lines = _add_extra_blanks_due_to_next_statement(
+                blank_lines, statement.data, surrounding_empty_lines_table
+            )
         formatted_lines += blank_lines
         lines, previously_processed_line_number = statement_formatter(
             statement, context
         )
         formatted_lines += lines
+        previous_statement_name = statement.data
     dedent_line_number = _find_dedent_line_number(
         previously_processed_line_number, context
     )
@@ -72,6 +90,57 @@ def _find_dedent_line_number(
         else:
             break
     return line_no
+
+
+def _add_extra_blanks_due_to_previous_statement(
+    blank_lines: FormattedLines,
+    previous_statement_name: str,
+    surrounding_empty_lines_table: MappingProxyType,
+) -> FormattedLines:
+    # assumption: there is no sequence of empty lines longer than 1 (in blank lines)
+    forced_blanks_num = surrounding_empty_lines_table.get(previous_statement_name)
+    if forced_blanks_num is None:
+        return blank_lines
+    lines_to_prepend = forced_blanks_num
+    lines_to_prepend -= 1 if len(blank_lines) > 0 and blank_lines[0][1] == "" else 0
+    empty_line = [(None, "")]  # type: FormattedLines
+    return lines_to_prepend * empty_line + blank_lines
+
+
+def _add_extra_blanks_due_to_next_statement(
+    blank_lines: FormattedLines,
+    next_statement_name: str,
+    surrounding_empty_lines_table: MappingProxyType,
+) -> FormattedLines:
+    # assumption: there is no sequence of empty lines longer than 2 (in blank lines)
+    forced_blanks_num = surrounding_empty_lines_table.get(next_statement_name)
+    if forced_blanks_num is None:
+        return blank_lines
+    first_empty_line_ix_from_end = _find_first_empty_line_ix_from_end(blank_lines)
+    empty_lines_already_in_place = 1 if first_empty_line_ix_from_end > -1 else 0
+    empty_lines_already_in_place += (
+        1
+        if first_empty_line_ix_from_end > 0
+        and blank_lines[first_empty_line_ix_from_end - 1][1] == ""
+        else 0
+    )
+    lines_to_inject = forced_blanks_num
+    lines_to_inject -= empty_lines_already_in_place
+    empty_line = [(None, "")]  # type: FormattedLines
+    if first_empty_line_ix_from_end == -1:
+        return lines_to_inject * empty_line + blank_lines
+    return (
+        blank_lines[:first_empty_line_ix_from_end]
+        + lines_to_inject * empty_line
+        + blank_lines[first_empty_line_ix_from_end:]
+    )
+
+
+def _find_first_empty_line_ix_from_end(blank_lines: FormattedLines) -> int:
+    for line_no, (_, line) in reversed(list(enumerate(blank_lines))):
+        if line == "":
+            return line_no
+    return -1
 
 
 def _reconstruct_blank_lines_in_range(

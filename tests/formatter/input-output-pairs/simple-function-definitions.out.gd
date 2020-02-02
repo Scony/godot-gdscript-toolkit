@@ -2,8 +2,10 @@ class Y:
 	func _init(a, b, c):
 		pass
 
+
 class X:
 	extends Y
+
 	func foo(a):
 		pass
 
@@ -28,7 +30,9 @@ class X:
 	func bab(a, b: int = 1, c := 1) -> int:
 		return 1
 
+
 class Z:
 	extends Y
+
 	func _init(a, b := 1, c: int = 1).(a, b, c) -> void:
 		pass
