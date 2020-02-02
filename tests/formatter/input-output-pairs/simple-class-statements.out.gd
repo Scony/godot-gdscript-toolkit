@@ -22,5 +22,6 @@ class X:
 	var q: int
 	var w := 1
 
+
 class Y:
 	extends X
