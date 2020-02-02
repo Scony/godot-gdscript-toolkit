@@ -16,7 +16,7 @@ The parser and the language grammar are ready to use, although they may have min
 
 The linter is currently a work-in-progress, however, some useful tests are already available.
 
-The formatter is close to being complete, however, it's still a work-in-progress.
+The formatter is almost complete - it should work in practice, but some features are still ongoing.
 
 ## Installation
 
@@ -69,6 +69,48 @@ sub-class-name: _?([A-Z][a-z0-9]*)+
 Once the dump is performed, you can modify the `gdlintrc` file and optionally rename it to `.gdlintrc`.
 From now on, linter will use this config file to override the default config.
 
+## Formatting with gdformat
+
+**Formatting may lead to data loss, so it's highly recommended to use it along with Version Control System (VCS) e.g. `git`**
+
+`gdformat` is the uncompromising GDScript code formatter. The only configurable thing is max line length allowed (`--line-length`). The rest will be taken care of by `gdformat` in a one, consistent way.
+
+To run a formatter you need to perform installation first. Once done, given a `test.gd` file:
+
+```
+class X:
+	var x=[1,2,{'a':1}]
+    var y=[1,2,3,]     # trailing comma
+	func foo(a:int,b,c=[1,2,3]):
+		if a in c and \
+		   b > 100:
+			print('foo')
+func bar():
+	print('bar')
+```
+
+when you run `gdformat test.gd`, the `test.gd` file will be reformatted as follows:
+
+```
+class X:
+	var x = [1, 2, {'a': 1}]
+	var y = [
+		1,
+		2,
+		3,
+	]  # trailing comma
+
+	func foo(a: int, b, c = [1, 2, 3]):
+		if a in c and b > 100:
+			print('foo')
+
+
+func bar():
+	print('bar')
+```
+
+If the program formats your files successfully, it will return the exit code `0`. Non-zero code will be returned otherwise.
+
 ## Parsing with gdparse
 
 To parse a file, use the `gdparse` program:
@@ -95,10 +137,6 @@ start
 ```
 
 If the program parses your file sucessfully, it will return the exit code `0`.
-
-## Formatting with gdformat
-
-Coming mid February 2020.
 
 ## Running tests
 
