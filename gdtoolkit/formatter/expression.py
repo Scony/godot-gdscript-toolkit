@@ -100,7 +100,7 @@ def format_comma_separated_list(
         (
             expression_context.suffix_line
             if expression_context.suffix_line is not None
-            else a_list[-1].line,
+            else a_list[-1].end_line,
             "{}{}".format(context.indent_string, expression_context.suffix_string),
         )
     )
