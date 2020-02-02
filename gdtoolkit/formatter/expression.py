@@ -98,7 +98,9 @@ def format_comma_separated_list(
         formatted_lines += lines
     formatted_lines.append(
         (
-            a_list[-1].line,
+            expression_context.suffix_line
+            if expression_context.suffix_line is not None
+            else a_list[-1].line,
             "{}{}".format(context.indent_string, expression_context.suffix_string),
         )
     )
@@ -200,6 +202,7 @@ def _format_array_to_multiple_lines(
         "{}[".format(expression_context.prefix_string),
         expression_context.prefix_line,
         "]{}".format(expression_context.suffix_string),
+        array.end_line,
     )
     return (
         format_comma_separated_list(array.children, new_expression_context, context),
@@ -214,6 +217,7 @@ def _format_dict_to_multiple_lines(
         "{}{{".format(expression_context.prefix_string),
         expression_context.prefix_line,
         "}}{}".format(expression_context.suffix_string),
+        a_dict.end_line,
     )
     return (
         format_comma_separated_list(a_dict.children, new_expression_context, context),
