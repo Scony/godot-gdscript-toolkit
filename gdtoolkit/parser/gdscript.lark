@@ -104,9 +104,8 @@ pattern: list_pattern
 !?bitw_or_pattern: bitw_xor_pattern ("|" bitw_xor_pattern)*
 !?bitw_xor_pattern: bitw_and_pattern ("^" bitw_and_pattern)*
 !?bitw_and_pattern: shift_pattern ("&" shift_pattern)*
-!?shift_pattern: subtr_pattern (("<<" | ">>") subtr_pattern)*
-!?subtr_pattern: addn_pattern ("-" addn_pattern)*
-!?addn_pattern: mdr_pattern ("+" mdr_pattern)*
+!?shift_pattern: arith_pattern (("<<" | ">>") arith_pattern)*
+!?arith_pattern: mdr_pattern (("-" | "+") mdr_pattern)*
 !?mdr_pattern: neg_pattern (("*" | "/" | "%") neg_pattern)*
 !?neg_pattern: "-" neg_pattern
              | bitw_not_pattern
@@ -144,9 +143,8 @@ assnmnt_expr: attr_expr _assnmnt_op test_expr
 !?bitw_or: bitw_xor ("|" bitw_xor)*
 !?bitw_xor: bitw_and ("^" bitw_and)*
 !?bitw_and: shift_expr ("&" shift_expr)*
-!?shift_expr: subtr_expr (("<<" | ">>") subtr_expr)*
-!?subtr_expr: addn_expr ("-" addn_expr)*
-!?addn_expr: mdr_expr ("+" mdr_expr)*
+!?shift_expr: arith_expr (("<<" | ">>") arith_expr)*
+!?arith_expr: mdr_expr (("-" | "+") mdr_expr)*
 !?mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
 !?neg_expr: "-" neg_expr
           | bitw_not
