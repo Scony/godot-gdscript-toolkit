@@ -4,6 +4,7 @@
 
 ### Fixed
  - Type inference in grammar
+ - Improved linter exec user experience
 
 ## [3.2.2] 2020-02-03
 

@@ -81,16 +81,26 @@ def main():  # pylint: disable=too-many-branches
             )
             config[key] = DEFAULT_CONFIG[key]
 
+    problems_total = 0
     for file_path in arguments["<file>"]:
         with open(file_path, "r") as fh:  # TODO: handle exception
             content = fh.read()
             problems = lint_code(content, config)
+            problems_total += len(problems)
             if len(problems) > 0:  # TODO: friendly frontend like in halint
                 for problem in problems:
                     print_problem(problem, file_path)
-                sys.exit(1)
 
-    logging.info("Success: no problems found")
+    if problems_total > 0:
+        print(
+            "Failure: {} problem{} found".format(
+                problems_total, "" if problems_total == 1 else "s"
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    print("Success: no problems found")
 
 
 if __name__ == "__main__":
