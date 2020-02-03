@@ -8,3 +8,4 @@ export var e1 = 234
 export(int) var e2
 onready var orv
 onready var orv2 = 123
+var is_enabled : = true

@@ -16,3 +16,6 @@ func exec():
 
 func _process(delta):
 	.process(delta)
+
+func bat(x := 1):
+	pass
