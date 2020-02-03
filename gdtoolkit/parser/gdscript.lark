@@ -39,7 +39,7 @@ var_assigned: "var" NAME "=" expr
 _var_typed: "var" NAME ":" TYPE
 var_typed: _var_typed
 var_typed_assgnd: _var_typed "=" expr
-var_inf: "var" NAME ":=" expr
+var_inf: "var" NAME ":" "=" expr
 !setget: "setget" (NAME ["," NAME] | "," NAME)
 !const_stmt: "const" NAME [":" [TYPE]] "=" expr
 onready_stmt: "onready" class_var_stmt
@@ -55,7 +55,7 @@ func_args: func_arg ("," func_arg)*
          | func_arg_inf
          | func_arg_typed
 func_arg_regular: ["var"] NAME ["=" expr]
-func_arg_inf: ["var"] NAME ":=" expr
+func_arg_inf: ["var"] NAME ":" "=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
 _func_suite: _func_body
            | func_stmt+

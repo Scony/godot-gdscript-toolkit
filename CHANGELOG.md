@@ -1,5 +1,10 @@
 # Changelog
 
+## [master]
+
+### Fixed
+ - Type inference in grammar
+
 ## [3.2.2] 2020-02-03
 
 ### Fixed
