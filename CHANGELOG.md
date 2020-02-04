@@ -1,10 +1,5 @@
 # Changelog
 
-## [3.2.4] 2020-02-04
-
-### Fixed
- - Fixed linter haning on windows-specific corner-cases
-
 ## [3.2.3] 2020-02-04
 
 ### Fixed

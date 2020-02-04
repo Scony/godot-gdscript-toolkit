@@ -51,7 +51,7 @@ def main():  # pylint: disable=too-many-branches
     # TODO: extract the algorithm
     search_dir = Path(os.getcwd())
     found_config_file_path = None
-    while search_dir != Path(search_dir.root):
+    while search_dir != Path(os.path.abspath(os.sep)):
         file_path = os.path.join(search_dir, CONFIG_FILE_NAME)
         if os.path.isfile(file_path):
             found_config_file_path = file_path
