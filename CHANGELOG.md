@@ -1,10 +1,11 @@
 # Changelog
 
-## [master]
+## [3.2.3] 2020-02-04
 
 ### Fixed
  - Type inference in grammar
  - Improved linter exec user experience
+ - Fixed linter hanging on config file not present
 
 ## [3.2.2] 2020-02-03
 
