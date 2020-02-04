@@ -21,3 +21,11 @@ install:
 
 script:
   - tox
+
+deploy:
+  provider: pypi
+  user: "__token__"
+  password: "pypi-AgEIcHlwaS5vcmcCJGYzYjNjMzYyLWQ2MDQtNDQwYS05ZTJiLTY1MjEzYWIzY2FiMAACOnsicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJnZHRvb2xraXQiXX0sICJ2ZXJzaW9uIjogMX0AAAYgCAQtf2Sen970YpqwgLR6GResnbIrqQyD0q4SXnvyzmc"
+  on:
+    tags: true
+    branch: master
