@@ -1,7 +1,20 @@
 language: python
-python:
-  - "3.7"
-  - "3.8"
+
+jobs:
+  include:
+    - os: linux
+      python: "3.7"
+    - os: linux
+      python: "3.8"
+    - os: osx
+      osx_image: xcode11.2
+      language: shell
+    - os: windows
+      language: shell
+      before_install:
+        - choco install python --version 3.8.0
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
   - pip3 install tox
