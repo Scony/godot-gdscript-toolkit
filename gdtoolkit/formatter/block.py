@@ -95,7 +95,7 @@ def _find_dedent_line_number(
             break
         line_no += 1
     for line in context.gdscript_code_lines[line_no - 1 :: -1]:
-        if line == "":  # TODO: all ws-lines (non-code&non-comment)
+        if line.strip() == "":
             line_no -= 1
         else:
             break

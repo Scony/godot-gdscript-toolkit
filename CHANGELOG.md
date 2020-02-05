@@ -5,6 +5,7 @@
 ### Fixed
  - Fixed parent block comments in if-elif-else
  - Fixed parentheses handling in formatter
+ - Improved fromatter's dedent lookup
 
 ## [3.2.3] 2020-02-04
 
