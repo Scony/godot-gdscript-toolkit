@@ -38,9 +38,7 @@ def format_comma_separated_list(
     fake_expression = Tree("fake", a_list)
     multiline_mode_forced = is_expression_forcing_multiple_lines(fake_expression)
     if not multiline_mode_forced:
-        strings_to_join = list(
-            map(standalone_expression_to_str, elements)
-        )  # TODO: make standalone_expression_to_str
+        strings_to_join = list(map(standalone_expression_to_str, elements))
         single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
             ", ".join(strings_to_join),
@@ -87,9 +85,7 @@ def format_comma_separated_list(
     ]  # type: FormattedLines
     trailing_comma_present = is_trailing_comma(a_list[-1])
     for i, element in enumerate(elements):
-        suffix = (
-            "," if i != len(elements) - 1 else ("," if trailing_comma_present else "")
-        )
+        suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
         child_expression_context = ExpressionContext("", element.line, suffix)
         lines, _ = _format_standalone_expression(
             element, child_expression_context, child_context

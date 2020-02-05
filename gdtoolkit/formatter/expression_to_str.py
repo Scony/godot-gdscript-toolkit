@@ -42,7 +42,7 @@ def expression_to_str(expression: Node) -> str:
         "type_cast": _operator_chain_based_expression_to_str,
         "standalone_call": _standalone_call_to_str,
         "getattr_call": _getattr_call_to_str,
-        "getattr": lambda e: "".join([expression_to_str(c) for c in e.children]),
+        "getattr": lambda e: "".join(map(expression_to_str, e.children)),
         "subscr_expr": _subscription_to_str,
         "par_expr": lambda e: "({})".format(
             standalone_expression_to_str(e.children[0])
@@ -128,7 +128,7 @@ def _array_to_str(array: Tree) -> str:
 
 
 def _dict_to_str(a_dict: Tree) -> str:
-    elements = [expression_to_str(child) for child in a_dict.children]
+    elements = map(expression_to_str, a_dict.children)
     return "{{{}}}".format(", ".join(elements))
 
 
