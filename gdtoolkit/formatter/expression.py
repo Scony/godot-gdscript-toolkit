@@ -13,16 +13,15 @@ from .expression_utils import (
     is_trailing_comma,
     has_leading_dot,
 )
-from .expression_to_str import expression_to_str
+from .expression_to_str import expression_to_str, standalone_expression_to_str
 
 
 def format_expression(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     concrete_expression = expression.children[0]
-    concrete_expression = remove_outer_parentheses(concrete_expression)
     return (
-        _format_concrete_expression(concrete_expression, expression_context, context)[
+        _format_standalone_expression(concrete_expression, expression_context, context)[
             0
         ],  # TODO: make those to not return last processed line (at the very end)
         expression.end_line,
@@ -34,14 +33,14 @@ def format_expression(
 def format_comma_separated_list(
     a_list: List[Node], expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
-    elements = [
-        remove_outer_parentheses(node) for node in a_list if not is_any_comma(node)
-    ]
+    elements = [node for node in a_list if not is_any_comma(node)]
     child_context = context.create_child_context(expression_context.prefix_line)
     fake_expression = Tree("fake", a_list)
     multiline_mode_forced = is_expression_forcing_multiple_lines(fake_expression)
     if not multiline_mode_forced:
-        strings_to_join = list(map(expression_to_str, elements))
+        strings_to_join = list(
+            map(standalone_expression_to_str, elements)
+        )  # TODO: make standalone_expression_to_str
         single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
             ", ".join(strings_to_join),
@@ -92,7 +91,7 @@ def format_comma_separated_list(
             "," if i != len(elements) - 1 else ("," if trailing_comma_present else "")
         )
         child_expression_context = ExpressionContext("", element.line, suffix)
-        lines, _ = _format_concrete_expression(
+        lines, _ = _format_standalone_expression(
             element, child_expression_context, child_context
         )
         formatted_lines += lines
@@ -107,10 +106,16 @@ def format_comma_separated_list(
     return formatted_lines
 
 
-def _format_concrete_expression(
+def _format_standalone_expression(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     expression = remove_outer_parentheses(expression)
+    return _format_concrete_expression(expression, expression_context, context)
+
+
+def _format_concrete_expression(
+    expression: Node, expression_context: ExpressionContext, context: Context
+) -> Outcome:
     if is_foldable(expression):
         return _format_foldable(expression, expression_context, context)
     return (
@@ -233,14 +238,14 @@ def _format_kv_pair_to_multiple_lines(
     key_expression_context = ExpressionContext(
         expression_context.prefix_string, expression_context.prefix_line, suffix
     )
-    key_lines, _ = _format_concrete_expression(
+    key_lines, _ = _format_standalone_expression(
         concrete_expression.children[0], key_expression_context, context
     )
     if concrete_expression.data == "c_dict_element":
         value_expression_context = ExpressionContext(
             "", -1, expression_context.suffix_string,
         )
-        value_lines, _ = _format_concrete_expression(
+        value_lines, _ = _format_standalone_expression(
             concrete_expression.children[1], value_expression_context, context
         )
         return (key_lines + value_lines, concrete_expression.end_line)
@@ -250,7 +255,7 @@ def _format_kv_pair_to_multiple_lines(
         last_key_line_no,  # type: ignore
         expression_context.suffix_string,
     )
-    value_lines, last_processed_line_no = _format_concrete_expression(
+    value_lines, last_processed_line_no = _format_standalone_expression(
         concrete_expression.children[1], value_expression_context, context
     )
     return (key_lines[:-1] + value_lines, last_processed_line_no)
@@ -259,26 +264,18 @@ def _format_kv_pair_to_multiple_lines(
 def _format_parentheses_to_multiple_lines(
     par_expr: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}(".format(context.indent_string, expression_context.prefix_string),
-        )
-    ]  # type: FormattedLines
-    child_context = context.create_child_context(expression_context.prefix_line)
-    lines, _ = _format_concrete_expression(
-        par_expr.children[0],
-        ExpressionContext("", par_expr.children[0].line, ""),
-        child_context,
+    new_expression_context = ExpressionContext(
+        "{}(".format(expression_context.prefix_string),
+        expression_context.prefix_line,
+        "){}".format(expression_context.suffix_string),
+        par_expr.end_line,
     )
-    formatted_lines += lines
-    formatted_lines.append(
-        (
-            par_expr.children[-1].line,
-            "{}){}".format(context.indent_string, expression_context.suffix_string),
-        )
+    return (
+        _format_standalone_expression(
+            par_expr.children[0], new_expression_context, context,
+        )[0],
+        par_expr.end_line,
     )
-    return (formatted_lines, par_expr.children[-1].line)
 
 
 def _format_string_to_multiple_lines(
@@ -385,7 +382,7 @@ def _format_subscription_to_multiple_lines(
         "]{}".format(expression_context.suffix_string),
     )
     subscript = expression.children[1]
-    subscript_lines, _ = _format_concrete_expression(
+    subscript_lines, _ = _format_standalone_expression(
         subscript, subscript_expression_context, context
     )
     return (subscriptee_lines[:-1] + subscript_lines, expression.end_line)
@@ -407,10 +404,17 @@ def _format_attribute_expression_to_multiple_lines(
 def _format_operator_chain_based_expression_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
+    inside_par = expression_context.prefix_string.endswith(
+        "("
+    ) and expression_context.suffix_string.startswith(")")
+    lpar = "" if inside_par else "("
+    rpar = "" if inside_par else ")"
     formatted_lines = [
         (
             expression_context.prefix_line,
-            "{}{}(".format(context.indent_string, expression_context.prefix_string),
+            "{}{}{}".format(
+                context.indent_string, expression_context.prefix_string, lpar
+            ),
         )
     ]  # type: FormattedLines
     child_context = context.create_child_context(expression_context.prefix_line)
@@ -430,7 +434,9 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     formatted_lines.append(
         (
             expression.children[-1].line,
-            "{}){}".format(context.indent_string, expression_context.suffix_string),
+            "{}{}{}".format(
+                context.indent_string, rpar, expression_context.suffix_string
+            ),
         )
     )
     return (formatted_lines, expression.children[-1].line)

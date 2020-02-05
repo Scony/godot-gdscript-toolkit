@@ -11,11 +11,16 @@ from .expression_utils import (
 )
 
 
+def standalone_expression_to_str(expression: Node) -> str:
+    expression = remove_outer_parentheses(expression)
+    return expression_to_str(expression)
+
+
 def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Token):
         return expression.value
     return {
-        "expr": lambda e: expression_to_str(e.children[0]),
+        "expr": lambda e: standalone_expression_to_str(e.children[0]),
         "assnmnt_expr": _operator_chain_based_expression_to_str,
         "test_expr": _operator_chain_based_expression_to_str,
         "or_test": _operator_chain_based_expression_to_str,
@@ -39,7 +44,9 @@ def expression_to_str(expression: Node) -> str:
         "getattr_call": _getattr_call_to_str,
         "getattr": lambda e: "".join([expression_to_str(c) for c in e.children]),
         "subscr_expr": _subscription_to_str,
-        "par_expr": lambda e: "({})".format(expression_to_str(e.children[0])),
+        "par_expr": lambda e: "({})".format(
+            standalone_expression_to_str(e.children[0])
+        ),
         "array": _array_to_str,
         "dict": _dict_to_str,
         "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
@@ -52,17 +59,17 @@ def expression_to_str(expression: Node) -> str:
         # fake expressions:
         "func_arg_regular": lambda e: "{}{}".format(
             e.children[0].value,
-            " = {}".format(expression_to_str(e.children[1]))
+            " = {}".format(standalone_expression_to_str(e.children[1]))
             if len(e.children) > 1
             else "",
         ),
         "func_arg_inf": lambda e: "{} := {}".format(
-            e.children[0].value, expression_to_str(e.children[1])
+            e.children[0].value, standalone_expression_to_str(e.children[1])
         ),
         "func_arg_typed": lambda e: "{}: {}{}".format(
             e.children[0].value,
             e.children[1].value,
-            " = {}".format(expression_to_str(e.children[2]))
+            " = {}".format(standalone_expression_to_str(e.children[2]))
             if len(e.children) > 2
             else "",
         ),
@@ -104,7 +111,7 @@ def _getattr_call_to_str(call: Tree) -> str:
 def _arguments_to_str(arguments: List[Node]) -> str:
     return ", ".join(
         [
-            expression_to_str(remove_outer_parentheses(argument))
+            standalone_expression_to_str(argument)
             for argument in arguments
             if not is_any_parentheses(argument) and not is_any_comma(argument)
         ]
@@ -113,7 +120,7 @@ def _arguments_to_str(arguments: List[Node]) -> str:
 
 def _array_to_str(array: Tree) -> str:
     elements = [
-        expression_to_str(remove_outer_parentheses(child))
+        standalone_expression_to_str(child)
         for child in array.children
         if not is_any_comma(child)
     ]
@@ -128,13 +135,13 @@ def _dict_to_str(a_dict: Tree) -> str:
 def _subscription_to_str(subscription: Tree) -> str:
     return "{}[{}]".format(
         expression_to_str(subscription.children[0]),
-        expression_to_str(subscription.children[1]),
+        standalone_expression_to_str(subscription.children[1]),
     )
 
 
 def _dict_element_to_str(dict_element: Tree) -> str:
     template = "{}: {}" if dict_element.data == "c_dict_element" else "{} = {}"
     return template.format(
-        expression_to_str(remove_outer_parentheses(dict_element.children[0])),
-        expression_to_str(remove_outer_parentheses(dict_element.children[1])),
+        standalone_expression_to_str(dict_element.children[0]),
+        standalone_expression_to_str(dict_element.children[1]),
     )
