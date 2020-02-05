@@ -4,7 +4,7 @@ from typing import Dict, Callable, Optional
 from .context import Context, ExpressionContext
 from .types import Outcome, Node, FormattedLines
 from .expression import format_expression
-from .block import format_block
+from .block import format_block, reconstruct_blank_lines_in_range
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 
@@ -43,7 +43,13 @@ def _format_return_statement(statement: Node, context: Context) -> Outcome:
 
 def _format_if_statement(statement: Node, context: Context) -> Outcome:
     formatted_lines = []  # type: FormattedLines
+    previously_processed_line_number = None
     for branch in statement.children:
+        if previously_processed_line_number is not None:
+            blank_lines = reconstruct_blank_lines_in_range(
+                previously_processed_line_number, branch.line, context,
+            )
+            formatted_lines += blank_lines
         branch_prefix = {
             "if_branch": "if ",
             "elif_branch": "elif ",
@@ -52,11 +58,11 @@ def _format_if_statement(statement: Node, context: Context) -> Outcome:
         expr_position = {"if_branch": 0, "elif_branch": 0, "else_branch": None}[
             branch.data
         ]
-        lines, last_processed_line_no = _format_branch(
+        lines, previously_processed_line_number = _format_branch(
             branch_prefix, ":", expr_position, branch, context
         )
         formatted_lines += lines
-    return (formatted_lines, last_processed_line_no)
+    return (formatted_lines, previously_processed_line_number)  # type: ignore
 
 
 def _format_for_statement(statement: Node, context: Context) -> Outcome:

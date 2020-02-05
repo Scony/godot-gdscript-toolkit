@@ -20,7 +20,7 @@ def format_block(
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
-        blank_lines = _reconstruct_blank_lines_in_range(
+        blank_lines = reconstruct_blank_lines_in_range(
             previously_processed_line_number, statement.line, context,
         )
         if previously_processed_line_number == context.previously_processed_line_number:
@@ -43,13 +43,23 @@ def format_block(
     dedent_line_number = _find_dedent_line_number(
         previously_processed_line_number, context
     )
-    lines_at_the_end = _reconstruct_blank_lines_in_range(
+    lines_at_the_end = reconstruct_blank_lines_in_range(
         previously_processed_line_number, dedent_line_number, context,
     )
     lines_at_the_end = _remove_empty_strings_from_end(lines_at_the_end)
     formatted_lines += lines_at_the_end
     previously_processed_line_number = dedent_line_number - 1
     return (formatted_lines, previously_processed_line_number)
+
+
+def reconstruct_blank_lines_in_range(
+    begin: int, end: int, context: Context
+) -> FormattedLines:
+    prefix = context.indent_string
+    comments_in_range = context.standalone_comments[begin + 1 : end]
+    reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
+    reconstructed_lines = _squeeze_lines(reconstructed_lines)
+    return list(zip([None for _ in range(begin + 1, end)], reconstructed_lines))
 
 
 # TODO: indent detection & refactoring
@@ -141,16 +151,6 @@ def _find_first_empty_line_ix_from_end(blank_lines: FormattedLines) -> int:
         if line == "":
             return line_no
     return -1
-
-
-def _reconstruct_blank_lines_in_range(
-    begin: int, end: int, context: Context
-) -> FormattedLines:
-    prefix = context.indent_string
-    comments_in_range = context.standalone_comments[begin + 1 : end]
-    reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
-    reconstructed_lines = _squeeze_lines(reconstructed_lines)
-    return list(zip([None for _ in range(begin + 1, end)], reconstructed_lines))
 
 
 def _squeeze_lines(lines: List[str]) -> List[str]:
