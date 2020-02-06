@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [3.2.4] 2020-02-06
 
 ### Fixed
  - Fixed parent block comments in if-elif-else
