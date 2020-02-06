@@ -1,3 +1,8 @@
+class A:
+	class B:
+		tool
+
+
 class X:
 	"""docstr
 	eod"""
@@ -21,6 +26,7 @@ class X:
 	var z: int = 1
 	var q: int
 	var w := 1
+	var xx: A.B
 
 
 class Y:
