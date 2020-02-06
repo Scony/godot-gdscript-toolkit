@@ -11,3 +11,10 @@ class E extends "simple-class-statements.in.gd":
 
 class F extends E:
 	tool
+
+class X:
+	class Y:
+		tool
+
+class Z:
+	extends X.Y
