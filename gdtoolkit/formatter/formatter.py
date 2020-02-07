@@ -1,4 +1,3 @@
-import re
 from typing import List, Optional
 
 from ..parser import parser
@@ -7,6 +6,10 @@ from .constants import INLINE_COMMENT_OFFSET, GLOBAL_SCOPE_SURROUNDING_EMPTY_LIN
 from .types import FormattedLines
 from .block import format_block
 from .class_statement import format_class_statement
+from .comments import (
+    gather_standalone_comments_from_code,
+    gather_inline_comments_from_code,
+)
 
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
@@ -21,8 +24,8 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         previously_processed_line_number=0,
         max_line_length=max_line_length,
         gdscript_code_lines=gdscript_code_lines,
-        standalone_comments=_gather_standalone_comments_from_code(gdscript_code),
-        inline_comments=_gather_inline_comments_from_code(gdscript_code),
+        standalone_comments=gather_standalone_comments_from_code(gdscript_code),
+        inline_comments=gather_inline_comments_from_code(gdscript_code),
     )
     formatted_lines, _ = format_block(
         parse_tree.children,
@@ -35,29 +38,6 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         formatted_lines, context.inline_comments
     )
     return "\n".join([line for _, line in formatted_lines_with_inlined_comments])
-
-
-def _gather_standalone_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
-    return _gather_comments_from_code_by_regex(gdscript_code, r"^\s*(#.*)$")
-
-
-def _gather_inline_comments_from_code(gdscript_code: str) -> List[Optional[str]]:
-    return _gather_comments_from_code_by_regex(gdscript_code, r"^\s*[^\s#]+[^#]*(#.*)$")
-
-
-def _gather_comments_from_code_by_regex(
-    gdscript_code: str, comment_regex: str
-) -> List[Optional[str]]:
-    lines = gdscript_code.splitlines()
-    comments = [None]  # type: List[Optional[str]]
-    regex = re.compile(comment_regex)
-    for line in lines:
-        match = regex.search(line)
-        if match is not None:
-            comments.append(match.group(1))
-        else:
-            comments.append(None)
-    return comments
 
 
 def _add_inline_comments(
