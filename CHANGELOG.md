@@ -5,6 +5,7 @@
 ### Fixed
  - Formatting strings with hash inside
  - Fixed getattr call formatting bug
+ - Fixed 'extends' formatting bug
 
 ## [3.2.4] 2020-02-06
 

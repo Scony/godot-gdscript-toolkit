@@ -23,7 +23,7 @@ def format_block(
         blank_lines = reconstruct_blank_lines_in_range(
             previously_processed_line_number, statement.line, context,
         )
-        if previously_processed_line_number == context.previously_processed_line_number:
+        if previous_statement_name is None:
             blank_lines = _remove_empty_strings_from_begin(blank_lines)
         else:
             blank_lines = _add_extra_blanks_due_to_previous_statement(
