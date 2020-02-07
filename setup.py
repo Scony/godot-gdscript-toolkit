@@ -16,7 +16,7 @@ setup(
         "gdtoolkit.formatter",
         "gdtoolkit.parser",
     ],
-    package_data={"gdtoolkit.parser": ["gdscript.lark"]},
+    package_data={"gdtoolkit.parser": ["gdscript.lark", "comments.lark"]},
     entry_points={
         "console_scripts": [
             "gdparse = gdtoolkit.parser.__main__:main",

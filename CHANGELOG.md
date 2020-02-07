@@ -1,5 +1,10 @@
 # Changelog
 
+## [master]
+
+### Fixed
+ - Formatting strings with hash inside
+
 ## [3.2.4] 2020-02-06
 
 ### Fixed

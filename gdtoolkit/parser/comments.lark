@@ -1,0 +1,9 @@
+start: COMMENT*
+
+ANYTHING: /[^#"']+/
+REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
+LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is | /'''.*?(?<!\\)(\\\\)*?'''/is
+COMMENT: /#[^\n]*/
+%ignore REGULAR_STRING
+%ignore LONG_STRING
+%ignore ANYTHING

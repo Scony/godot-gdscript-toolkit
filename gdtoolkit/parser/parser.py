@@ -61,6 +61,11 @@ class Parser:
             else self._parser.parse(code)
         )
 
+    def parse_comments(self, code: str) -> Tree:
+        """Parses GDScript code and returns comments - both standalone, and inline."""
+        code += "\n"  # to overcome lark bug (#489)
+        return self._comment_parser.parse(code)
+
     @cached_property
     def _parser(self) -> Tree:
         return Lark.open(
@@ -99,6 +104,17 @@ class Parser:
                 propagate_positions=True,
                 maybe_placeholders=False,
             )
+
+    @cached_property
+    def _comment_parser(self) -> Tree:
+        return Lark.open(
+            os.path.join(self._directory, "comments.lark"),
+            postlex=Indenter(),
+            parser="lalr",
+            start="start",
+            propagate_positions=True,
+            maybe_placeholders=False,
+        )
 
 
 parser = Parser()
