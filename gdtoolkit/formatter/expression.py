@@ -349,6 +349,19 @@ def _format_call_expression_to_multiline_line(
     offset = 1 if has_leading_dot(expression) else 0
     callee_node = expression.children[0 + offset]
     callee = expression_to_str(callee_node)
+    list_is_empty = len(expression.children) == 3 + offset
+    if list_is_empty:
+        return (
+            [
+                (
+                    expression_context.prefix_line,
+                    "{}{}{}()".format(
+                        context.indent_string, expression_context.prefix_string, callee
+                    ),
+                )
+            ],
+            expression.end_line,
+        )
     new_expression_context = ExpressionContext(
         "{}{}{}(".format(expression_context.prefix_string, dot, callee),
         callee_node.line,
