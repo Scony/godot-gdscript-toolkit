@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [3.2.5] 2020-02-09
 
 ### Fixed
  - Formatting strings with hash inside
