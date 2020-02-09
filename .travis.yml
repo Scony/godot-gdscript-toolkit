@@ -5,6 +5,8 @@ stages:
   - name: deploy
     if: branch = master AND tag IS present
 
+cache: false
+
 jobs:
   include:
     - os: linux
@@ -27,6 +29,9 @@ jobs:
         user: "__token__"
         password:
           secure: uZ2pCFNIaKWbcc8X2anQbgAT4yTxOQA9Ug8bT3aO4hNTSLYRBHyxt08d7NKmgOt8P0FrMUTQ2ALaWGnQciV1TrPEHOaG17RUhxL+Ggt1pcsBmNWk45VcCz3sBxKBnueAuDqH6znBFFIIN16Ga+1pAxJWVbqZVD1JL+HqHIxjOwJvmvJ0xCQrvFtOtQHOSvJsD0YXq7wUYllzAW3z/6Y8KhsB5z3Yg75osZrFU576GA6DpgQnHG64F9kIGjBXjywqHmQEV0GQQIHPYCndHsgurSJcQlj3Yv/xZEVzOUx3KzeFnsW7x5x1Kiv1Lb6K2xHnci8GR7Si/eTtuXMAk3RcVwmAGZXQIlCQU15Nmw1LtsjwV4Nob1ZJwYfzj/XFGRBnMdMWL3l3dv1TG6R7FYF3CTmVOqR+6iFuATFnX3Dx5WFEmVjz1TZqdXCZE3Vm2xxmURs8ip9HzkJIrwecUJAqfT6YOQ9ynKf9WEP4ETSIk1VP6yCoNOucn8ipQ2g0yui5fyEjO1ypKrzik7Ni+eVylQvryNRU1z7NXWAlP7NTTDPCXOU7cHgH59jMsqrYFF8ZG+2ZZbuJ1Wd3XztEWMdqo9ossJgxaCmf0WVFT7fUbdQQZDyo/rnVDjWa6Tjqxvf1foozCFf7U8unAXAbqBCsGNSXO6y1Ylsij7qKU7G3k9c=
+        on:
+          tags: true
+          branch: master
 
 install:
   - pip3 install tox
