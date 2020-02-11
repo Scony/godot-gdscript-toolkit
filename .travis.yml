@@ -1,12 +1,5 @@
 language: python
 
-stages:
-  - name: test
-  - name: deploy
-    if: branch = master AND tag IS present
-
-cache: false
-
 jobs:
   include:
     - os: linux
