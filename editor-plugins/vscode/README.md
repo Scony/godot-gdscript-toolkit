@@ -8,7 +8,7 @@ Formats GDScript code using VSCode's built-in formatters. Supports format-on-sav
 
 Usage: `ctrl`+`shift`+`P` to open the command palette. `Format Document` on a GDScript file.
 
-![Formatted output](https://github.com/Scony/godot-gdscript-toolkit/blob/vscode-plugin/editor-plugins/vscode/assets/banner.png)
+![Formatted output](editor-plugins/vscode/assets/banner.png)
 
 ## Requirements
 
@@ -24,6 +24,10 @@ Usage: `ctrl`+`shift`+`P` to open the command palette. `Format Document` on a GD
 None yet
 
 ## Release Notes
+
+### 1.0.2
+
+Fix to the README markdown and package.json
 
 ### 1.0.0
 
