@@ -2,8 +2,12 @@
     "name": "gdscript-toolkit-formatter",
     "displayName": "GDScript Formatter",
     "description": "Formatter for GDScript in Visual Studio Code using Scony's GDScript Toolkit",
-    "version": "1.0.0",
-    "repository": "https://github.com/Scony/godot-gdscript-toolkit",
+    "version": "1.0.2",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Scony/godot-gdscript-toolkit.git",
+        "directory": "editor-plugins/vscode"
+    },
     "publisher": "Razoric",
     "author": "Scony",
     "icon": "icon.png",
