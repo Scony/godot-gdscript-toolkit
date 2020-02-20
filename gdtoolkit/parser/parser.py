@@ -6,6 +6,8 @@ and to get an intermediate representation as a Lark Tree.
 import os
 import pickle
 import re
+import sys
+import tempfile
 from typing import List
 
 from lark import Lark, Tree, indenter
@@ -48,9 +50,7 @@ class Parser:
 
     def __init__(self):
         self._directory = os.path.dirname(__file__)
-        self._cache_dirpath: str = os.path.join(
-            os.path.expanduser("~"), ".cache/gdtoolkit"
-        )
+        self._cache_dirpath: str = os.path.join(get_cache_directory(), "gdtoolkit")
 
     def parse(
         self, code: str, gather_metadata: bool = False, loosen_grammar: bool = False
@@ -164,6 +164,18 @@ class Parser:
                 transformer=None,
                 postlex=Indenter(),
             )
+
+
+def get_cache_directory() -> str:
+    """Returns the cache directory based on the user's operating system"""
+    directory: str = ""
+    if sys.platform in ["linux", "linux2"]:
+        directory = os.path.join(os.path.expanduser("~"), ".cache")
+    elif sys.platform == "darwin":
+        directory = os.path.join(os.path.expanduser("~"), "Library", "Caches")
+    elif sys.platform == "win32":
+        directory = os.path.expandvars(r"%LOCALAPPDATA%")
+    return directory
 
 
 parser = Parser()
