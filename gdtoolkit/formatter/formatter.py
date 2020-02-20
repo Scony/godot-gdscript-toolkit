@@ -7,13 +7,14 @@ from .types import FormattedLines
 from .block import format_block
 from .class_statement import format_class_statement
 from .comments import (
-    gather_standalone_comments_from_code,
-    gather_inline_comments_from_code,
+    gather_standalone_comments,
+    gather_inline_comments,
 )
 
 
 def format_code(gdscript_code: str, max_line_length: int) -> str:
     parse_tree = parser.parse(gdscript_code, gather_metadata=True)
+    comment_parse_tree = parser.parse_comments(gdscript_code)
     gdscript_code_lines = [
         "",
         *gdscript_code.splitlines(),
@@ -24,8 +25,10 @@ def format_code(gdscript_code: str, max_line_length: int) -> str:
         previously_processed_line_number=0,
         max_line_length=max_line_length,
         gdscript_code_lines=gdscript_code_lines,
-        standalone_comments=gather_standalone_comments_from_code(gdscript_code),
-        inline_comments=gather_inline_comments_from_code(gdscript_code),
+        standalone_comments=gather_standalone_comments(
+            gdscript_code, comment_parse_tree
+        ),
+        inline_comments=gather_inline_comments(gdscript_code, comment_parse_tree),
     )
     formatted_lines, _ = format_block(
         parse_tree.children,
