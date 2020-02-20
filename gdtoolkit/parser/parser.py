@@ -78,14 +78,34 @@ class Parser:
         name: str,
         add_metadata: bool = False,
         grammar_filename: str = "gdscript.lark",
-        grammar_override: str = "",
+        is_loosened_parser: bool = False,
     ) -> Tree:
         version = "3.2.5"
 
         tree: Tree = None
         filepath: str = os.path.join(self._cache_dirpath, version, name) + ".pickle"
         if not os.path.exists(filepath):
-            grammar: str = os.path.join(self._directory, grammar_filename)
+            # TODO: remove loosened parser, see #63
+            #
+            # This is a special parser to work around issues with trailing
+            # commas in enums, etc.
+            loosened_grammar_file = tempfile.TemporaryFile("w")
+            if is_loosened_parser:
+                with open(
+                    os.path.join(self._directory, "gdscript.lark"), "r"
+                ) as file_grammar:
+                    grammar_lines: List[str] = file_grammar.read().splitlines()
+                    grammar: str = "\n".join(
+                        [re.sub(r"^!", "", line) for line in grammar_lines]
+                    )
+                    grammar = grammar.replace(" -> par_expr", "")
+                    loosened_grammar_file.write(grammar)
+
+            grammar: str = (
+                loosened_grammar_file
+                if is_loosened_parser
+                else os.path.join(self._directory, grammar_filename)
+            )
             tree = Lark.open(
                 grammar,
                 parser="lalr",
@@ -95,6 +115,7 @@ class Parser:
                 maybe_placeholders=False,
             )
             self.save(tree, filepath)
+            loosened_grammar_file.close()
         tree = self.load(filepath)
         return tree
 
@@ -106,21 +127,11 @@ class Parser:
     def _parser_with_metadata(self) -> Tree:
         return self._get_parser("parser_with_metadata", True)
 
+    # TODO: remove loosened parser, see #63
     @cached_property
     def _loosen_parser_with_metadata(self) -> Tree:
-        with open(os.path.join(self._directory, "gdscript.lark"), "r") as file_grammar:
-            grammar_lines: List[str] = file_grammar.read().splitlines()
-            grammar: str = "\n".join(
-                [re.sub(r"^!", "", line) for line in grammar_lines]
-            ).replace(" -> par_expr", "")
-            return Lark(
-                grammar,
-                postlex=Indenter(),
-                parser="lalr",
-                start="start",
-                propagate_positions=True,
-                maybe_placeholders=False,
-            )
+        return self._get_parser("loosened_parser_with_metadata", True)
+        return
 
     @cached_property
     def _comment_parser(self) -> Tree:
