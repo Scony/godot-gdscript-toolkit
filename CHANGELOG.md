@@ -1,5 +1,10 @@
 # Changelog
 
+## master
+
+### Fixed
+ - Improved comment parsing time by a tiny chunk
+
 ## [3.2.5] 2020-02-09
 
 ### Fixed
