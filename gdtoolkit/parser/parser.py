@@ -4,9 +4,15 @@ Provides a function to parse GDScript code
 and to get an intermediate representation as a Lark Tree.
 """
 import os
+import pickle
 import re
+import sys
+import tempfile
+from typing import List
 
 from lark import Lark, Tree, indenter
+from lark.grammar import Rule
+from lark.lexer import TerminalDef
 
 
 class Indenter(indenter.Indenter):
@@ -44,6 +50,7 @@ class Parser:
 
     def __init__(self):
         self._directory = os.path.dirname(__file__)
+        self._cache_dirpath: str = os.path.join(get_cache_directory(), "gdtoolkit")
 
     def parse(
         self, code: str, gather_metadata: bool = False, loosen_grammar: bool = False
@@ -66,55 +73,109 @@ class Parser:
         code += "\n"  # to overcome lark bug (#489)
         return self._comment_parser.parse(code)
 
+    def _get_parser(
+        self,
+        name: str,
+        add_metadata: bool = False,
+        grammar_filename: str = "gdscript.lark",
+        is_loosened_parser: bool = False,
+    ) -> Tree:
+        version = "3.2.5"
+
+        tree: Tree = None
+        filepath: str = os.path.join(self._cache_dirpath, version, name) + ".pickle"
+        if not os.path.exists(filepath):
+            # TODO: remove loosened parser, see #63
+            #
+            # This is a special parser to work around issues with trailing
+            # commas in enums, etc.
+            loosened_grammar_file = tempfile.TemporaryFile("w")
+            if is_loosened_parser:
+                with open(
+                    os.path.join(self._directory, "gdscript.lark"), "r"
+                ) as file_grammar:
+                    grammar_lines: List[str] = file_grammar.read().splitlines()
+                    grammar: str = "\n".join(
+                        [re.sub(r"^!", "", line) for line in grammar_lines]
+                    )
+                    grammar = grammar.replace(" -> par_expr", "")
+                    loosened_grammar_file.write(grammar)
+
+            grammar: str = (
+                loosened_grammar_file
+                if is_loosened_parser
+                else os.path.join(self._directory, grammar_filename)
+            )
+            tree = Lark.open(
+                grammar,
+                parser="lalr",
+                start="start",
+                postlex=Indenter(),
+                propagate_positions=add_metadata,
+                maybe_placeholders=False,
+            )
+            self.save(tree, filepath)
+            loosened_grammar_file.close()
+        tree = self.load(filepath)
+        return tree
+
     @cached_property
     def _parser(self) -> Tree:
-        return Lark.open(
-            os.path.join(self._directory, "gdscript.lark"),
-            postlex=Indenter(),
-            parser="lalr",
-            start="start",
-            maybe_placeholders=False,
-        )
+        return self._get_parser("parser")
 
     @cached_property
     def _parser_with_metadata(self) -> Tree:
-        return Lark.open(
-            os.path.join(self._directory, "gdscript.lark"),
-            postlex=Indenter(),
-            parser="lalr",
-            start="start",
-            propagate_positions=True,
-            maybe_placeholders=False,
-        )
+        return self._get_parser("parser_with_metadata", True)
 
+    # TODO: remove loosened parser, see #63
     @cached_property
     def _loosen_parser_with_metadata(self) -> Tree:
-        with open(os.path.join(self._directory, "gdscript.lark"), "r") as fh:
-            grammar_code = fh.read()
-            grammar_lines = grammar_code.splitlines()
-            grammar_code = "\n".join(
-                [re.sub(r"^!", "", line) for line in grammar_lines]
-            )
-            grammar_code = grammar_code.replace(" -> par_expr", "")
-            return Lark(
-                grammar_code,
-                postlex=Indenter(),
-                parser="lalr",
-                start="start",
-                propagate_positions=True,
-                maybe_placeholders=False,
-            )
+        return self._get_parser("loosened_parser_with_metadata", True)
+        return
 
     @cached_property
     def _comment_parser(self) -> Tree:
-        return Lark.open(
-            os.path.join(self._directory, "comments.lark"),
-            postlex=Indenter(),
-            parser="lalr",
-            start="start",
-            propagate_positions=True,
-            maybe_placeholders=False,
-        )
+        return self._get_parser("parser_comments", True, "comments.lark")
+
+    def save(self, parser: Tree, path: str) -> None:
+        """Serializes the Lark parser and saves it to the disk."""
+
+        data, memo = parser.memo_serialize([TerminalDef, Rule])
+        write_data: dict = {
+            "data": data,
+            "memo": memo,
+        }
+
+        dirpath: str = os.path.dirname(path)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+        with open(path, "wb") as file_parser:
+            pickle.dump(write_data, file_parser, pickle.HIGHEST_PROTOCOL)
+
+    def load(self, path: str) -> Tree:
+        """Loads the Lark parser from the disk and deserializes it."""
+        with open(path, "rb") as file_parser:
+            data: dict = pickle.load(file_parser)
+            namespace = {"Rule": Rule, "TerminalDef": TerminalDef}
+            return Lark.deserialize(
+                data["data"],
+                namespace,
+                data["memo"],
+                transformer=None,
+                postlex=Indenter(),
+            )
+
+
+def get_cache_directory() -> str:
+    """Returns the cache directory based on the user's operating system"""
+    directory: str = ""
+    if sys.platform in ["linux", "linux2"]:
+        directory = os.path.join(os.path.expanduser("~"), ".cache")
+    elif sys.platform == "darwin":
+        directory = os.path.join(os.path.expanduser("~"), "Library", "Caches")
+    elif sys.platform == "win32":
+        directory = os.path.expandvars(r"%LOCALAPPDATA%")
+    return directory
 
 
 parser = Parser()
