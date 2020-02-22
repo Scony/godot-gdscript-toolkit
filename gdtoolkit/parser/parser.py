@@ -7,7 +7,7 @@ import os
 import pickle
 import re
 import sys
-import tempfile
+import pkg_resources
 from typing import List
 
 from lark import Lark, Tree, indenter
@@ -80,43 +80,45 @@ class Parser:
         grammar_filename: str = "gdscript.lark",
         is_loosened_parser: bool = False,
     ) -> Tree:
-        version = "3.2.5"
+        version: str = pkg_resources.get_distribution("gdtoolkit").version
 
         tree: Tree = None
-        filepath: str = os.path.join(self._cache_dirpath, version, name) + ".pickle"
-        if not os.path.exists(filepath):
+        cache_filepath: str = os.path.join(
+            self._cache_dirpath, version, name
+        ) + ".pickle"
+        grammar_filepath: str = os.path.join(self._directory, grammar_filename)
+        if not os.path.exists(cache_filepath):
             # TODO: remove loosened parser, see #63
             #
             # This is a special parser to work around issues with trailing
             # commas in enums, etc.
-            loosened_grammar_file = tempfile.TemporaryFile("w")
             if is_loosened_parser:
-                with open(
-                    os.path.join(self._directory, "gdscript.lark"), "r"
-                ) as file_grammar:
+                with open(grammar_filepath, "r") as file_grammar:
                     grammar_lines: List[str] = file_grammar.read().splitlines()
                     grammar: str = "\n".join(
                         [re.sub(r"^!", "", line) for line in grammar_lines]
                     )
                     grammar = grammar.replace(" -> par_expr", "")
-                    loosened_grammar_file.write(grammar)
-
-            grammar: str = (
-                loosened_grammar_file
-                if is_loosened_parser
-                else os.path.join(self._directory, grammar_filename)
-            )
-            tree = Lark.open(
-                grammar,
-                parser="lalr",
-                start="start",
-                postlex=Indenter(),
-                propagate_positions=add_metadata,
-                maybe_placeholders=False,
-            )
-            self.save(tree, filepath)
-            loosened_grammar_file.close()
-        tree = self.load(filepath)
+                    tree = Lark(
+                        grammar,
+                        parser="lalr",
+                        start="start",
+                        postlex=Indenter(),
+                        propagate_positions=add_metadata,
+                        maybe_placeholders=False,
+                    )
+            else:
+                tree = Lark.open(
+                    grammar_filepath,
+                    parser="lalr",
+                    start="start",
+                    postlex=Indenter(),
+                    propagate_positions=add_metadata,
+                    maybe_placeholders=False,
+                )
+            self.save(tree, cache_filepath)
+        else:
+            tree = self.load(cache_filepath)
         return tree
 
     @cached_property
@@ -125,22 +127,26 @@ class Parser:
 
     @cached_property
     def _parser_with_metadata(self) -> Tree:
-        return self._get_parser("parser_with_metadata", True)
+        return self._get_parser("parser_with_metadata", add_metadata=True)
 
     # TODO: remove loosened parser, see #63
     @cached_property
     def _loosen_parser_with_metadata(self) -> Tree:
-        return self._get_parser("loosened_parser_with_metadata", True)
-        return
+        return self._get_parser(
+            "loosened_parser_with_metadata", add_metadata=True, is_loosened_parser=True
+        )
 
     @cached_property
     def _comment_parser(self) -> Tree:
-        return self._get_parser("parser_comments", True, "comments.lark")
+        return self._get_parser(
+            "parser_comments", add_metadata=True, grammar_filename="comments.lark"
+        )
 
-    def save(self, parser: Tree, path: str) -> None:
+    @staticmethod
+    def save(a_parser: Tree, path: str) -> None:
         """Serializes the Lark parser and saves it to the disk."""
 
-        data, memo = parser.memo_serialize([TerminalDef, Rule])
+        data, memo = a_parser.memo_serialize([TerminalDef, Rule])
         write_data: dict = {
             "data": data,
             "memo": memo,
@@ -152,7 +158,8 @@ class Parser:
         with open(path, "wb") as file_parser:
             pickle.dump(write_data, file_parser, pickle.HIGHEST_PROTOCOL)
 
-    def load(self, path: str) -> Tree:
+    @staticmethod
+    def load(path: str) -> Tree:
         """Loads the Lark parser from the disk and deserializes it."""
         with open(path, "rb") as file_parser:
             data: dict = pickle.load(file_parser)
