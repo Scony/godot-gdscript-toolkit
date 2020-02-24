@@ -24,6 +24,8 @@ class Enum:
 
     @staticmethod
     def _load_name(enum_def: Tree) -> Optional[str]:
+        if len(enum_def.children[0].children) == 0:
+            return None
         node = enum_def.children[0].children[0]
         if isinstance(node, Token) and node.type == "NAME":
             return node.value
@@ -44,8 +46,10 @@ class Enum:
 
     @staticmethod
     def _check_trailing_comma(enum_def: Tree) -> bool:
-        node = enum_def.children[0].children[-2]
-        if isinstance(node, Token) and node.type == "COMMA":
+        if len(enum_def.children[0].children) == 0:
+            return False
+        node = enum_def.children[0].children[-1]
+        if isinstance(node, Tree) and node.data == "trailing_comma":
             return True
         return False
 
@@ -60,7 +64,7 @@ def format_enum(enum_def: Tree, context: Context) -> Outcome:
     else:
         lines = _format_to_single_line(enum, context)
     concrete_enum_def = enum_def.children[0]
-    return lines, concrete_enum_def.children[-1].line
+    return lines, concrete_enum_def.end_line
 
 
 def _calculate_single_line_len(enum: Enum, context: Context) -> int:
@@ -81,7 +85,7 @@ def _calculate_single_line_len(enum: Enum, context: Context) -> int:
 
 def _calculate_total_inline_comments_len(enum: Enum, context: Context) -> int:
     begin_line = enum.lark_node.line
-    end_line = enum.lark_node.children[0].children[-1].line
+    end_line = enum.lark_node.children[0].end_line
     return sum(
         len(comment) + 2
         for comment in context.inline_comments[begin_line : end_line + 1]
@@ -92,6 +96,7 @@ def _calculate_total_inline_comments_len(enum: Enum, context: Context) -> int:
 def _calculate_single_line_elements_len(enum: Enum) -> int:
     spaces = 2 if len(enum.elements) > 0 else 0
     separators = (len(enum.elements) - 1) * 2 if len(enum.elements) > 1 else 0
+    trailing_comma = 1 if enum.trailing_comma else 0
     return (
         sum(
             len(element.name)
@@ -100,6 +105,7 @@ def _calculate_single_line_elements_len(enum: Enum) -> int:
         )
         + spaces
         + separators
+        + trailing_comma
     )
 
 
@@ -122,6 +128,8 @@ def _format_elements_to_single_line(enum: Enum) -> List[str]:
             fragments.append(", {}".format(element.name))
         if element.value is not None:
             fragments.append(" = {}".format(element.value))
+    if enum.trailing_comma:
+        fragments.append(",")
     if len(enum.elements) > 0:
         fragments.append(" ")
     return fragments
@@ -135,20 +143,21 @@ def _format_to_multiple_lines(enum: Enum, context: Context) -> List:
     line_fragments.append("{")
     enum_lines.append((enum.lark_node.line, "".join(line_fragments)))
     enum_lines += _format_elements_to_multiple_lines(enum, context)
-    closing_brace_line = enum.lark_node.children[0].children[-1].line
+    closing_brace_line = enum.lark_node.children[0].end_line
     enum_lines.append((closing_brace_line, "{}}}".format(context.indent_string)))
     return enum_lines
 
 
 def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
     lines_w_elements = []
-    for element in enum.elements:
+    for index, element in enumerate(enum.elements):
+        comma = "," if enum.trailing_comma or index != len(enum.elements) - 1 else ""
         if element.value is None:
             lines_w_elements.append(
                 (
                     element.lark_node.line,
-                    "{}{}{},".format(
-                        context.indent_string, INDENT_STRING, element.name,
+                    "{}{}{}{}".format(
+                        context.indent_string, INDENT_STRING, element.name, comma,
                     ),
                 )
             )
@@ -156,11 +165,12 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
             lines_w_elements.append(
                 (
                     element.lark_node.line,
-                    "{}{}{} = {},".format(
+                    "{}{}{} = {}{}".format(
                         context.indent_string,
                         INDENT_STRING,
                         element.name,
                         element.value,
+                        comma,
                     ),
                 )
             )

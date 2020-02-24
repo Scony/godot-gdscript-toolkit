@@ -4,6 +4,11 @@
 
 ### Fixed
  - Improved comment parsing time by a tiny chunk
+ - Improved formatting time due to loosen grammar removal
+ - Improved formatting time due to grammar caching
+
+### Changed
+ - Enum doesn't add trailing comma unless it was in place from the very beginning
 
 ## [3.2.5] 2020-02-09
 

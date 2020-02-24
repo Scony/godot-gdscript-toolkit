@@ -8,7 +8,7 @@ enum {
 	SOME_G,
 	SOME_H,
 	SOME_I,
-	SOME_J = 9,
+	SOME_J = 9
 }
 enum Named {
 	SOME_A,
@@ -19,5 +19,5 @@ enum Named {
 	SOME_F,
 	SOME_G,
 	SOME_H,
-	SOME_I = 999,
+	SOME_I = 999
 }
