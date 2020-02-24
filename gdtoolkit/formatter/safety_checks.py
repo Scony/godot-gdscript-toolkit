@@ -1,3 +1,5 @@
+from lark import Transformer
+
 from ..parser import parser
 from .formatter import format_code
 from .comments import gather_comments_from_code
@@ -15,10 +17,19 @@ class CommentPersistenceViolation(Exception):
     pass
 
 
-# TODO: modify formatted code parse tree inplace to enable tree modifications
+class LoosenTreeTransformer(Transformer):
+    def par_expr(self, args):  # pylint: disable=R0201
+        return args[0] if len(args) > 0 else args
+
+
 def check_tree_invariant(given_code: str, formatted_code: str) -> None:
-    given_code_parse_tree = parser.parse(given_code, loosen_grammar=True)
-    formatted_code_parse_tree = parser.parse(formatted_code, loosen_grammar=True)
+    given_code_parse_tree = parser.parse(given_code)
+    formatted_code_parse_tree = parser.parse(formatted_code)
+    loosen_tree_transformer = LoosenTreeTransformer()
+    given_code_parse_tree = loosen_tree_transformer.transform(given_code_parse_tree)
+    formatted_code_parse_tree = loosen_tree_transformer.transform(
+        formatted_code_parse_tree
+    )
     if given_code_parse_tree != formatted_code_parse_tree:
         raise TreeInvariantViolation
 

@@ -2,7 +2,7 @@ from typing import List
 import difflib
 
 from gdtoolkit.parser import parser
-from gdtoolkit.formatter import format_code
+from gdtoolkit.formatter import format_code, LoosenTreeTransformer
 
 
 MAX_LINE_LENGTH = 100
@@ -46,8 +46,13 @@ def format_and_compare(input_code, expected_output_code):
 
 
 def _tree_invariant_check(input_code, formatted_code):
-    input_code_parse_tree = parser.parse(input_code, loosen_grammar=True)
-    formatted_code_parse_tree = parser.parse(formatted_code, loosen_grammar=True)
+    input_code_parse_tree = parser.parse(input_code)
+    formatted_code_parse_tree = parser.parse(formatted_code)
+    loosen_tree_transformer = LoosenTreeTransformer()
+    input_code_parse_tree = loosen_tree_transformer.transform(input_code_parse_tree)
+    formatted_code_parse_tree = loosen_tree_transformer.transform(
+        formatted_code_parse_tree
+    )
     diff = "\n".join(
         difflib.unified_diff(
             str(input_code_parse_tree.pretty()).splitlines(),

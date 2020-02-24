@@ -5,10 +5,8 @@ and to get an intermediate representation as a Lark Tree.
 """
 import os
 import pickle
-import re
 import sys
 import pkg_resources
-from typing import List
 
 from lark import Lark, Tree, indenter
 from lark.grammar import Rule
@@ -50,18 +48,15 @@ class Parser:
 
     def __init__(self):
         self._directory = os.path.dirname(__file__)
+        self._use_grammar_cache = True
         self._cache_dirpath: str = os.path.join(get_cache_directory(), "gdtoolkit")
 
-    def parse(
-        self, code: str, gather_metadata: bool = False, loosen_grammar: bool = False
-    ) -> Tree:
+    def parse(self, code: str, gather_metadata: bool = False) -> Tree:
         """Parses GDScript code and returns an intermediate representation as a Lark Tree.
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
         code += "\n"  # to overcome lark bug (#489)
-        if loosen_grammar:
-            return self._loosen_parser_with_metadata.parse(code)
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -73,12 +68,14 @@ class Parser:
         code += "\n"  # to overcome lark bug (#489)
         return self._comment_parser.parse(code)
 
+    def disable_grammar_caching(self) -> None:
+        self._use_grammar_cache = False
+
     def _get_parser(
         self,
         name: str,
         add_metadata: bool = False,
         grammar_filename: str = "gdscript.lark",
-        is_loosened_parser: bool = False,
     ) -> Tree:
         version: str = pkg_resources.get_distribution("gdtoolkit").version
 
@@ -87,35 +84,15 @@ class Parser:
             self._cache_dirpath, version, name
         ) + ".pickle"
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
-        if not os.path.exists(cache_filepath):
-            # TODO: remove loosened parser, see #63
-            #
-            # This is a special parser to work around issues with trailing
-            # commas in enums, etc.
-            if is_loosened_parser:
-                with open(grammar_filepath, "r") as file_grammar:
-                    grammar_lines: List[str] = file_grammar.read().splitlines()
-                    grammar: str = "\n".join(
-                        [re.sub(r"^!", "", line) for line in grammar_lines]
-                    )
-                    grammar = grammar.replace(" -> par_expr", "")
-                    tree = Lark(
-                        grammar,
-                        parser="lalr",
-                        start="start",
-                        postlex=Indenter(),
-                        propagate_positions=add_metadata,
-                        maybe_placeholders=False,
-                    )
-            else:
-                tree = Lark.open(
-                    grammar_filepath,
-                    parser="lalr",
-                    start="start",
-                    postlex=Indenter(),
-                    propagate_positions=add_metadata,
-                    maybe_placeholders=False,
-                )
+        if not os.path.exists(cache_filepath) or not self._use_grammar_cache:
+            tree = Lark.open(
+                grammar_filepath,
+                parser="lalr",
+                start="start",
+                postlex=Indenter(),
+                propagate_positions=add_metadata,
+                maybe_placeholders=False,
+            )
             self.save(tree, cache_filepath)
         else:
             tree = self.load(cache_filepath)
@@ -128,13 +105,6 @@ class Parser:
     @cached_property
     def _parser_with_metadata(self) -> Tree:
         return self._get_parser("parser_with_metadata", add_metadata=True)
-
-    # TODO: remove loosened parser, see #63
-    @cached_property
-    def _loosen_parser_with_metadata(self) -> Tree:
-        return self._get_parser(
-            "loosened_parser_with_metadata", add_metadata=True, is_loosened_parser=True
-        )
 
     @cached_property
     def _comment_parser(self) -> Tree:

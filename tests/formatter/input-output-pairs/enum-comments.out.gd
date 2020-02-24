@@ -2,7 +2,7 @@ class X:
 	enum First { A, B }  # xxx
 	enum Second {
 		A,
-		B,
+		B
 	}  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	enum Third { A }  # aaa  # bbb
 	enum Fourth {  # aaa
@@ -10,5 +10,5 @@ class X:
 		B,  # ccc
 	}  # ddd
 	enum Fifth {  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-		A,  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+		A  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	}  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
