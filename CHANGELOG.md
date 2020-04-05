@@ -6,6 +6,7 @@
  - Improved comment parsing time by a tiny chunk
  - Improved formatting time due to loosen grammar removal
  - Improved formatting time due to grammar caching
+ - Improved formatting time due to parse tree reuse in safety checks
 
 ### Changed
  - Enum doesn't add trailing comma unless it was in place from the very beginning
