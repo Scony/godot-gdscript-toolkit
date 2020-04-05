@@ -2,6 +2,9 @@
 
 ## master
 
+### Changed
+ - Level-0 standalone comments are not indented anymore
+
 ### Fixed
  - Improved comment parsing time by a tiny chunk
  - Improved formatting time due to loosen grammar removal
