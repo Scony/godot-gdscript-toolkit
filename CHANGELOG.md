@@ -1,9 +1,6 @@
 # Changelog
 
-## master
-
-### Changed
- - Level-0 standalone comments are not indented anymore
+## [3.2.6] 2020-04-05
 
 ### Fixed
  - Improved comment parsing time by a tiny chunk
@@ -14,6 +11,7 @@
 
 ### Changed
  - Enum doesn't add trailing comma unless it was in place from the very beginning
+ - Level-0 standalone comments are not indented anymore
 
 ## [3.2.5] 2020-02-09
 
