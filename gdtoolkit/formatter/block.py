@@ -55,9 +55,18 @@ def format_block(
 def reconstruct_blank_lines_in_range(
     begin: int, end: int, context: Context
 ) -> FormattedLines:
-    prefix = context.indent_string
     comments_in_range = context.standalone_comments[begin + 1 : end]
-    reconstructed_lines = ["" if c is None else prefix + c for c in comments_in_range]
+    reconstructed_lines = []
+    for line_no, comment in zip(range(begin + 1, end), comments_in_range):
+        if comment is not None:
+            prefix = (
+                context.indent_string
+                if not context.gdscript_code_lines[line_no].startswith("#")
+                else ""
+            )
+            reconstructed_lines.append(prefix + comment)
+        else:
+            reconstructed_lines.append("")
     reconstructed_lines = _squeeze_lines(reconstructed_lines)
     return list(zip([None for _ in range(begin + 1, end)], reconstructed_lines))
 
