@@ -58,10 +58,10 @@ func_arg_regular: ["var"] NAME ["=" expr]
 func_arg_inf: ["var"] NAME ":" "=" expr
 func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
 _func_suite: _func_body
-           | func_stmt+
-_func_body: _NL _INDENT func_stmt+ _DEDENT
-?func_stmt: (simple_func_stmt _NL) | compound_func_stmt
-?simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
+           | _func_stmt
+_func_body: _NL _INDENT _func_stmt+ _DEDENT
+_func_stmt: (_simple_func_stmt _NL) | compound_func_stmt
+_simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
 ?single_func_stmt: pass_stmt
                  | return_stmt
                  | func_var_stmt
@@ -86,7 +86,7 @@ while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
 match_stmt: "match" expr ":" _match_body
 _match_body: _NL _INDENT match_branch+ _DEDENT
-match_branch: pattern ":" _NL _INDENT func_stmt+ _DEDENT // TODO: _func_body
+match_branch: pattern ":" _func_suite
 
 enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" _enum_body

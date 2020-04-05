@@ -7,6 +7,7 @@
  - Improved formatting time due to loosen grammar removal
  - Improved formatting time due to grammar caching
  - Improved formatting time due to parse tree reuse in safety checks
+ - Fixed bug in grammar causing func suite to consume statements from outer scope
 
 ### Changed
  - Enum doesn't add trailing comma unless it was in place from the very beginning
