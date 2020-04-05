@@ -37,8 +37,14 @@ def _gather_comments_by_regex(
     return comments
 
 
-def gather_comments_from_code(gdscript_code: str) -> List[str]:
-    comment_tree = parser.parse_comments(gdscript_code)
+def gather_comments_from_code(
+    gdscript_code: str, comment_tree: Optional[Tree] = None
+) -> List[str]:
+    comment_tree = (
+        comment_tree
+        if comment_tree is not None
+        else parser.parse_comments(gdscript_code)
+    )
     comment_line_numbers = [comment.line for comment in comment_tree.children]
     lines = gdscript_code.splitlines()
     comments = []  # type: List[str]

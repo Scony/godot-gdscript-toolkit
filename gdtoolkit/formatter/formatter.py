@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from lark import Tree
+
 from ..parser import parser
 from .context import Context
 from .constants import INLINE_COMMENT_OFFSET, GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
@@ -12,9 +14,22 @@ from .comments import (
 )
 
 
-def format_code(gdscript_code: str, max_line_length: int) -> str:
-    parse_tree = parser.parse(gdscript_code, gather_metadata=True)
-    comment_parse_tree = parser.parse_comments(gdscript_code)
+def format_code(
+    gdscript_code: str,
+    max_line_length: int,
+    parse_tree: Optional[Tree] = None,
+    comment_parse_tree: Optional[Tree] = None,
+) -> str:
+    parse_tree = (
+        parse_tree
+        if parse_tree is not None
+        else parser.parse(gdscript_code, gather_metadata=True)
+    )
+    comment_parse_tree = (
+        comment_parse_tree
+        if comment_parse_tree is not None
+        else parser.parse_comments(gdscript_code)
+    )
     gdscript_code_lines = [
         "",
         *gdscript_code.splitlines(),
