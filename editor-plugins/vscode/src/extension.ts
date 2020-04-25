@@ -84,6 +84,11 @@ export function run_formatter(
     let options = PythonShell.defaultOptions;
     options.scriptPath = SCRIPT_PATH;
 
+    const pythonPath: string | undefined = vscode.workspace
+        .getConfiguration("python")
+        .get("pythonPath");
+    if (!!pythonPath) options.pythonPath = pythonPath;
+
     let input = script;
 
     options.args = PY_ARGS;
