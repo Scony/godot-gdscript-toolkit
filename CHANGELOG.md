@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.2.7] 2020-05-08
+
+### Fixed
+ - Added missing expression operators (`^=`, `>>=`, and `<<=`)
+
 ## [3.2.6] 2020-04-05
 
 ### Fixed
