@@ -5,7 +5,7 @@ max line length allowed. The rest will be taken care of by gdformat in a one,
 consistent way.
 
 Usage:
-  gdformat <file>... [options]
+  gdformat <path>... [options]
 
 Options:
   -c --check                 Don't write the files back,
@@ -20,11 +20,32 @@ Examples:
 """
 import sys
 import pkg_resources
+import os
+from typing import List
 
 from docopt import docopt
 
 from gdtoolkit.formatter import format_code, check_formatting_safety
 from gdtoolkit.parser import parser
+
+
+def find_files_from(paths: List[str]) -> List[str]:
+    """Finds files in the list of paths and walks directories recursively to find
+    gdscript files.
+    Returns a list of file paths.
+    """
+    files = []
+    excluded_directories = {".git"}
+    for path in paths:
+        if os.path.isdir(path):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
+                files += [
+                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
+                ]
+        else:
+            files.append(path)
+    return files
 
 
 # TODO: refa & tests
@@ -36,7 +57,9 @@ def main():
             pkg_resources.get_distribution("gdtoolkit").version
         ),
     )
-    files = arguments["<file>"]
+    files: List[str] = find_files_from(arguments["<path>"])
+    print(files)
+
     line_length = int(arguments["--line-length"])
     if files == ["-"]:
         code = sys.stdin.read()
