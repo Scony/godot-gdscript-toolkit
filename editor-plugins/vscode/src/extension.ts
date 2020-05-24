@@ -12,7 +12,7 @@ const PY_ARGS = [
     "",
     `${vscode.workspace
         .getConfiguration("gdscript_formatter")
-        .get("line_size")}`
+        .get("line_size")}`,
 ];
 
 export function activate(context: vscode.ExtensionContext) {
@@ -21,13 +21,13 @@ export function activate(context: vscode.ExtensionContext) {
         () => {
             if (vscode.window.activeTextEditor) {
                 let document = vscode.window.activeTextEditor.document;
-                run_formatter(document.getText(), document.uri, results => {
+                run_formatter(document.getText(), document.uri, (results) => {
                     if (results) {
                         let organizer = new Organizer(results);
                         run_formatter(
                             organizer.get_parsed_script(),
                             document.uri,
-                            results => {
+                            (results) => {
                                 applyFormat(
                                     results
                                         ? results.join("\n")
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
             provideDocumentFormattingEdits(
                 document: vscode.TextDocument
             ): vscode.TextEdit[] {
-                run_formatter(document.getText(), document.uri, results => {
+                run_formatter(document.getText(), document.uri, (results) => {
                     applyFormat(
                         results ? results.join("\n") : document.getText(),
                         document
@@ -67,10 +67,18 @@ export function activate(context: vscode.ExtensionContext) {
                 });
 
                 return [];
-            }
+            },
         }
     );
 
+    let update_formatter = vscode.commands.registerCommand(
+        "gdscript-formatter.update_formatter",
+        () => {
+            runPipInstall();
+        }
+    );
+
+	context.subscriptions.push(update_formatter);
     context.subscriptions.push(formatter);
     context.subscriptions.push(organize_command);
     context.subscriptions.push(convert_command);
@@ -87,7 +95,9 @@ export function run_formatter(
     const pythonPath: string | undefined = vscode.workspace
         .getConfiguration("python")
         .get("pythonPath");
-    if (!!pythonPath) options.pythonPath = pythonPath;
+    if (!!pythonPath) {
+        options.pythonPath = pythonPath;
+    }
 
     let input = script;
 
@@ -111,7 +121,7 @@ export function replace_multiline(script: string) {
 
     let replacement_blocks: string[] = [];
 
-    comment_blocks?.forEach(cb => {
+    comment_blocks?.forEach((cb) => {
         let uncommented = cb.slice(3, cb.length - 3);
         let lines = uncommented.split("\n");
         let final_block = "";
@@ -138,12 +148,12 @@ export function replace_multiline(script: string) {
     return script;
 }
 
-export function runPipInstall(uri: vscode.Uri) {
-    cp.exec("pip3 install gdtoolkit", err => {
+export function runPipInstall(uri?: vscode.Uri) {
+    cp.exec("pip3 install gdtoolkit", (err) => {
         if (err) {
             console.log(err);
             vscode.window.showErrorMessage(err.message);
-        } else {
+        } else if (uri) {
             vscode.commands.executeCommand(
                 "vscode.executeFormatDocumentProvider",
                 uri
@@ -164,7 +174,7 @@ export function onPythonError(err: Error, uri: vscode.Uri) {
             "Install using pip",
             "Open GDToolkit repo"
         );
-        promise.then(action => {
+        promise.then((action) => {
             if (action === "Open GDToolkit repo") {
                 opn("https://github.com/Scony/godot-gdscript-toolkit");
             } else if (action === "Install using pip") {
