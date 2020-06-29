@@ -1,4 +1,4 @@
-func foo(x, var y, z: int, var q: int, w = 7, var e: int = 7, r: int = 7, t := 8, var y := 9):
+func foo(x, var y, z: int, var q: int, w = 7, var e: int = 7, r: int = 7, t := 8, var u := 9):
 	pass
 
 func bar() -> void:

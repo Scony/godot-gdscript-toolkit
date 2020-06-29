@@ -1,0 +1,3 @@
+var x = preload(
+	'xxx'
+)
