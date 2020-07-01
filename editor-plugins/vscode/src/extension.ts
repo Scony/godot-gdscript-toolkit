@@ -199,8 +199,9 @@ export function applyFormat(formatted: string, document: vscode.TextDocument) {
         formatted
     );
 
-    vscode.workspace.applyEdit(edit).then((res) => {
-        if (res) {
+    vscode.workspace.applyEdit(edit).then((success) => {
+        var format_on_save = vscode.workspace.getConfiguration("editor").formatOnSave;
+        if (success && format_on_save) {
             document.save();
         }
     });
