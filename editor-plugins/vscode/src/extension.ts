@@ -78,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
-	context.subscriptions.push(update_formatter);
+    context.subscriptions.push(update_formatter);
     context.subscriptions.push(formatter);
     context.subscriptions.push(organize_command);
     context.subscriptions.push(convert_command);
@@ -199,7 +199,12 @@ export function applyFormat(formatted: string, document: vscode.TextDocument) {
         formatted
     );
 
-    vscode.workspace.applyEdit(edit);
+    vscode.workspace.applyEdit(edit).then((success) => {
+        var format_on_save = vscode.workspace.getConfiguration("editor").formatOnSave;
+        if (success && format_on_save) {
+            document.save();
+        }
+    });
 }
 
-export function deactivate() {}
+export function deactivate() { }
