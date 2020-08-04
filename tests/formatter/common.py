@@ -85,6 +85,7 @@ def _comment_preservation_check(
         assert occurances_in_input <= occurances_in_output
 
 
+# TODO: use gatherer from gdtoolkit
 def _gather_comment_statistics_from_code(gdscript_code: str) -> dict:
     stats = {}  # type: dict
     lines = gdscript_code.splitlines()
@@ -92,15 +93,19 @@ def _gather_comment_statistics_from_code(gdscript_code: str) -> dict:
         comment_start = line.find("#")
         if comment_start >= 0:
             comment = line[comment_start:]
+            comment = comment.rstrip()
             stats[comment] = stats.get(comment, 0) + 1
     return stats
 
 
+# TODO: use gatherer from gdtoolkit
 def _gather_comments_from_code(gdscript_code: str) -> List[str]:
     lines = gdscript_code.splitlines()
     comments = []  # type: List[str]
     for line in lines:
         comment_start = line.find("#")
         if comment_start >= 0:
-            comments.append(line[comment_start:])
+            comment = line[comment_start:]
+            comment = comment.rstrip()
+            comments.append(comment)
     return comments
