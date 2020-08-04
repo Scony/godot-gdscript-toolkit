@@ -58,7 +58,6 @@ def main():
         ),
     )
     files: List[str] = find_files_from(arguments["<path>"])
-    print(files)
 
     line_length = int(arguments["--line-length"])
     if files == ["-"]:
