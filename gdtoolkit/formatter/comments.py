@@ -9,15 +9,19 @@ from ..parser import parser
 def gather_standalone_comments(
     gdscript_code: str, comment_parse_tree: Tree
 ) -> List[Optional[str]]:
-    return _gather_comments_by_regex(gdscript_code, comment_parse_tree, r"^\s*(#.*)$")
+    comments = _gather_comments_by_regex(
+        gdscript_code, comment_parse_tree, r"^\s*(#.*)$"
+    )
+    return _rstrip_comments(comments)
 
 
 def gather_inline_comments(
     gdscript_code: str, comment_parse_tree: Tree
 ) -> List[Optional[str]]:
-    return _gather_comments_by_regex(
+    comments = _gather_comments_by_regex(
         gdscript_code, comment_parse_tree, r"^\s*[^\s#]+[^#]*(#.*)$"
     )
+    return _rstrip_comments(comments)
 
 
 def _gather_comments_by_regex(
@@ -54,3 +58,10 @@ def gather_comments_from_code(
         if comment_start >= 0 and normalized_line_number in comment_line_numbers:
             comments.append(line[comment_start:])
     return comments
+
+
+def _rstrip_comments(comments: List[Optional[str]]) -> List[Optional[str]]:
+    return [
+        comment.rstrip() if isinstance(comment, str) else comment
+        for comment in comments
+    ]

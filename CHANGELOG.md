@@ -4,6 +4,7 @@
 
 ### Fixed
  - Introduced WA for Godot's `preload` bug
+ - Improved formatter to remove trailing whitespaces also from comments
 
 ## [3.2.7] 2020-05-08
 
