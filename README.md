@@ -150,3 +150,9 @@ You can run only selected test cases:
 ```
 tox -e py3 -- -k lint
 ```
+
+For manual testing, you can consider installing package in editable mode:
+
+```
+pip3 install -e .
+```

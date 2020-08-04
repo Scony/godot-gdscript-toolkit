@@ -1,5 +1,10 @@
 # Changelog
 
+## master
+
+### Fixed
+ - Introduced WA for Godot's `preload` bug
+
 ## [3.2.7] 2020-05-08
 
 ### Fixed
