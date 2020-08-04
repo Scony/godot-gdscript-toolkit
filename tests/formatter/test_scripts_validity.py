@@ -11,6 +11,7 @@ EXCEPTIONS = set(  # TODO: fix wherever possible
     [
         "type-cast-expressions.in.gd",  # godot bug
         "type-cast-expressions.out.gd",  # godot bug
+        "multiline-preload-workaround.in.gd",  # godot bug
     ]
 )
 
