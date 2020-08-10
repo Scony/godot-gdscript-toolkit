@@ -24,6 +24,7 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "func_def": _format_func_statement,
         "enum_def": format_enum,
         "classname_stmt": _format_classname_statement,
+        "classname_extends_stmt": _format_classname_extends_statement,
         "signal_stmt": _format_signal_statement,
         "docstr_stmt": _format_docstring_statement,
         "const_stmt": _format_const_statement,
@@ -158,6 +159,47 @@ def _format_extends_statement(statement: Node, context: Context) -> Outcome:
             "{}extends {}{}".format(
                 context.indent_string,
                 expression_to_str(statement.children[0]),
+                optional_attributes,
+            ),
+        )
+    ]
+    return (formatted_lines, last_processed_line_no)
+
+
+def _format_classname_extends_statement(statement: Node, context: Context) -> Outcome:
+    last_processed_line_no = statement.line
+    optional_string = (
+        ""
+        if isinstance(statement.children[2], Token)
+        and statement.children[2].value == "extends"
+        else ", {}".format(expression_to_str(statement.children[3]))
+    )
+    extendee_pos = (
+        2 + 1
+        if isinstance(statement.children[2], Token)
+        and statement.children[2].value == "extends"
+        else 4 + 1
+    )
+    optional_attributes = (
+        ""
+        if len(statement.children) <= extendee_pos + 1
+        else ".{}".format(
+            ".".join(
+                [
+                    expression_to_str(child)
+                    for child in statement.children[extendee_pos + 1 :]
+                ]
+            )
+        )
+    )
+    formatted_lines = [
+        (
+            statement.line,
+            "{}class_name {}{} extends {}{}".format(
+                context.indent_string,
+                statement.children[1].value,
+                optional_string,
+                expression_to_str(statement.children[extendee_pos]),
                 optional_attributes,
             ),
         )
