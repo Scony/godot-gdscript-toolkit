@@ -1,6 +1,6 @@
 from typing import Optional
 
-from lark import Tree, Transformer
+from lark import Tree, Transformer, Token
 
 from ..parser import parser
 from .formatter import format_code
@@ -22,6 +22,13 @@ class CommentPersistenceViolation(Exception):
 class LoosenTreeTransformer(Transformer):
     def par_expr(self, args):  # pylint: disable=R0201
         return args[0] if len(args) > 0 else args
+
+    def neg_expr(self, args):  # pylint: disable=R0201
+        return (
+            Token("NUMBER", "-{}".format(args[1].value))
+            if isinstance(args[1], Token) and args[1].type == "NUMBER"
+            else Tree("neg_expr", args)
+        )
 
 
 def check_tree_invariant(
