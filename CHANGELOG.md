@@ -6,6 +6,7 @@
  - Introduced WA for Godot's `preload` bug
  - Improved formatter to remove trailing whitespaces also from comments
  - Added missing `class_name (...) extends (...)` statement support in grammar and formatter
+ - Fixed false positive `TreeInvariantViolation` for `neg_expr`
 
 ## [3.2.7] 2020-05-08
 
