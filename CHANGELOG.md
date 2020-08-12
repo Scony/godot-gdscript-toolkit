@@ -2,6 +2,9 @@
 
 ## master
 
+### Added
+ - Added support for legacy (godot 3.1) parenthesesless `assert` (e.g. `assert 1 == 1`)
+
 ### Fixed
  - Introduced WA for Godot's `preload` bug
  - Improved formatter to remove trailing whitespaces also from comments
