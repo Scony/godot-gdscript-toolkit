@@ -1,6 +1,8 @@
 from functools import partial
 from typing import Dict, Callable, Optional
 
+from lark import Tree
+
 from .context import Context, ExpressionContext
 from .types import Outcome, Node, FormattedLines
 from .expression import format_expression
@@ -15,6 +17,7 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
         "func_var_stmt": format_var_statement,
         "expr_stmt": _format_expr_statement,
         "return_stmt": _format_return_statement,
+        "legacy_assert_stmt": _format_legacy_assert_stmt,
         "break_stmt": partial(format_simple_statement, "break"),
         "continue_stmt": partial(format_simple_statement, "continue"),
         "if_stmt": _format_if_statement,
@@ -38,6 +41,18 @@ def _format_return_statement(statement: Node, context: Context) -> Outcome:
         return format_simple_statement("return", statement, context)
     expr = statement.children[0]
     expression_context = ExpressionContext("return ", statement.line, "")
+    return format_expression(expr, expression_context, context)
+
+
+def _format_legacy_assert_stmt(statement: Node, context: Context) -> Outcome:
+    expr = statement.children[0]
+    expression_context = (
+        ExpressionContext("assert(", statement.line, ")")
+        if isinstance(statement.children[0], Tree)
+        and isinstance(statement.children[0].children[0], Tree)
+        and statement.children[0].children[0].data == "par_expr"
+        else ExpressionContext("assert ", statement.line, "")
+    )
     return format_expression(expr, expression_context, context)
 
 

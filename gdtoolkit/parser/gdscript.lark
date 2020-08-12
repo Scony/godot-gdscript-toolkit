@@ -70,6 +70,7 @@ _simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
                  | break_stmt
                  | continue_stmt
                  | expr_stmt
+                 | legacy_assert_stmt
 ?compound_func_stmt: if_stmt
                    | while_stmt
                    | for_stmt
@@ -79,6 +80,7 @@ return_stmt: "return" [expr]
 func_var_stmt: _var_stmt
 break_stmt.2: "break"
 continue_stmt.2: "continue"
+legacy_assert_stmt: "assert" expr // TODO: remove in 4.0
 expr_stmt: expr
 if_stmt: if_branch (_NL? elif_branch)* [_NL? else_branch]
 if_branch: "if" expr ":" _func_suite
