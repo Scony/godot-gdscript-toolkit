@@ -4,7 +4,7 @@ By default, nothing is being printed on success and the exitcode is 0.
 On failure, python exception or list of problems is shown and exitcode is non-zero.
 
 Usage:
-  gdlint <file>... [options]
+  gdlint <path>... [options]
   gdlint -d
 
 Options:
@@ -18,12 +18,32 @@ import os
 import pkg_resources
 import logging
 from pathlib import Path
+from typing import List
 
 import yaml
 from docopt import docopt
 
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 from gdtoolkit.linter.problem_printer import print_problem
+
+
+def find_files_from(paths: List[str], config: dict) -> List[str]:
+    """Finds files in the list of paths and walks directories recursively to find
+    gdscript files.
+    Returns a list of file paths.
+    """
+    files = []
+    excluded_directories = config["excluded_directories"]
+    for path in paths:
+        if os.path.isdir(path):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
+                files += [
+                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
+                ]
+        else:
+            files.append(path)
+    return files
 
 
 def main():  # pylint: disable=too-many-branches
@@ -82,7 +102,9 @@ def main():  # pylint: disable=too-many-branches
             config[key] = DEFAULT_CONFIG[key]
 
     problems_total = 0
-    for file_path in arguments["<file>"]:
+    files: List[str] = find_files_from(arguments["<path>"], config)
+
+    for file_path in files:
         with open(file_path, "r") as fh:  # TODO: handle exception
             content = fh.read()
             problems = lint_code(content, config)
