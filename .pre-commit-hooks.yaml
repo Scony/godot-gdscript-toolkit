@@ -1,0 +1,16 @@
+- id: gdlint
+  name: gdlint
+  description: "gdlint - linter for GDScript"
+  entry: gdlint
+  language: python
+  language_version: python3
+  require_serial: true
+  types: [gdscript]
+- id: gdformat
+  name: gdformat
+  description: "gdformat - formater for GDScript"
+  entry: gdformat
+  language: python
+  language_version: python3
+  require_serial: true
+  types: [gdscript]
