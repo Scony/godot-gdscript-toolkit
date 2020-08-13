@@ -76,6 +76,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "max-line-length": 100,
         "mixed-tabs-and-spaces": None,
         # misc
+        "excluded_directories": {".git"},
         # no-else-return
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
