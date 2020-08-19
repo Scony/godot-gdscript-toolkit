@@ -1,5 +1,6 @@
 """GDScript linter
 
+A tool for diagnosing typical GDScript code problems.
 By default, nothing is being printed on success and the exitcode is 0.
 On failure, python exception or list of problems is shown and exitcode is non-zero.
 
@@ -17,7 +18,7 @@ import sys
 import os
 import pkg_resources
 import logging
-from pathlib import Path
+import pathlib
 from typing import List
 
 import yaml
@@ -27,23 +28,7 @@ from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 from gdtoolkit.linter.problem_printer import print_problem
 
 
-def find_files_from(paths: List[str], config: dict) -> List[str]:
-    """Finds files in the list of paths and walks directories recursively to find
-    gdscript files.
-    Returns a list of file paths.
-    """
-    files = []
-    excluded_directories = config["excluded_directories"]
-    for path in paths:
-        if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
-                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
-                files += [
-                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
-                ]
-        else:
-            files.append(path)
-    return files
+Path = str
 
 
 def main():  # pylint: disable=too-many-branches
@@ -69,9 +54,9 @@ def main():  # pylint: disable=too-many-branches
 
     # TODO: add opt-based config-file providing
     # TODO: extract the algorithm
-    search_dir = Path(os.getcwd())
+    search_dir = pathlib.Path(os.getcwd())
     found_config_file_path = None
-    while search_dir != Path(os.path.abspath(os.sep)):
+    while search_dir != pathlib.Path(os.path.abspath(os.sep)):
         file_path = os.path.join(search_dir, CONFIG_FILE_NAME)
         if os.path.isfile(file_path):
             found_config_file_path = file_path
@@ -102,7 +87,7 @@ def main():  # pylint: disable=too-many-branches
             config[key] = DEFAULT_CONFIG[key]
 
     problems_total = 0
-    files: List[str] = find_files_from(arguments["<path>"], config)
+    files: List[Path] = _find_files_from(arguments["<path>"], config)
 
     for file_path in files:
         with open(file_path, "r") as fh:  # TODO: handle exception
@@ -123,6 +108,22 @@ def main():  # pylint: disable=too-many-branches
         sys.exit(1)
 
     print("Success: no problems found")
+
+
+def _find_files_from(paths: List[Path], config: dict) -> List[Path]:
+    """Finds files in directories recursively and combines results to the list"""
+    files = []
+    excluded_directories = config["excluded_directories"]
+    for path in paths:
+        if os.path.isdir(path):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
+                files += [
+                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
+                ]
+        else:
+            files.append(path)
+    return files
 
 
 if __name__ == "__main__":
