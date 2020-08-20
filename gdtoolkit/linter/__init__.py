@@ -1,5 +1,7 @@
+import re
+from collections import defaultdict
 from types import MappingProxyType
-from typing import List
+from typing import List, Dict, Set
 
 from .problem import Problem
 from ..parser import parser
@@ -106,4 +108,39 @@ def lint_code(
     problems += name_checks.lint(parse_tree, config)
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
+
+    lines_to_ignored_problems = _fetch_ignored_problems_per_lines(gdscript_code)
+    problems = list(
+        filter(
+            lambda problem: not _is_problem_ignored(problem, lines_to_ignored_problems),
+            problems,
+        )
+    )
+
     return problems
+
+
+def _fetch_ignored_problems_per_lines(gdscript_code: str) -> Dict[int, Set[str]]:
+    lines = gdscript_code.splitlines()
+    compiled_regex = re.compile(r"#\s*gdlint\s*:\s*ignore\s*=\s*([^,]+(,[^,]+)*)")
+    lines_to_ignored_problems: Dict[int, Set[str]] = defaultdict(set)
+    for line_no, line in enumerate(lines, start=1):
+        pattern_matching_outcome = compiled_regex.search(line)
+        if pattern_matching_outcome is not None:
+            ignored_problems = [
+                p.strip() for p in pattern_matching_outcome.group(1).split(",")
+            ]
+            lines_to_ignored_problems[line_no].update(ignored_problems)
+    return lines_to_ignored_problems
+
+
+def _is_problem_ignored(
+    problem: Problem, lines_to_ignored_problems: Dict[int, Set[str]]
+) -> bool:
+    return (
+        problem.line in lines_to_ignored_problems
+        and problem.name in lines_to_ignored_problems[problem.line]
+    ) or (
+        problem.line - 1 in lines_to_ignored_problems
+        and problem.name in lines_to_ignored_problems[problem.line - 1]
+    )

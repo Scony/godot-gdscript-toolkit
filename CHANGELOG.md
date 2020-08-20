@@ -6,6 +6,7 @@
  - Added support for legacy (godot 3.1) parenthesesless `assert` (e.g. `assert 1 == 1`)
  - Added support for recursive file finding in `gdlint` (e.g. `gdlint dir1/ dir2/`)
  - Added pre-commit hooks which can consumed by `pre-commit` project
+ - Added a possibility to disable linter checks (e.g. `# gdlint: ignore=function-name` inline or in the line before)
 
 ### Fixed
  - Introduced WA for Godot's `preload` bug
