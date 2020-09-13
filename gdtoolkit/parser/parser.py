@@ -25,10 +25,10 @@ class Indenter(indenter.Indenter):
 
 # When upgrading to Python 3.8, replace with functools.cached_property
 class cached_property:
-    """ A property that is only computed once per instance and then replaces
-        itself with an ordinary attribute. Deleting the attribute resets the
-        property.
-        """
+    """A property that is only computed once per instance and then replaces
+    itself with an ordinary attribute. Deleting the attribute resets the
+    property.
+    """
 
     def __init__(self, func):
         self.__doc__ = func.__doc__
@@ -80,9 +80,9 @@ class Parser:
         version: str = pkg_resources.get_distribution("gdtoolkit").version
 
         tree: Tree = None
-        cache_filepath: str = os.path.join(
-            self._cache_dirpath, version, name
-        ) + ".pickle"
+        cache_filepath: str = (
+            os.path.join(self._cache_dirpath, version, name) + ".pickle"
+        )
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
         if not os.path.exists(cache_filepath) or not self._use_grammar_cache:
             tree = Lark.open(

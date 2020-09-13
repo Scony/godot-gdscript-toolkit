@@ -13,7 +13,8 @@ def pytest_generate_tests(metafunc):
     if "test_name" in metafunc.fixturenames:
         tests_in_dir = os.path.join(this_directory, DATA_DIR)
         metafunc.parametrize(
-            "test_name", os.listdir(tests_in_dir),
+            "test_name",
+            os.listdir(tests_in_dir),
         )
 
 

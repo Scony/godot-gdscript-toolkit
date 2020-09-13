@@ -21,7 +21,7 @@ def format_block(
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
         blank_lines = reconstruct_blank_lines_in_range(
-            previously_processed_line_number, statement.line, context,
+            previously_processed_line_number, statement.line, context
         )
         if previous_statement_name is None:
             blank_lines = _remove_empty_strings_from_begin(blank_lines)
@@ -44,7 +44,7 @@ def format_block(
         previously_processed_line_number, context
     )
     lines_at_the_end = reconstruct_blank_lines_in_range(
-        previously_processed_line_number, dedent_line_number, context,
+        previously_processed_line_number, dedent_line_number, context
     )
     lines_at_the_end = _remove_empty_strings_from_end(lines_at_the_end)
     formatted_lines += lines_at_the_end

@@ -25,7 +25,11 @@ setup(
         ]
     },
     include_package_data=True,
-    install_requires=["lark-parser==0.8.0", "docopt>=0.6.2", "pyyaml>=5.1",],
+    install_requires=[
+        "lark-parser==0.8.0",
+        "docopt>=0.6.2",
+        "pyyaml>=5.1",
+    ],
     python_requires=">=3.7",
     classifiers=[
         "Development Status :: 5 - Production/Stable",

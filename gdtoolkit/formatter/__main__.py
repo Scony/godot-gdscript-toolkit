@@ -118,7 +118,7 @@ def main():
         if len(formattable_files) == 0:
             print(
                 "{} file{} would be left unchanged".format(
-                    len(files), "s" if len(files) != 1 else "",
+                    len(files), "s" if len(files) != 1 else ""
                 )
             )
             sys.exit(0)
