@@ -242,7 +242,7 @@ def _format_kv_pair_to_multiple_lines(
     )
     if concrete_expression.data == "c_dict_element":
         value_expression_context = ExpressionContext(
-            "", -1, expression_context.suffix_string,
+            "", -1, expression_context.suffix_string
         )
         value_lines, _ = _format_standalone_expression(
             concrete_expression.children[1], value_expression_context, context
@@ -271,7 +271,9 @@ def _format_parentheses_to_multiple_lines(
     )
     return (
         _format_standalone_expression(
-            par_expr.children[0], new_expression_context, context,
+            par_expr.children[0],
+            new_expression_context,
+            context,
         )[0],
         par_expr.end_line,
     )
@@ -299,7 +301,7 @@ def _format_string_to_multiple_lines(
 
 
 def _format_assignment_expression_to_multiline_line(
-    expression: Tree, expression_context: ExpressionContext, context: Context,
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     new_expression_context = ExpressionContext(
         "{}{} {} ".format(
@@ -316,7 +318,7 @@ def _format_assignment_expression_to_multiline_line(
 
 
 def _format_func_arg_to_multiple_lines(
-    expression: Tree, expression_context: ExpressionContext, context: Context,
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     if expression.data == "func_arg_regular" and len(expression.children) == 1:
         return _format_concrete_expression(
@@ -346,7 +348,7 @@ def _format_func_arg_to_multiple_lines(
 
 
 def _format_call_expression_to_multiline_line(
-    expression: Tree, expression_context: ExpressionContext, context: Context,
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     dot = "." if has_leading_dot(expression) else ""
     offset = 1 if has_leading_dot(expression) else 0
@@ -379,7 +381,7 @@ def _format_call_expression_to_multiline_line(
 
 
 def _format_subscription_to_multiple_lines(
-    expression: Tree, expression_context: ExpressionContext, context: Context,
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     subscriptee_expression_context = ExpressionContext(
         expression_context.prefix_string, expression_context.prefix_line, ""
@@ -401,7 +403,9 @@ def _format_subscription_to_multiple_lines(
 
 
 def _format_attribute_expression_to_multiple_lines(
-    expression: Tree, expression_context: ExpressionContext, context: Context,
+    expression: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
 ) -> Outcome:
     suffix = ".".join(expression.children[2::2])
     base_expression_context = ExpressionContext(

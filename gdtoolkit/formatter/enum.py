@@ -157,7 +157,10 @@ def _format_elements_to_multiple_lines(enum: Enum, context: Context) -> List:
                 (
                     element.lark_node.line,
                     "{}{}{}{}".format(
-                        context.indent_string, INDENT_STRING, element.name, comma,
+                        context.indent_string,
+                        INDENT_STRING,
+                        element.name,
+                        comma,
                     ),
                 )
             )

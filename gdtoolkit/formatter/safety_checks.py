@@ -80,10 +80,10 @@ def check_comment_persistence(
     formatted_code_comment_parse_tree: Optional[Tree] = None,
 ) -> None:
     original_comments = gather_comments_from_code(
-        given_code, comment_tree=given_code_comment_parse_tree,
+        given_code, comment_tree=given_code_comment_parse_tree
     )
     comments_after_formatting = gather_comments_from_code(
-        formatted_code, comment_tree=formatted_code_comment_parse_tree,
+        formatted_code, comment_tree=formatted_code_comment_parse_tree
     )
     for original_comment in original_comments:
         if not any(

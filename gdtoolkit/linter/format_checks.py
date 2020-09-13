@@ -13,9 +13,18 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
             "max-line-length",
             partial(_max_line_length_check, config["max-line-length"]),
         ),
-        ("max-file-lines", partial(_max_file_lines_check, config["max-file-lines"]),),
-        ("trailing-whitespace", _trailing_ws_check,),
-        ("mixed-tabs-and-spaces", _mixed_tabs_and_spaces_check,),
+        (
+            "max-file-lines",
+            partial(_max_file_lines_check, config["max-file-lines"]),
+        ),
+        (
+            "trailing-whitespace",
+            _trailing_ws_check,
+        ),
+        (
+            "mixed-tabs-and-spaces",
+            _mixed_tabs_and_spaces_check,
+        ),
     ]  # type: List[Tuple[str, Callable]]
     problem_clusters = map(
         lambda x: x[1](gdscript_code) if x[0] not in disable else [],

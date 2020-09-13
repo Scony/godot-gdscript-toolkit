@@ -129,7 +129,9 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
                 _generic_name_check,
                 config["function-load-variable-name"],
                 _gather_rule_name_tokens(
-                    parse_tree, ["func_var_stmt"], _has_load_or_preload_call_expr,
+                    parse_tree,
+                    ["func_var_stmt"],
+                    _has_load_or_preload_call_expr,
                 )["func_var_stmt"],
                 "function-load-variable-name",
                 'Function-scope load/preload variable name "{}" is not valid',
@@ -155,7 +157,9 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
                 _generic_name_check,
                 config["load-constant-name"],
                 _gather_rule_name_tokens(
-                    parse_tree, ["const_stmt"], _has_load_or_preload_call_expr,
+                    parse_tree,
+                    ["const_stmt"],
+                    _has_load_or_preload_call_expr,
                 )["const_stmt"],
                 "load-constant-name",
                 'Constant (load/preload) name "{}" is not valid',
@@ -181,7 +185,9 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
                 _generic_name_check,
                 config["class-load-variable-name"],
                 _gather_rule_name_tokens(
-                    parse_tree, ["class_var_stmt"], _has_load_or_preload_call_expr,
+                    parse_tree,
+                    ["class_var_stmt"],
+                    _has_load_or_preload_call_expr,
                 )["class_var_stmt"],
                 "class-load-variable-name",
                 'Class-scope load/preload variable name "{}" is not valid',

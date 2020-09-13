@@ -10,11 +10,26 @@ from .helpers import find_name_token_among_children
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_tree = [
-        ("unnecessary-pass", _unnecessary_pass_check,),
-        ("expression-not-assigned", _expression_not_assigned_check,),
-        ("duplicated-load", _duplicated_load_check,),
-        ("unused-argument", _unused_argument_check,),
-        ("comparison-with-itself", _comparison_with_itself_check,),
+        (
+            "unnecessary-pass",
+            _unnecessary_pass_check,
+        ),
+        (
+            "expression-not-assigned",
+            _expression_not_assigned_check,
+        ),
+        (
+            "duplicated-load",
+            _duplicated_load_check,
+        ),
+        (
+            "unused-argument",
+            _unused_argument_check,
+        ),
+        (
+            "comparison-with-itself",
+            _comparison_with_itself_check,
+        ),
     ]
     problem_clusters = map(
         lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree

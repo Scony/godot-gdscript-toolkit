@@ -62,7 +62,7 @@ def _format_if_statement(statement: Node, context: Context) -> Outcome:
     for branch in statement.children:
         if previously_processed_line_number is not None:
             blank_lines = reconstruct_blank_lines_in_range(
-                previously_processed_line_number, branch.line, context,
+                previously_processed_line_number, branch.line, context
             )
             formatted_lines += blank_lines
         branch_prefix = {

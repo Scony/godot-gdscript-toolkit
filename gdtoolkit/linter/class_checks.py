@@ -11,7 +11,10 @@ from .helpers import find_name_token_among_children, is_function_public
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
     checks_to_run_w_tree = [
-        ("private-method-call", _private_method_call_check,),
+        (
+            "private-method-call",
+            _private_method_call_check,
+        ),
         (
             "class-definitions-order",
             partial(_class_definitions_order_check, config["class-definitions-order"]),
