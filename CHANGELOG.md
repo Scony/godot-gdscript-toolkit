@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## [3.2.8] 2020-09-15
 
 ### Added
  - Added support for legacy (godot 3.1) parenthesesless `assert` (e.g. `assert 1 == 1`)
