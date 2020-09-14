@@ -291,27 +291,20 @@ def test_function_variable_name_nok(code):
 @pytest.mark.parametrize('code', [
 """
 func foo():
-    var Xxx = load()
-""",
-"""
-func foo():
     var XxxYyy = preload()
 """,
 ])
-def test_function_load_variable_name_ok(code):
+def test_function_preload_variable_name_ok(code):
     simple_ok_check(code)
 
 
 @pytest.mark.parametrize('code', [
 """func foo():
-    var xxx = load()
-""",
-"""func foo():
     var x_y = preload()
 """,
 ])
-def test_function_load_variable_name_nok(code):
-    simple_nok_check(code, 'function-load-variable-name')
+def test_function_preload_variable_name_nok(code):
+    simple_nok_check(code, 'function-preload-variable-name')
 
 
 @pytest.mark.parametrize('code', [
