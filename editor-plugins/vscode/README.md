@@ -30,7 +30,8 @@ A [vscode extension](https://marketplace.visualstudio.com/items?itemName=Razoric
 
 ## Known Issues
 
-None yet
+### MacOS
+ - if you get `ImportError: No module named gdtoolkit.formatter` or similar import error, make sure that VS Code uses `Python3` by setting `Python: Python Path` to `python3`. Alternatively in `settings.json`: `"python.pythonPath": "python3"`.
 
 ## Release Notes
 
