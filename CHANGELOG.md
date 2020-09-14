@@ -15,6 +15,9 @@
  - Added missing `class_name (...) extends (...)` statement support in grammar and formatter
  - Fixed false positive `TreeInvariantViolation` for `neg_expr`
 
+### Changed
+ - `var x = load('some.tres')` is allowed since it may be custom resource instance loading
+
 ## [3.2.7] 2020-05-08
 
 ### Fixed

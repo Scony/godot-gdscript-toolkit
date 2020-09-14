@@ -124,17 +124,17 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             ),
         ),
         (
-            "function-load-variable-name",
+            "function-preload-variable-name",
             partial(
                 _generic_name_check,
-                config["function-load-variable-name"],
+                config["function-preload-variable-name"],
                 _gather_rule_name_tokens(
                     parse_tree,
                     ["func_var_stmt"],
-                    _has_load_or_preload_call_expr,
+                    _has_preload_call_expr,
                 )["func_var_stmt"],
-                "function-load-variable-name",
-                'Function-scope load/preload variable name "{}" is not valid',
+                "function-preload-variable-name",
+                'Function-scope preload variable name "{}" is not valid',
             ),
         ),
         (
@@ -240,6 +240,14 @@ def _gather_rule_name_tokens(
 
 
 def _has_load_or_preload_call_expr(tree: Tree) -> bool:
+    return _has_call_expr_name_in(tree, ["load", "preload"])
+
+
+def _has_preload_call_expr(tree: Tree) -> bool:
+    return _has_call_expr_name_in(tree, ["preload"])
+
+
+def _has_call_expr_name_in(tree: Tree, legal_names: List[str]) -> bool:
     for child in tree.children:
         if isinstance(child, Tree) and child.data == "expr":
             expr = child
@@ -252,5 +260,5 @@ def _has_load_or_preload_call_expr(tree: Tree) -> bool:
                 name_token = find_name_token_among_children(standalone_call)
                 assert name_token is not None
                 name = name_token.value
-                return name in ["load", "preload"]
+                return name in legal_names
     return False

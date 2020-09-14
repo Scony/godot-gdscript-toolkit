@@ -26,7 +26,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "class-variable-name": PRIVATE_SNAKE_CASE,
         "class-load-variable-name": r"({}|{})".format(PASCAL_CASE, PRIVATE_SNAKE_CASE),
         "function-variable-name": SNAKE_CASE,
-        "function-load-variable-name": PASCAL_CASE,
+        "function-preload-variable-name": PASCAL_CASE,
         "function-argument-name": PRIVATE_SNAKE_CASE,
         "loop-variable-name": PRIVATE_SNAKE_CASE,
         "enum-name": PASCAL_CASE,
