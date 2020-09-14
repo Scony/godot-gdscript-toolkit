@@ -7,6 +7,7 @@
  - Added support for recursive file finding in `gdlint` (e.g. `gdlint dir1/ dir2/`)
  - Added pre-commit hooks which can consumed by `pre-commit` project
  - Added a possibility to disable linter checks (e.g. `# gdlint: ignore=function-name` inline or in the line before)
+ - Added support for underscored numeric literals such as `1_000_000`, `1_000.000`, and `0xff_99_00`
 
 ### Fixed
  - Introduced WA for Godot's `preload` bug

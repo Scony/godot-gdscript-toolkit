@@ -178,7 +178,7 @@ getattr: _call_expr _attr+
         | string
         | node_path
         | get_node
-HEX.2: /0x[a-fA-F0-9]+/
+HEX.2: /0x[a-fA-F0-9][a-fA-F0-9_]*/
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
@@ -190,6 +190,13 @@ c_dict_element: test_expr ":" test_expr
 eq_dict_element: NAME "=" test_expr
 
 TYPE: NAME ("." NAME)*
+NUMBER: ["+"|"-"] (FLOAT | INT)
+FLOAT: INT _EXP | DECIMAL _EXP?
+_EXP: ("e"|"E") SIGNED_INT
+SIGNED_INT: ["+"|"-"] INT
+DECIMAL: INT "." INT? | "." INT
+INT: DIGIT (DIGIT | "_")*
+DIGIT: "0".."9"
 
 string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
@@ -207,4 +214,3 @@ LINE_CONT: /\\[\t \f]*\r?\n/
 
 %import common.WS_INLINE
 %import common.CNAME -> NAME
-%import common.SIGNED_NUMBER -> NUMBER
