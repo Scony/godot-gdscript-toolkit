@@ -13,6 +13,7 @@ func foo():
 	$"../xxx"
 	0xaf01
 	0xAfA01
+	0b0101111
 	012
 	null
 
