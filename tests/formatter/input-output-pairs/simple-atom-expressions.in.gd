@@ -11,3 +11,4 @@ func foo():
 	var t = $Some/Path
 	var k = $"../Some/Stuff"
 	var l = 0xfF9900
+	var b = 0b001101
