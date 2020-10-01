@@ -124,6 +124,7 @@ pattern: list_pattern
              | dict_pattern
              | NAME
              | HEX
+             | BIN
              | literal
 array_pattern: "[" [test_pattern ("," test_pattern)* [trailing_comma]] "]"
 dict_pattern: "{" [dict_pattern_element ("," dict_pattern_element)* [trailing_comma]] "}"
@@ -173,12 +174,14 @@ getattr: _call_expr _attr+
      | dict
      | NAME
      | HEX
+     | BIN
      | literal
 ?literal: NUMBER
         | string
         | node_path
         | get_node
 HEX.2: /0x[a-fA-F0-9][a-fA-F0-9_]*/
+BIN.2: /0b[01][01_]*/
 node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
