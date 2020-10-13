@@ -6,6 +6,7 @@ from lark import Tree, Token
 from .context import Context
 from .constants import INDENT_STRING
 from .types import Outcome
+from .expression_to_str import standalone_expression_to_str
 
 
 @dataclass
@@ -37,7 +38,7 @@ class Enum:
         for enum_element in enum_def.find_data("enum_element"):
             name = enum_element.children[0].value
             value = (
-                enum_element.children[1].value
+                standalone_expression_to_str(enum_element.children[1])
                 if len(enum_element.children) > 1
                 else None
             )
@@ -100,7 +101,7 @@ def _calculate_single_line_elements_len(enum: Enum) -> int:
     return (
         sum(
             len(element.name)
-            + (len(str(element.value)) + 3 if element.value is not None else 0)
+            + (len(element.value) + 3 if element.value is not None else 0)
             for element in enum.elements
         )
         + spaces
