@@ -30,3 +30,6 @@ enum {}
 enum Name {}
 
 enum WithNegativeElement { POS, NEG = -1 }
+
+enum WithOperator { ADD = 1 + 3, SHIFT = 1<<2 }
+enum WithIfElse { IF = 1 if true else [1,2, 3 ] }
