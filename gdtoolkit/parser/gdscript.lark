@@ -96,7 +96,7 @@ enum_def: (enum_regular | enum_named) _NL
 enum_regular: "enum" _enum_body
 enum_named: "enum" NAME _enum_body
 _enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
-enum_element: NAME ["=" NUMBER]
+enum_element: NAME ["=" test_expr]
 
 pattern: list_pattern
 ?list_pattern: test_pattern ("," test_pattern)*
