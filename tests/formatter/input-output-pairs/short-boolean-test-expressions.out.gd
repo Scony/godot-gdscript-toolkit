@@ -7,3 +7,4 @@ class X:
 		var f = true or true || true
 		var g = 1 if true else 0
 		var h = (1 + 1) + 1
+		var i = !true

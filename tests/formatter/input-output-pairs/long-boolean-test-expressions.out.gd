@@ -8,7 +8,7 @@ class X:
 			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 			in [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 		)
-		var c = not not not not not not not not not not not not not not not not not not not not ! true
+		var c = not not not not not not not not not not not not not not not not not not not not !true
 		var d = (
 			true
 			&& true
