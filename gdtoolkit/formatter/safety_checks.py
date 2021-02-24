@@ -1,4 +1,5 @@
 from typing import Optional
+from dataclasses import dataclass
 
 from lark import Tree, Transformer, Token
 
@@ -15,8 +16,14 @@ class FormattingStabilityViolation(Exception):
     pass
 
 
+@dataclass
 class CommentPersistenceViolation(Exception):
-    pass
+    missing_comment: str
+
+    def __str__(self):
+        return '{}(missing_comment="{}")'.format(
+            "CommentPersistenceViolation", self.missing_comment
+        )
 
 
 class LoosenTreeTransformer(Transformer):
@@ -90,4 +97,4 @@ def check_comment_persistence(
             original_comment in comment_after_formatting
             for comment_after_formatting in comments_after_formatting
         ):
-            raise CommentPersistenceViolation
+            raise CommentPersistenceViolation(original_comment)

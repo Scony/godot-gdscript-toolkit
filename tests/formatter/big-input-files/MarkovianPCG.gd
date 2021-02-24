@@ -322,3 +322,4 @@ func setup_tile_map(tiles):
 func init():
 	randomize()
 	setup_tile_map(generate_tile_map())
+	# comment with trailing ws 

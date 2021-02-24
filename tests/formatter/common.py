@@ -3,32 +3,21 @@ import difflib
 
 from gdtoolkit.parser import parser
 from gdtoolkit.formatter import format_code, LoosenTreeTransformer
+from gdtoolkit.formatter.safety_checks import check_comment_persistence
 
 
 MAX_LINE_LENGTH = 100
 
 
-def format_with_checks(
-    input_code,
-    check_comment_persistence=False,
-    check_tree_invariant=False,
-    check_formatting_stability=False,
-):
+def format_with_checks(input_code: str):
     formatted_code = format_code(input_code, max_line_length=MAX_LINE_LENGTH)
 
-    if check_comment_persistence:
-        input_code_comment_stats = _gather_comment_statistics_from_code(input_code)
-        formatted_code_comments = _gather_comments_from_code(formatted_code)
-        _comment_preservation_check(input_code_comment_stats, formatted_code_comments)
+    check_comment_persistence(input_code, formatted_code)
+    _tree_invariant_check(input_code, formatted_code)
 
-    if check_tree_invariant:
-        _tree_invariant_check(input_code, formatted_code)
-
-    if check_formatting_stability:
-        code_formatted_again = format_code(
-            formatted_code, max_line_length=MAX_LINE_LENGTH
-        )
-        _compare_again(code_formatted_again, formatted_code)
+    # check_formatting_stability:
+    code_formatted_again = format_code(formatted_code, max_line_length=MAX_LINE_LENGTH)
+    _compare_again(code_formatted_again, formatted_code)
 
 
 def format_and_compare(input_code, expected_output_code):
@@ -40,9 +29,7 @@ def format_and_compare(input_code, expected_output_code):
 
     _tree_invariant_check(input_code, formatted_code)
 
-    input_code_comment_stats = _gather_comment_statistics_from_code(input_code)
-    formatted_code_comments = _gather_comments_from_code(formatted_code)
-    _comment_preservation_check(input_code_comment_stats, formatted_code_comments)
+    check_comment_persistence(input_code, formatted_code)
 
 
 def _tree_invariant_check(input_code, formatted_code):
@@ -72,40 +59,3 @@ def _compare(formatted_code, expected_output_code):
 
 
 _compare_again = _compare
-
-
-def _comment_preservation_check(
-    input_code_comment_stats: dict, formatted_code_comments: List[str]
-):
-    for input_comment, occurances_in_input in input_code_comment_stats.items():
-        occurances_in_output = 0
-        for formatted_comment in formatted_code_comments:
-            if input_comment in formatted_comment:
-                occurances_in_output += 1
-        assert occurances_in_input <= occurances_in_output
-
-
-# TODO: use gatherer from gdtoolkit
-def _gather_comment_statistics_from_code(gdscript_code: str) -> dict:
-    stats = {}  # type: dict
-    lines = gdscript_code.splitlines()
-    for line in lines:
-        comment_start = line.find("#")
-        if comment_start >= 0:
-            comment = line[comment_start:]
-            comment = comment.rstrip()
-            stats[comment] = stats.get(comment, 0) + 1
-    return stats
-
-
-# TODO: use gatherer from gdtoolkit
-def _gather_comments_from_code(gdscript_code: str) -> List[str]:
-    lines = gdscript_code.splitlines()
-    comments = []  # type: List[str]
-    for line in lines:
-        comment_start = line.find("#")
-        if comment_start >= 0:
-            comment = line[comment_start:]
-            comment = comment.rstrip()
-            comments.append(comment)
-    return comments
