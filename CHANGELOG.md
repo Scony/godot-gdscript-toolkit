@@ -2,6 +2,9 @@
 
 ## master
 
+### Fixed
+ - Fixed comment persistence check
+
 ### Changed
  - Removed support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`) due to grammar conflict with modern (godot `3.2` assert)
 

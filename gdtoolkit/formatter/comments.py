@@ -57,7 +57,7 @@ def gather_comments_from_code(
         comment_start = line.find("#")
         if comment_start >= 0 and normalized_line_number in comment_line_numbers:
             comments.append(line[comment_start:])
-    return comments
+    return [comment.rstrip() for comment in comments]
 
 
 def _rstrip_comments(comments: List[Optional[str]]) -> List[Optional[str]]:
