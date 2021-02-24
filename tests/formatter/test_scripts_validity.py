@@ -12,8 +12,6 @@ EXCEPTIONS = set(  # TODO: fix wherever possible
         "type-cast-expressions.in.gd",  # godot bug
         "type-cast-expressions.out.gd",  # godot bug
         "multiline-preload-workaround.in.gd",  # godot bug
-        "legacy-assert-stmt.in.gd",  # was valid in godot 3.1
-        "legacy-assert-stmt.out.gd",  # was valid in godot 3.1
     ]
 )
 

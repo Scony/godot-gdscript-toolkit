@@ -1,9 +1,14 @@
 # Changelog
 
+## master
+
+### Changed
+ - Removed support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`) due to grammar conflict with modern (godot `3.2` assert)
+
 ## [3.2.8] 2020-09-15
 
 ### Added
- - Added support for legacy (godot 3.1) parenthesesless `assert` (e.g. `assert 1 == 1`)
+ - Added support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`)
  - Added support for recursive file finding in `gdlint` (e.g. `gdlint dir1/ dir2/`)
  - Added pre-commit hooks which can consumed by `pre-commit` project
  - Added a possibility to disable linter checks (e.g. `# gdlint: ignore=function-name` inline or in the line before)
