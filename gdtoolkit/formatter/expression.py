@@ -169,7 +169,7 @@ def _format_foldable_to_multiple_lines(
         "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
         "and_test": _format_operator_chain_based_expression_to_multiple_lines,
-        "not_test": partial(_append_to_expression_context_and_pass, " "),
+        "not_test": _format_not_test_to_multiple_lines,
         "content_test": _format_operator_chain_based_expression_to_multiple_lines,
         "comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
@@ -298,6 +298,18 @@ def _format_string_to_multiple_lines(
         (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
     )
     return (formatted_lines, string.line)
+
+
+def _format_not_test_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    if expression.children[0].value == "!":
+        return _append_to_expression_context_and_pass(
+            "", expression, expression_context, context
+        )
+    return _append_to_expression_context_and_pass(
+        " ", expression, expression_context, context
+    )
 
 
 def _format_assignment_expression_to_multiline_line(

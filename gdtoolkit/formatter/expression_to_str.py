@@ -25,8 +25,10 @@ def expression_to_str(expression: Node) -> str:
         "test_expr": _operator_chain_based_expression_to_str,
         "or_test": _operator_chain_based_expression_to_str,
         "and_test": _operator_chain_based_expression_to_str,
-        "not_test": lambda e: "{} {}".format(
-            expression_to_str(e.children[0]), expression_to_str(e.children[1])
+        "not_test": lambda e: "{}{}{}".format(
+            expression_to_str(e.children[0]),
+            "" if e.children[0].value == "!" else " ",
+            expression_to_str(e.children[1]),
         ),
         "content_test": _operator_chain_based_expression_to_str,
         "comparison": _operator_chain_based_expression_to_str,

@@ -1,4 +1,3 @@
-from typing import List
 import difflib
 
 from gdtoolkit.formatter import format_code, check_formatting_safety
