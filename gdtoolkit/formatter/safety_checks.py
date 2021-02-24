@@ -1,5 +1,6 @@
 from typing import Optional
 from dataclasses import dataclass
+import difflib
 
 from lark import Tree, Transformer, Token
 
@@ -8,12 +9,20 @@ from .formatter import format_code
 from .comments import gather_comments_from_code
 
 
+@dataclass
 class TreeInvariantViolation(Exception):
-    pass
+    diff: str
+
+    def __str__(self):
+        return '{}(diff="{}")'.format("TreeInvariantViolation", self.diff)
 
 
+@dataclass
 class FormattingStabilityViolation(Exception):
-    pass
+    diff: str
+
+    def __str__(self):
+        return '{}(diff="{}")'.format("FormattingStabilityViolation", self.diff)
 
 
 @dataclass
@@ -60,7 +69,13 @@ def check_tree_invariant(
         formatted_code_parse_tree
     )
     if given_code_parse_tree != formatted_code_parse_tree:
-        raise TreeInvariantViolation
+        diff = "\n".join(
+            difflib.unified_diff(
+                str(given_code_parse_tree.pretty()).splitlines(),
+                str(formatted_code_parse_tree.pretty()).splitlines(),
+            )
+        )
+        raise TreeInvariantViolation(diff)
 
 
 def check_formatting_stability(
@@ -76,7 +91,12 @@ def check_formatting_stability(
         comment_parse_tree=comment_parse_tree,
     )
     if formatted_code != code_formatted_again:
-        raise FormattingStabilityViolation
+        diff = "\n".join(
+            difflib.unified_diff(
+                formatted_code.splitlines(), code_formatted_again.splitlines()
+            )
+        )
+        raise FormattingStabilityViolation(diff)
 
 
 # TODO: boost algorithm
