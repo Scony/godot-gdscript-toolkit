@@ -18,6 +18,7 @@ from .expression_utils import is_any_comma
 def format_class_statement(statement: Node, context: Context) -> Outcome:
     handlers = {
         "tool_stmt": partial(format_simple_statement, "tool"),
+        "pass_stmt": partial(format_simple_statement, "pass"),
         "class_var_stmt": format_var_statement,
         "extends_stmt": _format_extends_statement,
         "class_def": _format_class_statement,

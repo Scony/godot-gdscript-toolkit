@@ -2,6 +2,9 @@
 
 ## master
 
+### Added
+ - Added support for `pass` statement on `class` level
+
 ### Fixed
  - Fixed comment persistence check
 
