@@ -3,6 +3,7 @@ start: _class_stmt+
 _class_stmt: (_simple_class_stmt _NL) | compound_class_stmt | _NL
 _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
 ?single_class_stmt: tool_stmt
+                  | pass_stmt
                   | signal_stmt
                   | extends_stmt
                   | classname_stmt
