@@ -5,6 +5,7 @@ from typing import List, Dict, Set
 
 from .problem import Problem
 from ..parser import parser
+from .types import Range
 from . import basic_checks, class_checks, design_checks, format_checks, name_checks
 
 PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
@@ -109,15 +110,34 @@ def lint_code(
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
 
-    lines_to_ignored_problems = _fetch_ignored_problems_per_lines(gdscript_code)
-    problems = list(
-        filter(
-            lambda problem: not _is_problem_ignored(problem, lines_to_ignored_problems),
-            problems,
-        )
+    problems_to_lines_where_they_are_inactive = _fetch_problem_inactivity_lines(
+        gdscript_code
     )
+    problems = [
+        problem
+        for problem in problems
+        if problem.name not in problems_to_lines_where_they_are_inactive
+        or problem.line not in problems_to_lines_where_they_are_inactive[problem.name]
+    ]
 
     return problems
+
+
+def _fetch_problem_inactivity_lines(gdscript_code: str) -> Dict[str, Set[int]]:
+    problem_inactivity_lines = defaultdict(set)
+    lines_to_ignored_problems = _fetch_ignored_problems_per_lines(gdscript_code)
+    for line, problems in lines_to_ignored_problems.items():
+        for problem in problems:
+            problem_inactivity_lines[problem].add(line)
+            problem_inactivity_lines[problem].add(line + 1)
+    problem_inactivity_ranges = _fetch_problem_inactivity_ranges(gdscript_code)
+    # TODO: use interval trees if to speed up
+    for problem, inactivity_ranges in problem_inactivity_ranges.items():
+        for a_range in inactivity_ranges:
+            problem_inactivity_lines[problem].update(
+                range(a_range.begin, a_range.end + 1)
+            )
+    return problem_inactivity_lines
 
 
 def _fetch_ignored_problems_per_lines(gdscript_code: str) -> Dict[int, Set[str]]:
@@ -134,13 +154,49 @@ def _fetch_ignored_problems_per_lines(gdscript_code: str) -> Dict[int, Set[str]]
     return lines_to_ignored_problems
 
 
-def _is_problem_ignored(
-    problem: Problem, lines_to_ignored_problems: Dict[int, Set[str]]
-) -> bool:
-    return (
-        problem.line in lines_to_ignored_problems
-        and problem.name in lines_to_ignored_problems[problem.line]
-    ) or (
-        problem.line - 1 in lines_to_ignored_problems
-        and problem.name in lines_to_ignored_problems[problem.line - 1]
-    )
+def _fetch_problem_inactivity_ranges(gdscript_code: str) -> Dict[str, List[Range]]:
+    problem_inactivity_ranges = defaultdict(list)
+    lines = gdscript_code.splitlines()
+    last_line_no = len(lines)
+
+    problem_range_begins = _fetch_problem_disabling_lines(lines)
+    for problem, range_begins in problem_range_begins.items():
+        for range_begin in range_begins:
+            problem_inactivity_ranges[problem].append(Range(range_begin, last_line_no))
+
+    problem_range_ends = _fetch_problem_enabling_lines(lines)
+    for problem, range_ends in problem_range_ends.items():
+        for range_end in range_ends:
+            for a_range in problem_inactivity_ranges[problem]:
+                if range_end < a_range.end:
+                    a_range.end = range_end
+
+    return problem_inactivity_ranges
+
+
+def _fetch_problem_disabling_lines(lines: List[str]) -> Dict[str, List[int]]:
+    compiled_regex = re.compile(r"#\s*gdlint\s*:\s*disable\s*=\s*([^,]+(,[^,]+)*)")
+    problem_to_disabling_lines = defaultdict(list)
+    for line_no, line in enumerate(lines, start=1):
+        pattern_matching_outcome = compiled_regex.search(line)
+        if pattern_matching_outcome is not None:
+            ignored_problems = [
+                p.strip() for p in pattern_matching_outcome.group(1).split(",")
+            ]
+            for problem in ignored_problems:
+                problem_to_disabling_lines[problem].append(line_no + 1)
+    return problem_to_disabling_lines
+
+
+def _fetch_problem_enabling_lines(lines: List[str]) -> Dict[str, List[int]]:
+    compiled_regex = re.compile(r"#\s*gdlint\s*:\s*enable\s*=\s*([^,]+(,[^,]+)*)")
+    problem_to_enabling_lines = defaultdict(list)
+    for line_no, line in enumerate(lines, start=1):
+        pattern_matching_outcome = compiled_regex.search(line)
+        if pattern_matching_outcome is not None:
+            ignored_problems = [
+                p.strip() for p in pattern_matching_outcome.group(1).split(",")
+            ]
+            for problem in ignored_problems:
+                problem_to_enabling_lines[problem].append(line_no)
+    return problem_to_enabling_lines
