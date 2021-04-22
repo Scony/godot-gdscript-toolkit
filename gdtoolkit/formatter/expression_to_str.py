@@ -78,6 +78,7 @@ def expression_to_str(expression: Node) -> str:
         # patterns (fake expressions):
         "wildcard_pattern": lambda _: "_",
         "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
+        "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
     }[expression.data](expression)
 
 
