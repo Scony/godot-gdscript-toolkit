@@ -3,6 +3,8 @@ class X:
 		match x:
 			1:
 				pass
+			1, 2:
+				pass
 			"x":
 				pass
 			x:
