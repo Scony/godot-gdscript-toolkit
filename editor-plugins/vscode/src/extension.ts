@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PythonShell } from "python-shell";
+import { Options, PythonShell } from "python-shell";
 import path = require("path");
 import cp = require("child_process");
 import { Organizer } from "./Organizer";
@@ -18,26 +18,24 @@ const PY_ARGS = [
 export function activate(context: vscode.ExtensionContext) {
     let organize_command = vscode.commands.registerCommand(
         "gdscript-formatter.organize_script",
-        () => {
+        async () => {
             if (vscode.window.activeTextEditor) {
                 let document = vscode.window.activeTextEditor.document;
-                run_formatter(document.getText(), document.uri, (results) => {
-                    if (results) {
-                        let organizer = new Organizer(results);
-                        run_formatter(
-                            organizer.get_parsed_script(),
-                            document.uri,
-                            (results) => {
-                                applyFormat(
-                                    results
-                                        ? results.join("\n")
-                                        : document.getText(),
-                                    document
-                                );
-                            }
-                        );
-                    }
-                });
+                let results = await run_formatter(document.getText(), document.uri);
+                if (results) {
+                    let organizer = new Organizer(results);
+                    let organized = await run_formatter(
+                        organizer.get_parsed_script(),
+                        document.uri
+                    );
+
+                    applyFormat(
+                        organized
+                            ? organized.join("\n")
+                            : document.getText(),
+                        document
+                    );
+                }
             }
         }
     );
@@ -58,15 +56,8 @@ export function activate(context: vscode.ExtensionContext) {
         {
             provideDocumentFormattingEdits(
                 document: vscode.TextDocument
-            ): vscode.TextEdit[] {
-                run_formatter(document.getText(), document.uri, (results) => {
-                    applyFormat(
-                        results ? results.join("\n") : document.getText(),
-                        document
-                    );
-                });
-
-                return [];
+            ): Promise<vscode.TextEdit[]> {
+                return provideEdits(document);
             },
         }
     );
@@ -84,11 +75,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(convert_command);
 }
 
-export function run_formatter(
+export async function run_formatter(
     script: string,
-    uri: vscode.Uri,
-    callback: (result: string[] | undefined) => void
-) {
+    uri: vscode.Uri
+): Promise<string[] | undefined> {
     let options = PythonShell.defaultOptions;
     options.scriptPath = SCRIPT_PATH;
 
@@ -103,13 +93,22 @@ export function run_formatter(
 
     options.args = PY_ARGS;
     options.args[0] = input;
+    try {
+        return await runPythonCommand(options);
+    } catch (error) {
+        onPythonError(error, uri);
+    }
+}
 
-    PythonShell.run(SCRIPT_NAME, options, (err, results) => {
-        if (err) {
-            onPythonError(err, uri);
-        } else {
-            callback(results);
-        }
+function runPythonCommand(options: Options) {
+    return new Promise<string[] | undefined>((resolve, reject) => {
+        PythonShell.run(SCRIPT_NAME, options, (err, results) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        });
     });
 }
 
@@ -186,6 +185,20 @@ export function onPythonError(err: Error, uri: vscode.Uri) {
     }
 }
 
+async function provideEdits(document: vscode.TextDocument) {
+    var edits: vscode.TextEdit[] = [];
+    var endLine = document.lineCount - 1;
+    var end_character = document.lineAt(endLine).text.length;
+    var range = new vscode.Range(0, 0, endLine, end_character);
+
+    const results = await run_formatter(document.getText(), document.uri);
+    if (results) {
+        edits.push(vscode.TextEdit.replace(range, results.join('\n')));
+    }
+
+    return edits;
+}
+
 export function applyFormat(formatted: string, document: vscode.TextDocument) {
     const edit = new vscode.WorkspaceEdit();
     var endLine = document.lineCount - 1;
@@ -198,13 +211,7 @@ export function applyFormat(formatted: string, document: vscode.TextDocument) {
         ),
         formatted
     );
-
-    vscode.workspace.applyEdit(edit).then((success) => {
-        var format_on_save = vscode.workspace.getConfiguration("editor").formatOnSave;
-        if (success && format_on_save) {
-            document.save();
-        }
-    });
+    vscode.workspace.applyEdit(edit);
 }
 
 export function deactivate() { }
