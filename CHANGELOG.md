@@ -12,6 +12,7 @@
 ### Changed
  - Removed support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`) due to grammar conflict with modern (godot `3.2` assert)
  - exclamation-mark-based not-test expression will be now formatted without space (`!(1==1)` instead of `! (1==1)`) while for `not` the behaviour remains the same (`not (1==1)`)
+ - Removed whitespace from `export (...)` - will be formatted as `export(...)` from now on
 
 ## [3.2.8] 2020-09-15
 
