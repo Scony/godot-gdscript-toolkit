@@ -1,11 +1,11 @@
 class X:
-	export (int) var a
-	export (
+	export(int) var a
+	export(
 		String,
 		FILE,
 		"*.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	) var b
-	export (int) var c = (
+	export(int) var c = (
 		1
 		+ 1
 		+ 1
@@ -28,7 +28,7 @@ class X:
 		+ 1
 		+ 1
 	)
-	export (
+	export(
 		String,
 		FILE,
 		"*.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -36,4 +36,4 @@ class X:
 		"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 		+ "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 	)
-	export (String, FILE) var e
+	export(String, FILE) var e
