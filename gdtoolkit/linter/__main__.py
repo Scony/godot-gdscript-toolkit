@@ -113,7 +113,7 @@ def main():  # pylint: disable=too-many-branches
 def _find_files_from(paths: List[Path], config: dict) -> List[Path]:
     """Finds files in directories recursively and combines results to the list"""
     files = []
-    excluded_directories = config["excluded_directories"]
+    excluded_directories = set(config["excluded_directories"])
     for path in paths:
         if os.path.isdir(path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
