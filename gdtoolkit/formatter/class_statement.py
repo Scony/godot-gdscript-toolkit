@@ -76,7 +76,7 @@ def _format_export_statement(statement: Tree, context: Context) -> Outcome:
         return format_var_statement(
             concrete_export_statement, context, prefix="export "
         )
-    expression_context = ExpressionContext("export (", statement.line, ")")
+    expression_context = ExpressionContext("export(", statement.line, ")")
     prefix_lines, _ = (
         format_comma_separated_list(
             concrete_export_statement.children[:-1], expression_context, context
