@@ -1,16 +1,27 @@
 import re
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from lark import Tree
 
 from ..parser import parser
 
 
+def gather_comments(
+    gdscript_code: str, comment_parse_tree: Optional[Tree] = None
+) -> List[str]:
+    comment_parse_tree = (
+        comment_parse_tree
+        if comment_parse_tree is not None
+        else parser.parse_comments(gdscript_code)
+    )
+    return [comment.value.rstrip() for comment in comment_parse_tree.children]
+
+
 def gather_standalone_comments(
     gdscript_code: str, comment_parse_tree: Tree
 ) -> List[Optional[str]]:
-    comments = _gather_comments_by_regex(
-        gdscript_code, comment_parse_tree, r"^\s*(#.*)$"
+    comments = _gather_comments_by_prefix_regex(
+        gdscript_code, comment_parse_tree, r"^\s*$"
     )
     return _rstrip_comments(comments)
 
@@ -18,46 +29,34 @@ def gather_standalone_comments(
 def gather_inline_comments(
     gdscript_code: str, comment_parse_tree: Tree
 ) -> List[Optional[str]]:
-    comments = _gather_comments_by_regex(
-        gdscript_code, comment_parse_tree, r"^\s*[^\s#]+[^#]*(#.*)$"
+    comments = _gather_comments_by_prefix_regex(
+        gdscript_code, comment_parse_tree, r"[^\s]+"
     )
     return _rstrip_comments(comments)
 
 
-def _gather_comments_by_regex(
-    gdscript_code: str, comment_parse_tree: Tree, comment_regex: str
+def _gather_comments_by_prefix_regex(
+    gdscript_code: str, comment_parse_tree: Tree, prefix_regex: str
 ) -> List[Optional[str]]:
-    comment_line_numbers = [comment.line for comment in comment_parse_tree.children]
+    """prefix means all line characters before comment"""
+    line_to_comment_mapping = {
+        comment.line: comment for comment in comment_parse_tree.children
+    }  # type: Dict[int, Tree]
     lines = gdscript_code.splitlines()
     comments = [None]  # type: List[Optional[str]]
-    regex = re.compile(comment_regex)
+    regex = re.compile(prefix_regex)
     for line_number, line in enumerate(lines):
         normalized_line_number = line_number + 1
-        match = regex.search(line)
-        if match is not None and normalized_line_number in comment_line_numbers:
-            comments.append(match.group(1))
-        else:
+        if normalized_line_number not in line_to_comment_mapping:
             comments.append(None)
+            continue
+        prefix = line[: line_to_comment_mapping[normalized_line_number].column - 1]
+        match = regex.search(prefix)
+        if match is None:
+            comments.append(None)
+        else:
+            comments.append(line_to_comment_mapping[normalized_line_number].value)
     return comments
-
-
-def gather_comments_from_code(
-    gdscript_code: str, comment_tree: Optional[Tree] = None
-) -> List[str]:
-    comment_tree = (
-        comment_tree
-        if comment_tree is not None
-        else parser.parse_comments(gdscript_code)
-    )
-    comment_line_numbers = [comment.line for comment in comment_tree.children]
-    lines = gdscript_code.splitlines()
-    comments = []  # type: List[str]
-    for line_number, line in enumerate(lines):
-        normalized_line_number = line_number + 1
-        comment_start = line.find("#")
-        if comment_start >= 0 and normalized_line_number in comment_line_numbers:
-            comments.append(line[comment_start:])
-    return [comment.rstrip() for comment in comments]
 
 
 def _rstrip_comments(comments: List[Optional[str]]) -> List[Optional[str]]:
