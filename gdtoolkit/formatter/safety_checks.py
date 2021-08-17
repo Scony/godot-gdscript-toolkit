@@ -6,7 +6,7 @@ from lark import Tree, Transformer, Token
 
 from ..parser import parser
 from .formatter import format_code
-from .comments import gather_comments_from_code
+from .comments import gather_comments
 
 
 @dataclass
@@ -106,11 +106,9 @@ def check_comment_persistence(
     given_code_comment_parse_tree: Optional[Tree] = None,
     formatted_code_comment_parse_tree: Optional[Tree] = None,
 ) -> None:
-    original_comments = gather_comments_from_code(
-        given_code, comment_tree=given_code_comment_parse_tree
-    )
-    comments_after_formatting = gather_comments_from_code(
-        formatted_code, comment_tree=formatted_code_comment_parse_tree
+    original_comments = gather_comments(given_code, given_code_comment_parse_tree)
+    comments_after_formatting = gather_comments(
+        formatted_code, formatted_code_comment_parse_tree
     )
     for original_comment in original_comments:
         if not any(
