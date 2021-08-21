@@ -33,6 +33,9 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "onready_stmt": lambda s, c: format_var_statement(
             s.children[0], c, prefix="onready "
         ),
+        "puppet_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="puppet "
+        ),
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
@@ -72,15 +75,31 @@ def _format_child_and_prepend_to_outcome(
 
 def _format_export_statement(statement: Tree, context: Context) -> Outcome:
     concrete_export_statement = statement.children[0]
+    puppet_present = any(
+        isinstance(child, Tree) and child.data == "puppet"
+        for child in concrete_export_statement.children
+    )
     if concrete_export_statement.data == "export_inf":
-        return format_var_statement(
-            concrete_export_statement, context, prefix="export "
+        puppet = "puppet " if puppet_present else ""
+        var_statement = (
+            Tree("fake_var_stmt", concrete_export_statement.children[1:])
+            if puppet_present
+            else concrete_export_statement
         )
-    expression_context = ExpressionContext("export(", statement.line, ")")
+        return format_var_statement(
+            var_statement, context, prefix="export {}".format(puppet)
+        )
+    puppet = " puppet" if puppet_present else ""
+    expression_context = ExpressionContext(
+        "export(", statement.line, "){}".format(puppet)
+    )
+    export_hints = (
+        concrete_export_statement.children[:-2]
+        if puppet_present
+        else concrete_export_statement.children[:-1]
+    )
     prefix_lines, _ = (
-        format_comma_separated_list(
-            concrete_export_statement.children[:-1], expression_context, context
-        ),
+        format_comma_separated_list(export_hints, expression_context, context),
         statement.end_line,
     )
     _, last_line = prefix_lines[-1]
