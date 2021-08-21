@@ -5,6 +5,7 @@
 ### Added
  - Added support for `pass` statement on `class` level
  - Added a possibility to disable linter checks in range from e.g. `# gdlint: disable=function-name` to `# gdlint: enable=function-name`
+ - Added support for `puppet var`
 
 ### Fixed
  - Fixed comment persistence check

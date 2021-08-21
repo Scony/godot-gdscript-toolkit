@@ -26,3 +26,8 @@ export puppet var yy = 1
 export puppet var yyy : int
 export puppet var yyyy : int = 1
 export puppet var yyyyy := 1
+
+export (int) puppet var zz = 1
+export (int) puppet var zzz : int
+export (int) puppet var zzzz : int = 1
+export (int) puppet var zzzzz := 1
