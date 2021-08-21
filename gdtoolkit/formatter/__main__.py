@@ -51,6 +51,7 @@ def find_files_from(paths: List[str]) -> List[str]:
 # TODO: refa & tests
 # pylint: disable=too-many-statements
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")
     arguments = docopt(
         __doc__,
         version="gdformat {}".format(
