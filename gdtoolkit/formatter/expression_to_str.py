@@ -18,6 +18,12 @@ def standalone_expression_to_str(expression: Node) -> str:
 
 def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Token):
+        token_handlers = {
+            "LONG_STRING": _long_string_to_str,
+            "REGULAR_STRING": _regular_string_to_str,
+        }
+        if expression.type in token_handlers:
+            return token_handlers[expression.type](expression)
         return expression.value
     return {
         "expr": lambda e: standalone_expression_to_str(e.children[0]),
@@ -54,7 +60,7 @@ def expression_to_str(expression: Node) -> str:
         "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
-        "string": lambda e: e.children[0].value,
+        "string": lambda e: expression_to_str(e.children[0]),
         "node_path": lambda e: "@{}".format(expression_to_str(e.children[0])),
         "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
         "path": lambda e: "/".join([name_token.value for name_token in e.children]),
@@ -148,3 +154,26 @@ def _dict_element_to_str(dict_element: Tree) -> str:
         standalone_expression_to_str(dict_element.children[0]),
         standalone_expression_to_str(dict_element.children[1]),
     )
+
+
+def _long_string_to_str(string: Token) -> str:
+    actual_string = string.value
+    if actual_string.startswith("'''") and actual_string.endswith("'''"):
+        fake_token = Token("REGULAR_STRING", actual_string[2:-2])
+        return _regular_string_to_str(fake_token)
+    return actual_string
+
+
+def _regular_string_to_str(string: Token) -> str:
+    actual_string = string.value
+    actual_string_data = actual_string[1:-1]
+    quotes_num = actual_string_data.count('"')
+    aposes_num = actual_string_data.count("'")
+    target = '"' if quotes_num <= aposes_num else "'"
+    if target == '"' and actual_string.startswith("'"):
+        actual_string_data = actual_string_data.replace("\\'", "'")
+        actual_string_data = actual_string_data.replace('"', '\\"')
+    if target == "'" and actual_string.startswith('"'):
+        actual_string_data = actual_string_data.replace('\\"', '"')
+        actual_string_data = actual_string_data.replace("'", "\\'")
+    return "{}{}{}".format(target, actual_string_data, target)  # pylint: disable=W1308

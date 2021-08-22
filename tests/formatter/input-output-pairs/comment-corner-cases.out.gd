@@ -5,7 +5,7 @@ class X:
 
 	func bar():
 		# xxx
-		var x = '##'
+		var x = "##"
 		# yyy
 		var y = "##"
 		# zzz
