@@ -6,7 +6,7 @@ import pytest
 
 
 DATA_DIR = "./input-output-pairs"
-GODOT_SERVER = "godot-server"
+GODOT_SERVER = "godot4"
 EXCEPTIONS = set(  # TODO: fix wherever possible
     [
         "if-corner-case.in.gd",
@@ -29,10 +29,17 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
+@pytest.mark.godot_check_only
 def test_script_is_valid(gdscript_path):
     this_directory = os.path.dirname(os.path.abspath(__file__))
     directory_tests = os.path.join(this_directory, DATA_DIR)
     gdscript_full_path = os.path.join(directory_tests, gdscript_path)
-    process = subprocess.Popen([GODOT_SERVER, "--check-only", "-s", gdscript_full_path])
+    process = subprocess.Popen(
+        [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_full_path],
+        stderr=subprocess.PIPE,
+    )
     process.wait()
-    assert process.returncode == 0
+    _, stderr = process.communicate()
+    assert stderr == b""
+    # TODO: fix once godot4 build is working
+    # assert process.returncode == 0
