@@ -77,6 +77,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "max-file-lines": 1000,
         "trailing-whitespace": None,
         "max-line-length": 100,
+        "tab-characters": 1,
         "mixed-tabs-and-spaces": None,
         # misc
         "excluded_directories": {".git"},
