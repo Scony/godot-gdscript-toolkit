@@ -11,7 +11,11 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
     checks_to_run_w_code = [
         (
             "max-line-length",
-            partial(_max_line_length_check, config["max-line-length"]),
+            partial(
+                _max_line_length_check,
+                config["max-line-length"],
+                config["tab-characters"],
+            ),
         ),
         (
             "max-file-lines",
@@ -34,11 +38,13 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
     return problems
 
 
-def _max_line_length_check(threshold, code: str) -> List[Problem]:
+def _max_line_length_check(threshold, tab_characters, code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
     for line_number in range(len(lines)):
-        if len(lines[line_number]) > threshold:
+        assert tab_characters is not None
+        line = lines[line_number].replace("\t", " " * tab_characters)
+        if len(line) > threshold:
             problems.append(
                 Problem(
                     name="max-line-length",
