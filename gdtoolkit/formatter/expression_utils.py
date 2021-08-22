@@ -16,6 +16,7 @@ def is_foldable(expression: Node) -> bool:
         "string",
         "node_path",
         "get_node",
+        "type_cast",
     ]
 
 

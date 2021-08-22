@@ -12,6 +12,7 @@
  - Fixed comment persistence check
  - Improved comments handling
  - Improved utf08 support
+ - Fixed type cast (e.g. `1 as String`) to always be in one line (this is forced by Godot's bug)
 
 ### Changed
  - Removed support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`) due to grammar conflict with modern (godot `3.2` assert)
