@@ -5,9 +5,9 @@ class X:
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 		]]
 		var z = {
-			x.yyyyyyyy.zzzzz.a: 'locked',
-			x.yyyyyyyy.zzzzz.b: 'unlocked',
-			x.yyyyyyyy.zzzzz.c: 'done',
+			x.yyyyyyyy.zzzzz.a: "locked",
+			x.yyyyyyyy.zzzzz.b: "unlocked",
+			x.yyyyyyyy.zzzzz.c: "done",
 		}[x]
 		var a = p[(
 			1

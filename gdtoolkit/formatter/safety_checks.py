@@ -7,6 +7,7 @@ from lark import Tree, Transformer, Token
 from ..parser import parser
 from .formatter import format_code
 from .comments import gather_comments
+from .expression_to_str import expression_to_str
 
 
 @dataclass
@@ -45,6 +46,10 @@ class LoosenTreeTransformer(Transformer):
             if isinstance(args[1], Token) and args[1].type == "NUMBER"
             else Tree("neg_expr", args)
         )
+
+    def string(self, args):  # pylint: disable=R0201
+        string_token = args[0]
+        return expression_to_str(string_token)
 
 
 def check_tree_invariant(

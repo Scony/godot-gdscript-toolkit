@@ -6,7 +6,7 @@ func foo():
 	var y = x
 	var z = 0x99ff
 	var q = null
-	var w = 'xxx'
+	var w = "xxx"
 	var e = @"../Node"
 	var r = """asd"""
 	var t = $Some/Path
