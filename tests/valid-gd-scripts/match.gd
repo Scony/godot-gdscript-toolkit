@@ -3,30 +3,30 @@ func foo(x):
 	match x:
 		1:
 			pass
-		y.aaa:
-			pass
-		1 + 1:
-			pass
-		y.zzz.aaa:
-			pass
+		# y.aaa:
+		# 	pass
+		# 1 + 1:
+		# 	pass
+		# y.zzz.aaa:
+		# 	pass
 		0xff9900:
 			pass
 		(1+1)*2+3:
 			pass
-		[1,2,[1,{1:2,2:var z,..,}]]:
-			pass
-		1 if true else 2:
-			pass
-		1 or 2 and 1:
-			pass
+		# [1,2,[1,{1:2,2:var z,..,}]]:
+		# 	pass
+		# 1 if true else 2:
+		# 	pass
+		# 1 or 2 and 1:
+		# 	pass
 		not true:
 			pass
-		1 < 2:
-			pass
-		1 | 1:
-			pass
-		1 >> 1:
-			pass
+		# 1 < 2:
+		# 	pass
+		# 1 | 1:
+		# 	pass
+		# 1 >> 1:
+		# 	pass
 		(1):
 			pass
 		"xx":
@@ -35,8 +35,8 @@ func foo(x):
 			pass
 		1, 2, 3:
 			pass
-		1, 2 or 3, 4:
-			pass
+		# 1, 2 or 3, 4:
+		# 	pass
 		_:
 			pass
 
@@ -51,7 +51,7 @@ func bar(x):
 
 func baz(x):
 	match typeof(x):
-		TYPE_REAL:
+		TYPE_FLOAT:
 			print("float")
 		TYPE_STRING:
 			print("text")

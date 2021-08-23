@@ -1,1 +1,1 @@
-class_name Foo, "res://some" extends "simple-class-statements.in.gd".X
+class_name Foo, "res://some" extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd".X

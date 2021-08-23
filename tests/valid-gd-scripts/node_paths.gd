@@ -6,7 +6,7 @@ func foo():
 	$'path'
 	$"""path"""
 	$Child/Sub
-	@"xx"
-	@'xx'
-	@"""xxxx"""
+	# @"xx"
+	# @'xx'
+	# @"""xxxx"""
 	$Child/Sub.text = "xx"

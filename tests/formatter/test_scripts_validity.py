@@ -7,13 +7,20 @@ import pytest
 
 DATA_DIR = "./input-output-pairs"
 GODOT_SERVER = "godot4"
-EXCEPTIONS = set(  # TODO: fix wherever possible
+EXCEPTIONS = set(
     [
         "if-corner-case.in.gd",
         "if-corner-case.out.gd",
-        "type-cast-expressions.in.gd",  # godot bug
-        "type-cast-expressions.out.gd",  # godot bug
-        "multiline-preload-workaround.in.gd",  # godot bug
+        # godot bugs:
+        "complex-trailing-comma-scenarios.in.gd",
+        "complex-trailing-comma-scenarios.out.gd",
+        "parentheses-expressions-preservation.in.gd",
+        "parentheses-expressions-preservation.out.gd",
+        "blockless-class.in.gd",
+        "blockless-class.out.gd",
+        "blockless-func-n-func-suite.in.gd",
+        "blockless-func-n-func-suite.out.gd",
+        "complex-signal-statements.out.gd",
     ]
 )
 

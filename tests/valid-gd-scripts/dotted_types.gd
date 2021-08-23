@@ -1,5 +1,5 @@
 class X:
 	class Y:
-		tool
+		pass
 
 var x: X.Y

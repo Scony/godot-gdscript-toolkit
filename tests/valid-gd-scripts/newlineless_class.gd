@@ -1,2 +1,2 @@
 class X:
-	tool
+	pass

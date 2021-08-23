@@ -24,9 +24,6 @@ class X:
 	func bav(a, b: int = 1):
 		pass
 
-	func _init(a, b := 1, c: int = 1).(a, b, c):
-		pass
-
 	func bab(a, b: int = 1, c := 1) -> int:
 		return 1
 
@@ -34,5 +31,5 @@ class X:
 class Z:
 	extends Y
 
-	func _init(a, b := 1, c: int = 1).(a, b, c) -> void:
+	func _init(a, b := 1, c: int = 1):
 		pass

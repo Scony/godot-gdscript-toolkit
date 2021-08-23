@@ -1,6 +1,6 @@
 # asda
 
-tool 							# asd
+@tool 							# asd
 
 func foo():						# asd
 	pass						# asd

@@ -1,8 +1,8 @@
 enum {AA, BB, CC }
 enum {XX, YY, ZZ, }
 enum {A,
-	  B,
-	  C}
+	B,
+	C}
 enum {
 	X,Y,
 Z
@@ -11,8 +11,8 @@ Z
 enum AAAAA {AA, BB, CC }
 enum BBBBBB {XX, YY, ZZ, }
 enum cc {A,
-	  B,
-	  C}
+	B,
+	C}
 enum _dddd{
 	X,Y,
 Z
@@ -32,4 +32,3 @@ enum Name {}
 enum WithNegativeElement { POS, NEG = -1 }
 
 enum WithOperator { ADD = 1 + 3, SHIFT = 1<<2 }
-enum WithIfElse { IF = 1 if true else [1,2, 3 ] }

@@ -1,28 +1,28 @@
-extends "simple-class-statements.in.gd"
+extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd"
 
 
 class C:
-	extends "simple-class-statements.in.gd".X
+	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd".X
 
 
 class D:
-	extends "simple-class-statements.in.gd".X
-	tool
+	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd".X
+	pass
 
 
 class E:
-	extends "simple-class-statements.in.gd"
-	tool
+	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd"
+	pass
 
 
 class F:
 	extends E
-	tool
+	pass
 
 
 class X:
 	class Y:
-		tool
+		pass
 
 
 class Z:

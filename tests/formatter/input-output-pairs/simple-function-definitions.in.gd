@@ -7,28 +7,25 @@ class X:
 	func foo(a):
 		pass
 
-	func bar(var a,b):
+	func bar(a,b):
 		pass
 
-	func baz (a,var b=1):
+	func baz (a, b=1):
 		pass
 
-	func bax (a,var b:=1):
+	func bax (a, b:=1):
 		pass
 
-	func bac (a,var b:int):
+	func bac (a, b:int):
 		pass
 
-	func bav (a,var b:int=1):
+	func bav (a, b:int=1):
 		pass
 
-	func _init (a,b:=1,c:int=1).(a,b,c):
-		pass
-
-	func bab (a,var b:int=1,c:=1) -> int:
+	func bab (a, b:int=1,c:=1) -> int:
 		return 1
 
 class Z:
 	extends Y
-	func _init (a,b:=1,c:int=1).(a,b,c) -> void:
+	func _init (a,b:=1,c:int=1):
 		pass

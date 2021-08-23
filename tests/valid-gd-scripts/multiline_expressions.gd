@@ -13,4 +13,4 @@ func foo():
 	)
 	pass
 	bar(('x' +
-		 'y'))
+		'y'))
