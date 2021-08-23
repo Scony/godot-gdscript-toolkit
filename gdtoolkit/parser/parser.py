@@ -84,7 +84,15 @@ class Parser:
             os.path.join(self._cache_dirpath, version, name) + ".pickle"
         )
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
-        if not os.path.exists(cache_filepath) or not self._use_grammar_cache:
+
+        tree = None
+        if os.path.exists(cache_filepath) and self._use_grammar_cache:
+            try:
+                tree = self.load(cache_filepath)
+            except ValueError:
+                # pickle errors on unsupported protocols - newer python versions (#93)
+                pass
+        if tree is None:
             tree = Lark.open(
                 grammar_filepath,
                 parser="lalr",
@@ -94,8 +102,7 @@ class Parser:
                 maybe_placeholders=False,
             )
             self.save(tree, cache_filepath)
-        else:
-            tree = self.load(cache_filepath)
+
         return tree
 
     @cached_property
@@ -126,7 +133,7 @@ class Parser:
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
         with open(path, "wb") as file_parser:
-            pickle.dump(write_data, file_parser, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(write_data, file_parser)
 
     @staticmethod
     def load(path: str) -> Tree:
