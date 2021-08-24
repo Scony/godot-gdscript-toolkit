@@ -28,7 +28,6 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "signal_stmt": _format_signal_statement,
         "docstr_stmt": _format_docstring_statement,
         "const_stmt": _format_const_statement,
-        "export_stmt": _format_export_statement,
         "onready_stmt": lambda s, c: format_var_statement(
             s.children[0], c, prefix="onready "
         ),
@@ -54,27 +53,6 @@ def _format_child_and_prepend_to_outcome(
         + lines[1:],
         last_processed_line,
     )
-
-
-def _format_export_statement(statement: Tree, context: Context) -> Outcome:
-    concrete_export_statement = statement.children[0]
-    if concrete_export_statement.data == "export_inf":
-        return format_var_statement(
-            concrete_export_statement, context, prefix="export "
-        )
-    expression_context = ExpressionContext("export(", statement.line, ")")
-    prefix_lines, _ = (
-        format_comma_separated_list(
-            concrete_export_statement.children[:-1], expression_context, context
-        ),
-        statement.end_line,
-    )
-    _, last_line = prefix_lines[-1]
-    prefix = "{} ".format(last_line.strip())
-    expr_lines, _ = format_var_statement(
-        concrete_export_statement.children[-1], context, prefix=prefix
-    )
-    return (prefix_lines[:-1] + expr_lines, statement.end_line)
 
 
 def _format_const_statement(statement: Tree, context: Context) -> Outcome:

@@ -8,7 +8,6 @@ _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
                   | classname_stmt
                   | class_var_stmt
                   | const_stmt
-                  | export_stmt
                   | onready_stmt
                   | docstr_stmt
                   | classname_extends_stmt
@@ -21,9 +20,6 @@ signal_stmt: "signal" NAME ["(" [NAME ("," NAME)* [trailing_comma]] ")"]
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME ["," string]
 !classname_extends_stmt: "class_name" NAME ["," string] "extends" (NAME | string) ("." NAME)*
-export_stmt: export_inf | export_typed
-export_inf: "export" (var_assigned | var_typed | var_typed_assgnd | var_inf) [setget]
-export_typed: "export" "(" TYPE ("," expr)* ")" class_var_stmt
 class_var_stmt: _var_stmt [setget]
 _var_stmt: var_empty
          | var_assigned
