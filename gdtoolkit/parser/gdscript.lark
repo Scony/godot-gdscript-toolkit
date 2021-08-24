@@ -162,11 +162,9 @@ getattr: _call_expr _attr+
      | literal
 ?literal: NUMBER
         | string
-        | node_path
         | get_node
 HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
-node_path: "@" string
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" [test_expr ("," test_expr)* [trailing_comma]] "]"
