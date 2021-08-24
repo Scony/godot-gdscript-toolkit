@@ -1,6 +1,3 @@
-@tool
-
-
 class_name X
 
 

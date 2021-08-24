@@ -35,7 +35,6 @@ def pytest_generate_tests(metafunc):
         )
 
 
-@pytest.mark.skip(reason="not working until grammar fixed")
 def test_parsing_success(gdscript_ok_path):
     with open(gdscript_ok_path, "r") as fh:
         code = fh.read()

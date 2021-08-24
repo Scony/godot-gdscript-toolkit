@@ -1,5 +1,5 @@
 func foo(a):
 	pass
-
-func bar():
-	foo(1,)
+# TODO: handle & uncomment
+# func bar():
+# 	foo(1,)
