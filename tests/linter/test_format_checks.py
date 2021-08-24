@@ -5,12 +5,12 @@ from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 
 def test_max_file_lines_ok():
-    code = "\n".join(["tool"] * 1000)
+    code = "\n".join(["pass"] * 1000)
     simple_ok_check(code)
 
 
 def test_max_file_lines_nok():
-    code = "\n".join(["tool"] * 1001)
+    code = "\n".join(["pass"] * 1001)
     simple_nok_check(code, "max-file-lines", 1001)
 
 

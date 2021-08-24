@@ -71,11 +71,11 @@ def test_class_name_nok(code):
 @pytest.mark.parametrize('code', [
 """
 class _SubClassName:
-    tool
+    pass
 """,
 """
 class SubClassName:
-    tool
+    pass
 """,
 ])
 def test_sub_class_name_ok(code):
@@ -85,11 +85,11 @@ def test_sub_class_name_ok(code):
 @pytest.mark.parametrize('code', [
 """
 class SubClassName_:
-    tool
+    pass
 """,
 """
 class sub_class_name:
-    tool
+    pass
 """,
 ])
 def test_sub_class_name_nok(code):
