@@ -18,7 +18,7 @@ signal_stmt: "signal" NAME ["(" [NAME ("," NAME)* [trailing_comma]] ")"]
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME ["," string]
 !classname_extends_stmt: "class_name" NAME ["," string] "extends" (NAME | string) ("." NAME)*
-class_var_stmt: _var_stmt [setget]
+class_var_stmt: _var_stmt
 _var_stmt: var_empty
          | var_assigned
          | var_typed
@@ -30,7 +30,6 @@ _var_typed: "var" NAME ":" TYPE
 var_typed: _var_typed
 var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":" "=" expr
-!setget: "setget" (NAME ["," NAME] | "," NAME)
 !const_stmt: "const" NAME [":" [TYPE]] "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
