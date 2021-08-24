@@ -43,7 +43,7 @@ def format_comma_separated_list(
     multiline_mode_forced = is_expression_forcing_multiple_lines(
         fake_expression, context.standalone_comments
     )
-    if not multiline_mode_forced or "preload" in expression_context.prefix_string:
+    if not multiline_mode_forced:
         strings_to_join = list(map(standalone_expression_to_str, elements))
         single_line_expression = "{}{}{}".format(
             expression_context.prefix_string,
@@ -51,10 +51,7 @@ def format_comma_separated_list(
             expression_context.suffix_string,
         )
         single_line_length = len(single_line_expression) + context.indent
-        if (
-            single_line_length <= context.max_line_length
-            or "preload" in expression_context.prefix_string
-        ):
+        if single_line_length <= context.max_line_length:
             return [
                 (
                     expression_context.prefix_line,
