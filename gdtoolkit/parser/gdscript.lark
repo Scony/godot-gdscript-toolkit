@@ -42,9 +42,9 @@ func_args: func_arg ("," func_arg)*
 ?func_arg: func_arg_regular
          | func_arg_inf
          | func_arg_typed
-func_arg_regular: ["var"] NAME ["=" expr]
-func_arg_inf: ["var"] NAME ":" "=" expr
-func_arg_typed: ["var"] NAME ":" TYPE ["=" expr]
+func_arg_regular: NAME ["=" expr]
+func_arg_inf: NAME ":" "=" expr
+func_arg_typed: NAME ":" TYPE ["=" expr]
 _func_suite: _func_body
            | _func_stmt
 _func_body: _NL _INDENT _func_stmt+ _DEDENT
