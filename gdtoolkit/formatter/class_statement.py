@@ -26,7 +26,6 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
         "signal_stmt": _format_signal_statement,
-        "docstr_stmt": _format_docstring_statement,
         "const_stmt": _format_const_statement,
         "onready_stmt": lambda s, c: format_var_statement(
             s.children[0], c, prefix="onready "
@@ -70,11 +69,6 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
         prefix, statement.line, "", statement.end_line
     )
     return format_expression(statement.children[-1], expression_context, context)
-
-
-def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
-    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
-    return format_expression(statement.children[0], expression_context, context)
 
 
 def _format_signal_statement(statement: Node, context: Context) -> Outcome:
