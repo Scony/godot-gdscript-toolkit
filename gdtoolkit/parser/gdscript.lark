@@ -8,7 +8,6 @@ _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
                   | classname_stmt
                   | class_var_stmt
                   | const_stmt
-                  | onready_stmt
                   | classname_extends_stmt
 ?compound_class_stmt: class_def
                     | enum_def
@@ -33,7 +32,6 @@ var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":" "=" expr
 !setget: "setget" (NAME ["," NAME] | "," NAME)
 !const_stmt: "const" NAME [":" [TYPE]] "=" expr
-onready_stmt: "onready" class_var_stmt
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT _class_stmt+ _DEDENT

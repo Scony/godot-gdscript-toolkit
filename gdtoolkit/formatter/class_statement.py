@@ -27,9 +27,6 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "classname_extends_stmt": _format_classname_extends_statement,
         "signal_stmt": _format_signal_statement,
         "const_stmt": _format_const_statement,
-        "onready_stmt": lambda s, c: format_var_statement(
-            s.children[0], c, prefix="onready "
-        ),
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
