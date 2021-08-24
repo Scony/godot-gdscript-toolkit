@@ -35,25 +35,6 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
-        "remote_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="remote "
-        ),
-        "remotesync_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="remotesync "
-        ),
-        "master_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="master "
-        ),
-        "mastersync_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="mastersync "
-        ),
-        "puppet_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="puppet "
-        ),
-        "puppetsync_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="puppetsync "
-        ),
-        "sync_func_def": partial(_format_child_and_prepend_to_outcome, prefix="sync "),
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 

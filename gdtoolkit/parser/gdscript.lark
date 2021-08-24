@@ -15,13 +15,6 @@ _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
 ?compound_class_stmt: class_def
                     | enum_def
                     | "static" func_def -> static_func_def
-                    | "remote" func_def -> remote_func_def
-                    | "remotesync" func_def -> remotesync_func_def
-                    | "master" func_def -> master_func_def
-                    | "mastersync" func_def -> mastersync_func_def
-                    | "puppet" func_def -> puppet_func_def
-                    | "puppetsync" func_def -> puppetsync_func_def
-                    | "sync" func_def -> sync_func_def
                     | func_def
 
 signal_stmt: "signal" NAME ["(" [NAME ("," NAME)* [trailing_comma]] ")"]
