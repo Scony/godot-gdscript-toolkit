@@ -59,8 +59,6 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
         prefix = "const {}: {} = ".format(
             statement.children[1].value, statement.children[3].value
         )
-    else:
-        raise NotImplementedError
     expression_context = ExpressionContext(
         prefix, statement.line, "", statement.end_line
     )
