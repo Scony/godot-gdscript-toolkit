@@ -7,6 +7,7 @@ from .context import Context
 from .constants import INDENT_STRING
 from .types import Outcome
 from .expression_to_str import standalone_expression_to_str
+from .expression_utils import has_trailing_comma
 
 
 @dataclass
@@ -21,7 +22,7 @@ class Enum:
         self.lark_node = enum_def
         self.name = self._load_name(enum_def)
         self.elements = self._load_elements(enum_def)
-        self.trailing_comma = self._check_trailing_comma(enum_def)
+        self.trailing_comma = has_trailing_comma(enum_def.children[0])
 
     @staticmethod
     def _load_name(enum_def: Tree) -> Optional[str]:
@@ -44,15 +45,6 @@ class Enum:
             )
             elements.append(EnumElement(name=name, value=value, lark_node=enum_element))
         return elements
-
-    @staticmethod
-    def _check_trailing_comma(enum_def: Tree) -> bool:
-        if len(enum_def.children[0].children) == 0:
-            return False
-        node = enum_def.children[0].children[-1]
-        if isinstance(node, Tree) and node.data == "trailing_comma":
-            return True
-        return False
 
 
 def format_enum(enum_def: Tree, context: Context) -> Outcome:
@@ -129,8 +121,6 @@ def _format_elements_to_single_line(enum: Enum) -> List[str]:
             fragments.append(", {}".format(element.name))
         if element.value is not None:
             fragments.append(" = {}".format(element.value))
-    if enum.trailing_comma:
-        fragments.append(",")
     if len(enum.elements) > 0:
         fragments.append(" ")
     return fragments
