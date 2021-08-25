@@ -16,7 +16,6 @@ def is_foldable(expression: Node) -> bool:
         return True
     return not isinstance(expression, Token) and expression.data not in [
         "string",
-        "node_path",
         "get_node",
     ]
 
@@ -73,22 +72,6 @@ def is_any_comma(expression: Node) -> bool:
 
 def is_any_parentheses(expression: Node) -> bool:
     return isinstance(expression, Token) and expression.type in ["LPAR", "RPAR"]
-
-
-def has_leading_dot(expression: Node) -> bool:
-    return (
-        isinstance(expression.children[0], Token)
-        and expression.children[0].type == "DOT"
-    )
-
-
-def _is_multiline_string(expression: Node) -> bool:
-    return (
-        isinstance(expression, Tree)
-        and expression.data == "string"
-        and expression.children[0].type == "LONG_STRING"
-        and len(expression.children[0].value.splitlines()) > 1
-    )
 
 
 def _has_standalone_comments(

@@ -12,7 +12,6 @@ from .expression_utils import (
     is_expression_forcing_multiple_lines,
     is_any_comma,
     is_trailing_comma,
-    has_leading_dot,
 )
 from .expression_to_str import expression_to_str, standalone_expression_to_str
 
@@ -369,11 +368,9 @@ def _format_func_arg_to_multiple_lines(
 def _format_call_expression_to_multiline_line(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    dot = "." if has_leading_dot(expression) else ""
-    offset = 1 if has_leading_dot(expression) else 0
-    callee_node = expression.children[0 + offset]
+    callee_node = expression.children[0]
     callee = expression_to_str(callee_node)
-    list_is_empty = len(expression.children) == 3 + offset
+    list_is_empty = len(expression.children) == 3
     if list_is_empty:
         return (
             [
@@ -390,14 +387,14 @@ def _format_call_expression_to_multiline_line(
             expression.end_line,
         )
     new_expression_context = ExpressionContext(
-        "{}{}{}(".format(expression_context.prefix_string, dot, callee),
+        "{}{}(".format(expression_context.prefix_string, callee),
         callee_node.line,
         "){}".format(expression_context.suffix_string),
         expression.end_line,
     )
     return (
         format_comma_separated_list(
-            expression.children[2 + offset :: 2], new_expression_context, context
+            expression.children[2::2], new_expression_context, context
         ),
         expression.end_line,
     )

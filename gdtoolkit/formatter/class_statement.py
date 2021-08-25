@@ -12,7 +12,6 @@ from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
 from .expression import format_comma_separated_list, format_expression
-from .expression_utils import is_any_comma
 
 
 def format_class_statement(statement: Node, context: Context) -> Outcome:
@@ -217,32 +216,6 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         formatted_lines = [
             (name_token.line, "{}func {}()".format(context.indent_string, name))
         ]
-    parent_call = (
-        statement.children[1]
-        if len(statement.children) > 1
-        and isinstance(statement.children[1], Tree)
-        and statement.children[1].data == "parent_call"
-        else None
-    )
-    parent_call = (
-        statement.children[2]
-        if len(statement.children) > 2
-        and isinstance(statement.children[2], Tree)
-        and statement.children[2].data == "parent_call"
-        else parent_call
-    )
-    if parent_call is not None:
-        last_line_no, last_line = formatted_lines[-1]
-        expression_context = ExpressionContext(
-            "{}.(".format(last_line.strip()),
-            last_line_no,  # type: ignore
-            ")",
-            parent_call.end_line,
-        )
-        elements = [e for e in parent_call.children[1:-1] if not is_any_comma(e)]
-        formatted_lines = formatted_lines[:-1] + format_comma_separated_list(
-            elements, expression_context, context
-        )
     return_type = (
         statement.children[1]
         if len(statement.children) > 1
@@ -255,13 +228,6 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         if len(statement.children) > 2
         and isinstance(statement.children[2], Token)
         and statement.children[2].type == "TYPE"
-        else return_type
-    )
-    return_type = (
-        statement.children[3]
-        if len(statement.children) > 3
-        and isinstance(statement.children[3], Token)
-        and statement.children[3].type == "TYPE"
         else return_type
     )
     if return_type is not None:

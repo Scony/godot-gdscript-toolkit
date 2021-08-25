@@ -6,7 +6,6 @@ from .types import Node
 from .expression_utils import (
     is_any_comma,
     is_any_parentheses,
-    has_leading_dot,
     remove_outer_parentheses,
     has_trailing_comma,
 )
@@ -62,7 +61,6 @@ def expression_to_str(expression: Node) -> str:
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
-        "node_path": lambda e: "@{}".format(expression_to_str(e.children[0])),
         "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
         "path": lambda e: "/".join([name_token.value for name_token in e.children]),
         # fake expressions:
@@ -125,16 +123,9 @@ def _operator_chain_based_expression_to_str(expression: Tree) -> str:
 
 
 def _standalone_call_to_str(call: Tree) -> str:
-    is_super_call = False
-    offset = 0
-    if has_leading_dot(call):
-        is_super_call = True
-        offset = 1
-
-    super_prefix = "." if is_super_call else ""
-    callee = expression_to_str(call.children[0 + offset])
-    arguments = _arguments_to_str(call.children[1 + offset :])
-    return "{}{}({})".format(super_prefix, callee, arguments)
+    callee = expression_to_str(call.children[0])
+    arguments = _arguments_to_str(call.children[1:])
+    return "{}({})".format(callee, arguments)
 
 
 def _getattr_call_to_str(call: Tree) -> str:
