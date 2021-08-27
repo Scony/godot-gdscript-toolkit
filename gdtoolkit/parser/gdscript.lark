@@ -118,42 +118,81 @@ kv_pair_pattern: (c_dict_pattern_element | eq_dict_pattern_element)
 c_dict_pattern_element: test_pattern ":" test_pattern
 eq_dict_pattern_element: NAME "=" test_pattern
 
-expr: test_expr
+expr: type_cast
     | assnmnt_expr
-assnmnt_expr: attr_expr _assnmnt_op test_expr
+assnmnt_expr: attr_expr _assnmnt_op type_cast
 !_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | ">>=" | "<<="
-!?test_expr: or_test ["if" or_test "else" test_expr]
-!?or_test: and_test (("or" | "||") and_test)*
-!?and_test: not_test (("and" | "&&") not_test)*
-!?not_test: ("not" | "!") not_test | content_test
-!?content_test: comparison ("in" comparison)*
-?comparison: bitw_or [_comp_op bitw_or]
+!?type_cast: test_expr
+           | actual_type_cast
+!?actual_type_cast: test_expr ("as" TYPE)+
+!?test_expr: or_test ["if" asless_or_test "else" asless_test_expr]
+           | actual_type_cast "if" asless_or_test "else" asless_actual_test_expr
+!?asless_actual_test_expr: asless_or_test "if" asless_or_test "else" asless_actual_test_expr
+!?asless_test_expr: asless_or_test ["if" asless_or_test "else" asless_test_expr]
+!?or_test: and_test (("or" | "||") asless_and_test)*
+         | actual_type_cast (("or" | "||") asless_and_test)+
+!?asless_or_test: asless_and_test (("or" | "||") asless_and_test)*
+!?and_test: not_test (("and" | "&&") asless_not_test)*
+          | actual_type_cast (("and" | "&&") asless_not_test)+
+!?asless_and_test: asless_not_test (("and" | "&&") asless_not_test)*
+!?not_test: content_test
+          | asless_actual_not_test
+!?asless_actual_not_test: ("not" | "!") asless_not_test
+!?asless_not_test: asless_content_test
+                 | ("not" | "!") asless_not_test
+!?content_test: comparison ("in" asless_comparison)*
+              | actual_type_cast ("in" asless_comparison)+
+!?asless_content_test: asless_comparison ("in" asless_comparison)*
+?comparison: bitw_or [_comp_op asless_bitw_or]
+           | actual_type_cast _comp_op asless_bitw_or
+?asless_comparison: asless_bitw_or [_comp_op asless_bitw_or]
 !_comp_op: ">" | "<" | "==" | "!=" | "<=" | ">="
-!?bitw_or: bitw_xor ("|" bitw_xor)*
-!?bitw_xor: bitw_and ("^" bitw_and)*
-!?bitw_and: shift_expr ("&" shift_expr)*
-!?shift_expr: arith_expr (("<<" | ">>") arith_expr)*
-!?arith_expr: mdr_expr (("-" | "+") mdr_expr)*
-!?mdr_expr: neg_expr (("*" | "/" | "%") neg_expr)*
-!?neg_expr: "-" neg_expr
-          | bitw_not
-!?bitw_not: "~" bitw_not
-          | type_test
-!?type_test: type_cast ("is" type_cast)*
-!?type_cast: _call_expr ("as" TYPE)* // TODO: fix precedence (same as "is" probably(!))
+!?bitw_or: bitw_xor ("|" asless_bitw_xor)*
+         | actual_type_cast ("|" asless_bitw_xor)+
+!?asless_bitw_or: asless_bitw_xor ("|" asless_bitw_xor)*
+!?bitw_xor: bitw_and ("^" asless_bitw_and)*
+          | actual_type_cast ("^" asless_bitw_and)+
+!?asless_bitw_xor: asless_bitw_and ("^" asless_bitw_and)*
+!?bitw_and: shift_expr ("&" asless_shift_expr)*
+          | actual_type_cast ("&" asless_shift_expr)+
+!?asless_bitw_and: asless_shift_expr ("&" asless_shift_expr)*
+!?shift_expr: arith_expr (("<<" | ">>") asless_arith_expr)*
+            | actual_type_cast (("<<" | ">>") asless_arith_expr)+
+!?asless_shift_expr: asless_arith_expr (("<<" | ">>") asless_arith_expr)*
+!?arith_expr: mdr_expr (("-" | "+") asless_mdr_expr)*
+            | actual_type_cast (("-" | "+") asless_mdr_expr)+
+!?asless_arith_expr: asless_mdr_expr (("-" | "+") asless_mdr_expr)*
+!?mdr_expr: neg_expr (("*" | "/" | "%") asless_neg_expr)*
+          | actual_type_cast (("*" | "/" | "%") asless_neg_expr)+
+!?asless_mdr_expr: asless_neg_expr (("*" | "/" | "%") asless_neg_expr)*
+!?neg_expr: bitw_not
+          | asless_actual_neg_expr
+!?asless_actual_neg_expr: "-" asless_neg_expr
+!?asless_neg_expr: asless_bitw_not
+                 | "-" asless_neg_expr
+!?bitw_not: type_test
+          | asless_actual_bitw_not
+!?asless_actual_bitw_not: "~" asless_bitw_not
+!?asless_bitw_not: asless_type_test
+                 | "~" asless_bitw_not
+
+!?type_test: _call_expr ("is" TYPE)*
+           | actual_type_cast ("is" TYPE)+
+!?asless_type_test: _call_expr ("is" TYPE)*
+
 _call_expr: standalone_call
           | getattr_call
           | attr_expr
 !standalone_call: NAME _call_arglist
 !getattr_call: getattr _call_arglist
-!_call_arglist: "(" [test_expr ("," test_expr)*] ")"
+!_call_arglist: "(" [type_cast ("," type_cast)*] ")"
 !?attr_expr: getattr
            | subscr_expr
 getattr: _call_expr _attr+
 !_attr: ("." NAME)
-?subscr_expr: _call_expr "[" test_expr "]"
+?subscr_expr: _call_expr "[" type_cast "]"
             | atom
-?atom: "(" test_expr ")" -> par_expr
+?atom: "(" type_cast ")" -> par_expr
      | array
      | dict
      | NAME
@@ -167,12 +206,12 @@ HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
-array: "[" [test_expr ("," test_expr)* [trailing_comma]] "]"
+array: "[" [type_cast ("," type_cast)* [trailing_comma]] "]"
 trailing_comma: ","
 dict: "{" [kv_pair ("," kv_pair)* [trailing_comma]] "}"
 kv_pair: (c_dict_element | eq_dict_element)
-c_dict_element: test_expr ":" test_expr
-eq_dict_element: NAME "=" test_expr
+c_dict_element: type_cast ":" type_cast
+eq_dict_element: NAME "=" type_cast
 
 TYPE: NAME ("." NAME)*
 NUMBER: ["+"|"-"] (FLOAT | INT)
