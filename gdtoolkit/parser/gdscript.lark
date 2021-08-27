@@ -11,9 +11,10 @@ _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
                   | classname_extends_stmt
 ?compound_class_stmt: class_def
                     | enum_def
-                    | "static" func_def -> static_func_def
                     | func_def
+                    | "static" func_def -> static_func_def
 
+pass_stmt: "pass"
 signal_stmt: "signal" NAME ["(" [NAME ("," NAME)* [trailing_comma]] ")"]
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME ["," string]
@@ -34,6 +35,12 @@ var_inf: "var" NAME ":" "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT _class_stmt+ _DEDENT
+
+enum_def: (enum_regular | enum_named) _NL
+enum_regular: "enum" _enum_body
+enum_named: "enum" NAME _enum_body
+_enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
+enum_element: NAME ["=" test_expr]
 
 func_def: func_header _func_suite
 func_header: "func" NAME "(" [func_args] ")" ["->" TYPE] ":"
@@ -60,7 +67,6 @@ _simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
                    | while_stmt
                    | for_stmt
                    | match_stmt
-pass_stmt: "pass"
 return_stmt: "return" [expr]
 func_var_stmt: _var_stmt
 break_stmt.2: "break"
@@ -75,12 +81,6 @@ for_stmt: "for" NAME "in" expr ":" _func_suite
 match_stmt: "match" expr ":" _match_body
 _match_body: _NL _INDENT match_branch+ _DEDENT
 match_branch: pattern ":" _func_suite
-
-enum_def: (enum_regular | enum_named) _NL
-enum_regular: "enum" _enum_body
-enum_named: "enum" NAME _enum_body
-_enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
-enum_element: NAME ["=" test_expr]
 
 pattern: list_pattern
 ?list_pattern: test_pattern ("," test_pattern)*
