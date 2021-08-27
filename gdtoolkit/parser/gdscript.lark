@@ -114,9 +114,7 @@ array_pattern: "[" [test_pattern ("," test_pattern)* [trailing_comma]] "]"
 dict_pattern: "{" [dict_pattern_element ("," dict_pattern_element)* [trailing_comma]] "}"
 ?dict_pattern_element: kv_pair_pattern
                      | atom_pattern
-kv_pair_pattern: (c_dict_pattern_element | eq_dict_pattern_element)
-c_dict_pattern_element: test_pattern ":" test_pattern
-eq_dict_pattern_element: NAME "=" test_pattern
+kv_pair_pattern: test_pattern ":" test_pattern
 
 expr: type_cast
     | assnmnt_expr
@@ -208,8 +206,8 @@ get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" [type_cast ("," type_cast)* [trailing_comma]] "]"
 trailing_comma: ","
-dict: "{" [kv_pair ("," kv_pair)* [trailing_comma]] "}"
-kv_pair: (c_dict_element | eq_dict_element)
+dict: "{" [c_dict_element ("," c_dict_element)* [trailing_comma]] "}"
+    | "{" [eq_dict_element ("," eq_dict_element)* [trailing_comma]] "}"
 c_dict_element: type_cast ":" type_cast
 eq_dict_element: NAME "=" type_cast
 

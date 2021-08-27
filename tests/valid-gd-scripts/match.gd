@@ -106,3 +106,8 @@ func ban(x):
 			print("It's 1 - 3")
 		"Sword", "Splash potion", "Fist":
 			print("Yep, you've taken damage")
+
+func bad(x):
+	match x:
+		{"x": 1}:#, y=2}:
+			pass
