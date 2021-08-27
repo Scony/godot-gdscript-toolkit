@@ -6,3 +6,4 @@ gdtoolkit.egg-info/
 dist/
 /logs
 build
+.hypothesis/
