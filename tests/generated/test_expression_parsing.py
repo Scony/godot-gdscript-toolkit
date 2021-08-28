@@ -22,5 +22,5 @@ with open("gdtoolkit/parser/gdscript.lark", "r") as fh:
 )
 @given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))
 def test_expression_parsing(expression):
-    gdscript_code = "func foo():\n\t{}".format(expression)
+    gdscript_code = "func foo():{}".format(expression)
     parser.parse(gdscript_code)  # just checking if not throwing
