@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## [3.3.0] 2021-08-31
 
 ### Added
  - Added support for `pass` statement on `class` level
