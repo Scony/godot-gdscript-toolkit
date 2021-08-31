@@ -25,6 +25,15 @@ class LoosenTreeTransformer(Transformer):
             else Tree("asless_actual_neg_expr", args)
         )
 
+    def asless_comparison(self, args):  # pylint: disable=R0201
+        return Tree("comparison", args)
+
+    def asless_and_test(self, args):  # pylint: disable=R0201
+        return Tree("and_test", args)
+
+    def asless_content_test(self, args):  # pylint: disable=R0201
+        return Tree("content_test", args)
+
     def string(self, args):  # pylint: disable=R0201
         string_token = args[0]
         return expression_to_str(string_token)

@@ -34,14 +34,14 @@ def expression_to_str(expression: Node) -> str:
         "or_test": _operator_chain_based_expression_to_str,
         # TODO: asless_or_test
         "and_test": _operator_chain_based_expression_to_str,
-        # TODO: asless_and_test
+        "asless_and_test": _operator_chain_based_expression_to_str,
         "asless_actual_not_test": lambda e: "{}{}{}".format(
             expression_to_str(e.children[0]),
             "" if e.children[0].value == "!" else " ",
             expression_to_str(e.children[1]),
         ),
         "content_test": _operator_chain_based_expression_to_str,
-        # TODO: asless_content_test
+        "asless_content_test": _operator_chain_based_expression_to_str,
         "comparison": _operator_chain_based_expression_to_str,
         "asless_comparison": _operator_chain_based_expression_to_str,
         # TODO: asless_comparison

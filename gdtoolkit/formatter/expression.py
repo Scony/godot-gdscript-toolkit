@@ -178,12 +178,14 @@ def _format_foldable_to_multiple_lines(
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
         # TODO: asless_or_test
         "and_test": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_and_test
+        "asless_and_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_actual_not_test": _format_not_test_to_multiple_lines,
         "content_test": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_content_test
+        "asless_content_test": (
+            _format_operator_chain_based_expression_to_multiple_lines
+        ),
         "comparison": _format_operator_chain_based_expression_to_multiple_lines,
-        # "asless_comparison": _format_operator_chain_based_expression_to_multiple_lines
+        "asless_comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
         # TODO: asless_bitw_or
         "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
