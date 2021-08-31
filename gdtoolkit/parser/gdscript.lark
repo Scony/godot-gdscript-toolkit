@@ -211,7 +211,7 @@ dict: "{" [c_dict_element ("," c_dict_element)* [trailing_comma]] "}"
 c_dict_element: type_cast ":" type_cast
 eq_dict_element: NAME "=" type_cast
 
-TYPE: NAME ("." NAME)*
+TYPE: NAME ([" "] "." [" "] NAME)*
 NUMBER: ["+"|"-"] (FLOAT | INT)
 FLOAT: INT _EXP | DECIMAL _EXP?
 _EXP: ("e"|"E") SIGNED_INT
