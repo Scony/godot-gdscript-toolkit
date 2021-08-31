@@ -173,10 +173,9 @@ def _format_foldable_to_multiple_lines(
     handlers = {
         "assnmnt_expr": _format_assignment_expression_to_multiline_line,
         "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_actual_test_expr
-        # TODO: asless_test_expr
+        "asless_test_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_or_test
+        "asless_or_test": _format_operator_chain_based_expression_to_multiple_lines,
         "and_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_and_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_actual_not_test": _format_not_test_to_multiple_lines,

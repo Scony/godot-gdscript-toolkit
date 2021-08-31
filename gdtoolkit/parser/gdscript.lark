@@ -124,8 +124,7 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
            | actual_type_cast
 !?actual_type_cast: test_expr ("as" TYPE)+
 !?test_expr: or_test ["if" asless_or_test "else" asless_test_expr]
-           | actual_type_cast "if" asless_or_test "else" asless_actual_test_expr
-!?asless_actual_test_expr: asless_or_test "if" asless_or_test "else" asless_actual_test_expr
+           | actual_type_cast "if" asless_or_test "else" asless_test_expr
 !?asless_test_expr: asless_or_test ["if" asless_or_test "else" asless_test_expr]
 !?or_test: and_test (("or" | "||") asless_and_test)*
          | actual_type_cast (("or" | "||") asless_and_test)+

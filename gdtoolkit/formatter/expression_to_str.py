@@ -29,10 +29,9 @@ def expression_to_str(expression: Node) -> str:
         "expr": lambda e: standalone_expression_to_str(e.children[0]),
         "assnmnt_expr": _operator_chain_based_expression_to_str,
         "test_expr": _operator_chain_based_expression_to_str,
-        # TODO: asless_actual_test_expr
-        # TODO: asless_test_expr
+        "asless_test_expr": _operator_chain_based_expression_to_str,
         "or_test": _operator_chain_based_expression_to_str,
-        # TODO: asless_or_test
+        "asless_or_test": _operator_chain_based_expression_to_str,
         "and_test": _operator_chain_based_expression_to_str,
         "asless_and_test": _operator_chain_based_expression_to_str,
         "asless_actual_not_test": lambda e: "{}{}{}".format(
