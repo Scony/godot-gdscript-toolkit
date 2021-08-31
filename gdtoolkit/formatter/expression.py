@@ -173,21 +173,34 @@ def _format_foldable_to_multiple_lines(
     handlers = {
         "assnmnt_expr": _format_assignment_expression_to_multiline_line,
         "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_actual_test_expr
+        # TODO: asless_test_expr
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_or_test
         "and_test": _format_operator_chain_based_expression_to_multiple_lines,
-        "not_test": _format_not_test_to_multiple_lines,
+        # TODO: asless_and_test
+        "asless_actual_not_test": _format_not_test_to_multiple_lines,
         "content_test": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_content_test
         "comparison": _format_operator_chain_based_expression_to_multiple_lines,
+        # "asless_comparison": _format_operator_chain_based_expression_to_multiple_lines
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_bitw_or
         "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_bitw_xor
         "bitw_and": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_bitw_and
         "shift_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_shift_expr
         "arith_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_arith_expr
         "mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        "neg_expr": partial(_append_to_expression_context_and_pass, ""),
-        "bitw_not": partial(_append_to_expression_context_and_pass, ""),
+        # TODO: asless_mdr_expr
+        "asless_actual_neg_expr": partial(_append_to_expression_context_and_pass, ""),
+        "asless_actual_bitw_not": partial(_append_to_expression_context_and_pass, ""),
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
-        "type_cast": _format_operator_chain_based_expression_to_multiple_lines,
+        # TODO: asless_type_test
+        "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiline_line,
         "getattr_call": _format_call_expression_to_multiline_line,
         "getattr": _format_attribute_expression_to_multiple_lines,
@@ -196,7 +209,8 @@ def _format_foldable_to_multiple_lines(
         "array": _format_array_to_multiple_lines,
         "string": _format_string_to_multiple_lines,
         "dict": _format_dict_to_multiple_lines,
-        "kv_pair": _format_kv_pair_to_multiple_lines,
+        "c_dict_element": _format_kv_pair_to_multiple_lines,
+        "eq_dict_element": _format_kv_pair_to_multiple_lines,
         # fake expressions:
         "func_arg_regular": _format_func_arg_to_multiple_lines,
         "func_arg_inf": _format_func_arg_to_multiple_lines,
@@ -238,7 +252,7 @@ def _format_dict_to_multiple_lines(
 def _format_kv_pair_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    concrete_expression = expression.children[0]
+    concrete_expression = expression
     suffix = ":" if concrete_expression.data == "c_dict_element" else ""
     key_expression_context = ExpressionContext(
         expression_context.prefix_string, expression_context.prefix_line, suffix

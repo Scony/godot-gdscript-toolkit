@@ -137,7 +137,7 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
           | asless_actual_not_test
 !?asless_actual_not_test: ("not" | "!") asless_not_test
 !?asless_not_test: asless_content_test
-                 | ("not" | "!") asless_not_test
+                 | asless_actual_not_test
 !?content_test: comparison ("in" asless_comparison)*
               | actual_type_cast ("in" asless_comparison)+
 !?asless_content_test: asless_comparison ("in" asless_comparison)*
@@ -167,12 +167,12 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
           | asless_actual_neg_expr
 !?asless_actual_neg_expr: "-" asless_neg_expr
 !?asless_neg_expr: asless_bitw_not
-                 | "-" asless_neg_expr
+                 | asless_actual_neg_expr
 !?bitw_not: type_test
           | asless_actual_bitw_not
 !?asless_actual_bitw_not: "~" asless_bitw_not
 !?asless_bitw_not: asless_type_test
-                 | "~" asless_bitw_not
+                 | asless_actual_bitw_not
 
 !?type_test: _call_expr ("is" TYPE)*
            | actual_type_cast ("is" TYPE)+

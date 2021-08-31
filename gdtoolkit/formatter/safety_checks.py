@@ -18,11 +18,11 @@ class LoosenTreeTransformer(Transformer):
     def par_expr(self, args):  # pylint: disable=R0201
         return args[0] if len(args) > 0 else args
 
-    def neg_expr(self, args):  # pylint: disable=R0201
+    def asless_actual_neg_expr(self, args):  # pylint: disable=R0201
         return (
             Token("NUMBER", "-{}".format(args[1].value))
             if isinstance(args[1], Token) and args[1].type == "NUMBER"
-            else Tree("neg_expr", args)
+            else Tree("asless_actual_neg_expr", args)
         )
 
     def string(self, args):  # pylint: disable=R0201

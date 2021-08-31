@@ -29,25 +29,43 @@ def expression_to_str(expression: Node) -> str:
         "expr": lambda e: standalone_expression_to_str(e.children[0]),
         "assnmnt_expr": _operator_chain_based_expression_to_str,
         "test_expr": _operator_chain_based_expression_to_str,
+        # TODO: asless_actual_test_expr
+        # TODO: asless_test_expr
         "or_test": _operator_chain_based_expression_to_str,
+        # TODO: asless_or_test
         "and_test": _operator_chain_based_expression_to_str,
-        "not_test": lambda e: "{}{}{}".format(
+        # TODO: asless_and_test
+        "asless_actual_not_test": lambda e: "{}{}{}".format(
             expression_to_str(e.children[0]),
             "" if e.children[0].value == "!" else " ",
             expression_to_str(e.children[1]),
         ),
         "content_test": _operator_chain_based_expression_to_str,
+        # TODO: asless_content_test
         "comparison": _operator_chain_based_expression_to_str,
+        "asless_comparison": _operator_chain_based_expression_to_str,
+        # TODO: asless_comparison
         "bitw_or": _operator_chain_based_expression_to_str,
+        # TODO: asless_bitw_or
         "bitw_xor": _operator_chain_based_expression_to_str,
+        # TODO: asless_bitw_xor
         "bitw_and": _operator_chain_based_expression_to_str,
+        # TODO: asless_bitw_and
         "shift_expr": _operator_chain_based_expression_to_str,
+        # TODO: asless_shift_expr
         "arith_expr": _operator_chain_based_expression_to_str,
+        # TODO: asless_arith_expr
         "mdr_expr": _operator_chain_based_expression_to_str,
-        "neg_expr": lambda e: "-{}".format(expression_to_str(e.children[1])),
-        "bitw_not": lambda e: "~{}".format(expression_to_str(e.children[1])),
+        "asless_mdr_expr": _operator_chain_based_expression_to_str,
+        "asless_actual_neg_expr": lambda e: "-{}".format(
+            expression_to_str(e.children[1])
+        ),
+        "asless_actual_bitw_not": lambda e: "~{}".format(
+            expression_to_str(e.children[1])
+        ),
         "type_test": _operator_chain_based_expression_to_str,
-        "type_cast": _operator_chain_based_expression_to_str,
+        # TODO: asless_type_test
+        "actual_type_cast": _operator_chain_based_expression_to_str,
         "standalone_call": _standalone_call_to_str,
         "getattr_call": _getattr_call_to_str,
         "getattr": lambda e: "".join(map(expression_to_str, e.children)),
@@ -57,13 +75,13 @@ def expression_to_str(expression: Node) -> str:
         ),
         "array": _array_to_str,
         "dict": _dict_to_str,
-        "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
+        # "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
         "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
         "path": lambda e: "/".join([name_token.value for name_token in e.children]),
-        # fake expressions:
+        # # fake expressions:
         "func_arg_regular": lambda e: "{}{}".format(
             e.children[0].value,
             " = {}".format(standalone_expression_to_str(e.children[1]))
