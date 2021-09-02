@@ -28,6 +28,8 @@ from docopt import docopt
 from gdtoolkit.formatter import format_code, check_formatting_safety
 from gdtoolkit.parser import parser
 
+import lark
+
 
 def find_files_from(paths: List[str]) -> List[str]:
     """Finds files in the list of paths and walks directories recursively to find
@@ -48,6 +50,26 @@ def find_files_from(paths: List[str]) -> List[str]:
     return files
 
 
+def pretty_print_format_error(e: lark.exceptions.UnexpectedInput, code):
+    print(
+        "Error while parsing the file:",
+        f"{e.line}:{e.column}",
+        f"{e.get_context(code)}",
+        f"Expected: {e.expected}",
+        sep="\n",
+    )
+
+
+def try_parse(code):
+    try:
+        code_parse_tree = parser.parse(code, gather_metadata=True)
+        comment_parse_tree = parser.parse_comments(code)
+    except lark.exceptions.UnexpectedInput as e:
+        pretty_print_format_error(e, code)
+        sys.exit(1)
+    return code_parse_tree, comment_parse_tree
+
+
 # TODO: refa & tests
 # pylint: disable=too-many-statements
 def main():
@@ -63,8 +85,8 @@ def main():
     line_length = int(arguments["--line-length"])
     if files == ["-"]:
         code = sys.stdin.read()
-        code_parse_tree = parser.parse(code, gather_metadata=True)
-        comment_parse_tree = parser.parse_comments(code)
+        code_parse_tree, comment_parse_tree = try_parse(code)
+
         formatted_code = format_code(
             gdscript_code=code,
             max_line_length=line_length,
@@ -84,21 +106,7 @@ def main():
         for file_path in files:
             with open(file_path, "r") as fh:
                 code = fh.read()
-                try:
-                    code_parse_tree = parser.parse(code, gather_metadata=True)
-                    comment_parse_tree = parser.parse_comments(code)
-                    formatted_code = format_code(
-                        gdscript_code=code,
-                        max_line_length=line_length,
-                        parse_tree=code_parse_tree,
-                        comment_parse_tree=comment_parse_tree,
-                    )
-                except Exception as e:
-                    print(
-                        "exception during formatting of {}".format(file_path),
-                        file=sys.stderr,
-                    )
-                    raise e
+                code_parse_tree, comment_parse_tree = try_parse(code)
                 if code != formatted_code:
                     print("would reformat {}".format(file_path), file=sys.stderr)
                     try:
@@ -140,21 +148,15 @@ def main():
         for file_path in files:
             with open(file_path, "r+") as fh:
                 code = fh.read()
-                try:
-                    code_parse_tree = parser.parse(code, gather_metadata=True)
-                    comment_parse_tree = parser.parse_comments(code)
-                    formatted_code = format_code(
-                        gdscript_code=code,
-                        max_line_length=line_length,
-                        parse_tree=code_parse_tree,
-                        comment_parse_tree=comment_parse_tree,
-                    )
-                except Exception as e:
-                    print(
-                        "exception during formatting of {}".format(file_path),
-                        file=sys.stderr,
-                    )
-                    raise e
+
+                code_parse_tree, comment_parse_tree = try_parse(code)
+
+                formatted_code = format_code(
+                    gdscript_code=code,
+                    max_line_length=line_length,
+                    parse_tree=code_parse_tree,
+                    comment_parse_tree=comment_parse_tree,
+                )
                 if code != formatted_code:
                     try:
                         check_formatting_safety(
