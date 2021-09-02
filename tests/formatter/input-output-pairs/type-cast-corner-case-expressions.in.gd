@@ -13,3 +13,24 @@ func foo():
 	# ---
 	1 as int if true or true else true
 	1 as int if [1,] or true else true
+	# ---
+	1 as int or 1|1
+	1 as int or [1,]|1
+	# ---
+	1 as int or 1^1
+	1 as int or [1,]^1
+	# ---
+	1 as int or 1&1
+	1 as int or [1,]&1
+	# ---
+	1 as int or 1<<1
+	1 as int or [1,]<<1
+	# ---
+	1 as int or 1*1
+	1 as int or [1,]*1
+	# ---
+	1 as int or 1+1
+	1 as int or [1,]-1
+	# ---
+	1 as int or 1 is int1
+	1 as int or [1,] is Array

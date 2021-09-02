@@ -186,21 +186,21 @@ def _format_foldable_to_multiple_lines(
         "comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_comparison": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_bitw_or
+        "asless_bitw_or": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_bitw_xor
+        "asless_bitw_xor": _format_operator_chain_based_expression_to_multiple_lines,
         "bitw_and": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_bitw_and
+        "asless_bitw_and": _format_operator_chain_based_expression_to_multiple_lines,
         "shift_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_shift_expr
+        "asless_shift_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "arith_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_arith_expr
+        "asless_arith_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_mdr_expr
+        "asless_mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_actual_neg_expr": partial(_append_to_expression_context_and_pass, ""),
         "asless_actual_bitw_not": partial(_append_to_expression_context_and_pass, ""),
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
-        # TODO: asless_type_test
+        "asless_type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiline_line,
         "getattr_call": _format_call_expression_to_multiline_line,

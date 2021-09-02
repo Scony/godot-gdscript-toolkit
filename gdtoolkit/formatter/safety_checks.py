@@ -34,11 +34,32 @@ class LoosenTreeTransformer(Transformer):
     def asless_or_test(self, args):  # pylint: disable=R0201
         return Tree("or_test", args)
 
+    def asless_bitw_or(self, args):  # pylint: disable=R0201
+        return Tree("bitw_or", args)
+
+    def asless_bitw_xor(self, args):  # pylint: disable=R0201
+        return Tree("bitw_xor", args)
+
+    def asless_bitw_and(self, args):  # pylint: disable=R0201
+        return Tree("bitw_and", args)
+
+    def asless_shift_expr(self, args):  # pylint: disable=R0201
+        return Tree("shift_expr", args)
+
+    def asless_type_test(self, args):  # pylint: disable=R0201
+        return Tree("type_test", args)
+
     def asless_content_test(self, args):  # pylint: disable=R0201
         return Tree("content_test", args)
 
     def asless_test_expr(self, args):  # pylint: disable=R0201
         return Tree("test_expr", args)
+
+    def asless_arith_expr(self, args):  # pylint: disable=R0201
+        return Tree("arith_expr", args)
+
+    def asless_mdr_expr(self, args):  # pylint: disable=R0201
+        return Tree("mdr_expr", args)
 
     def string(self, args):  # pylint: disable=R0201
         string_token = args[0]

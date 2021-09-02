@@ -43,17 +43,16 @@ def expression_to_str(expression: Node) -> str:
         "asless_content_test": _operator_chain_based_expression_to_str,
         "comparison": _operator_chain_based_expression_to_str,
         "asless_comparison": _operator_chain_based_expression_to_str,
-        # TODO: asless_comparison
         "bitw_or": _operator_chain_based_expression_to_str,
-        # TODO: asless_bitw_or
+        "asless_bitw_or": _operator_chain_based_expression_to_str,
         "bitw_xor": _operator_chain_based_expression_to_str,
-        # TODO: asless_bitw_xor
+        "asless_bitw_xor": _operator_chain_based_expression_to_str,
         "bitw_and": _operator_chain_based_expression_to_str,
-        # TODO: asless_bitw_and
+        "asless_bitw_and": _operator_chain_based_expression_to_str,
         "shift_expr": _operator_chain_based_expression_to_str,
-        # TODO: asless_shift_expr
+        "asless_shift_expr": _operator_chain_based_expression_to_str,
         "arith_expr": _operator_chain_based_expression_to_str,
-        # TODO: asless_arith_expr
+        "asless_arith_expr": _operator_chain_based_expression_to_str,
         "mdr_expr": _operator_chain_based_expression_to_str,
         "asless_mdr_expr": _operator_chain_based_expression_to_str,
         "asless_actual_neg_expr": lambda e: "-{}".format(
@@ -63,7 +62,7 @@ def expression_to_str(expression: Node) -> str:
             expression_to_str(e.children[1])
         ),
         "type_test": _operator_chain_based_expression_to_str,
-        # TODO: asless_type_test
+        "asless_type_test": _operator_chain_based_expression_to_str,
         "actual_type_cast": _operator_chain_based_expression_to_str,
         "standalone_call": _standalone_call_to_str,
         "getattr_call": _getattr_call_to_str,
@@ -74,7 +73,6 @@ def expression_to_str(expression: Node) -> str:
         ),
         "array": _array_to_str,
         "dict": _dict_to_str,
-        # "kv_pair": lambda e: _dict_element_to_str(e.children[0]),
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),

@@ -57,3 +57,80 @@ func foo():
 		)
 		else true
 	)
+	# ---
+	1 as int or 1 | 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			| 1
+		)
+	)
+	# ---
+	1 as int or 1 ^ 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			^ 1
+		)
+	)
+	# ---
+	1 as int or 1 & 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			& 1
+		)
+	)
+	# ---
+	1 as int or 1 << 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			<< 1
+		)
+	)
+	# ---
+	1 as int or 1 * 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			* 1
+		)
+	)
+	# ---
+	1 as int or 1 + 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			- 1
+		)
+	)
+	# ---
+	1 as int or 1 is int1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			is Array
+		)
+	)
