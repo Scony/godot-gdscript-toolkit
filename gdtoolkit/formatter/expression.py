@@ -443,9 +443,13 @@ def _format_attribute_expression_to_multiple_lines(
 def _format_operator_chain_based_expression_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    inside_par = expression_context.prefix_string.endswith(
-        "("
-    ) and expression_context.suffix_string.startswith(")")
+    inside_par = (
+        expression_context.prefix_string.endswith("(")
+        and expression_context.suffix_string.startswith(")")
+    ) or (
+        expression_context.prefix_string.endswith("[")
+        and expression_context.suffix_string.startswith("]")
+    )
     lpar = "" if inside_par else "("
     rpar = "" if inside_par else ")"
     formatted_lines = [

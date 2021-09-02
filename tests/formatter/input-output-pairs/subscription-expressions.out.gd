@@ -9,7 +9,7 @@ class X:
 			x.yyyyyyyy.zzzzz.b: "unlocked",
 			x.yyyyyyyy.zzzzz.c: "done",
 		}[x]
-		var a = p[(
+		var a = p[
 			1
 			+ 1
 			+ 1
@@ -51,7 +51,7 @@ class X:
 			+ 1
 			+ 1
 			+ 1
-		)]
+		]
 		var b = p[[
 			1,
 			2,
