@@ -253,32 +253,20 @@ def _format_dict_to_multiple_lines(
 def _format_kv_pair_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    concrete_expression = expression
-    suffix = ":" if concrete_expression.data == "c_dict_element" else ""
+    suffix = ":" if expression.data == "c_dict_element" else " ="
     key_expression_context = ExpressionContext(
         expression_context.prefix_string, expression_context.prefix_line, suffix
     )
     key_lines, _ = _format_standalone_expression(
-        concrete_expression.children[0], key_expression_context, context
+        expression.children[0], key_expression_context, context
     )
-    if concrete_expression.data == "c_dict_element":
-        value_expression_context = ExpressionContext(
-            "", -1, expression_context.suffix_string
-        )
-        value_lines, _ = _format_standalone_expression(
-            concrete_expression.children[1], value_expression_context, context
-        )
-        return (key_lines + value_lines, concrete_expression.end_line)
-    last_key_line_no, last_key_line = key_lines[-1]
     value_expression_context = ExpressionContext(
-        "{} = ".format(last_key_line.strip()),  # to overcome godot bug #35416
-        last_key_line_no,  # type: ignore
-        expression_context.suffix_string,
+        "", -1, expression_context.suffix_string
     )
-    value_lines, last_processed_line_no = _format_standalone_expression(
-        concrete_expression.children[1], value_expression_context, context
+    value_lines, _ = _format_standalone_expression(
+        expression.children[1], value_expression_context, context
     )
-    return (key_lines[:-1] + value_lines, last_processed_line_no)
+    return (key_lines + value_lines, expression.end_line)
 
 
 def _format_parentheses_to_multiple_lines(
