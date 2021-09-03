@@ -373,7 +373,7 @@ def _format_call_expression_to_multiline_line(
 ) -> Outcome:
     callee_node = expression.children[0]
     callee = expression_to_str(callee_node)
-    list_is_empty = len(expression.children) == 3
+    list_is_empty = len(expression.children) == 1
     if list_is_empty:
         return (
             [
@@ -397,7 +397,7 @@ def _format_call_expression_to_multiline_line(
     )
     return (
         format_comma_separated_list(
-            expression.children[2::2], new_expression_context, context
+            expression.children[1:], new_expression_context, context
         ),
         expression.end_line,
     )

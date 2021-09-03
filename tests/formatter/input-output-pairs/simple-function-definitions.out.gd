@@ -27,6 +27,13 @@ class X:
 	func bab(a, b: int = 1, c := 1) -> int:
 		return 1
 
+	func ban(
+		a,
+		b,
+		c,
+	):
+		pass
+
 
 class Z:
 	extends Y

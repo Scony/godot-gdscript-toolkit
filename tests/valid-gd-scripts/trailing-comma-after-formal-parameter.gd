@@ -1,3 +1,2 @@
-pass # TODO: hande & uncomment
-# func foo(a,):
-# 	pass
+func foo(a,):
+	pass
