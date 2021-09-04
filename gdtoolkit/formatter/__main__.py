@@ -107,6 +107,14 @@ def main():
             with open(file_path, "r") as fh:
                 code = fh.read()
                 code_parse_tree, comment_parse_tree = try_parse(code)
+
+                formatted_code = format_code(
+                    gdscript_code=code,
+                    max_line_length=line_length,
+                    parse_tree=code_parse_tree,
+                    comment_parse_tree=comment_parse_tree,
+                )
+
                 if code != formatted_code:
                     print("would reformat {}".format(file_path), file=sys.stderr)
                     try:
