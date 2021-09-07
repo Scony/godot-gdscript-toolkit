@@ -17,6 +17,8 @@ def is_foldable(expression: Node) -> bool:
     return not isinstance(expression, Token) and expression.data not in [
         "string",
         "get_node",
+        "node_path",
+        "string_name",
     ]
 
 

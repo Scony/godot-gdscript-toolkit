@@ -14,3 +14,5 @@ func foo():
 	var m = -0xfF9900
 	var b = 0b001101
 	var c = -0b001101
+	var d = ^"../Some/Stuff"
+	var e = &"xxx"
