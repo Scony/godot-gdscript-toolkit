@@ -15,6 +15,7 @@ setup(
         "gdtoolkit.linter",
         "gdtoolkit.formatter",
         "gdtoolkit.parser",
+        "gdtoolkit.common",
     ],
     package_data={"gdtoolkit.parser": ["gdscript.lark", "comments.lark"]},
     entry_points={
