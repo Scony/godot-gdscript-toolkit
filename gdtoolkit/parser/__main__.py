@@ -31,14 +31,30 @@ def main():
         print(arguments)
         sys.exit(0)
 
+    success = True
     for file_path in arguments["<file>"]:
-        with open(file_path, "r") as fh:  # TODO: handle exception
+        success &= _parse_file(file_path, arguments)
+
+    if not success:
+        sys.exit(1)
+
+
+def _parse_file(file_path, arguments):
+    try:
+        with open(file_path, "r") as fh:
             content = fh.read()
             tree = parser.parse(content)  # TODO: handle exception
             if arguments["--pretty"]:
                 print(tree.pretty())
             elif arguments["--verbose"]:
                 print(tree)
+            return True
+    except OSError as e:
+        print(
+            "Cannot open file '{}': {}".format(file_path, e.strerror),
+            file=sys.stderr,
+        )
+    return False
 
 
 if __name__ == "__main__":
