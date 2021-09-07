@@ -7,9 +7,9 @@ import pytest
 from gdtoolkit.parser import parser
 
 
-OK_DATA_DIR = "./valid-gd-scripts"
-NOK_DATA_DIR = "./invalid-gd-scripts"
-BUGS_DATA_DIR = "./potential-godot-bugs"
+OK_DATA_DIR = "../valid-gd-scripts"
+NOK_DATA_DIR = "../invalid-gd-scripts"
+BUGS_DATA_DIR = "../potential-godot-bugs"
 GODOT_SERVER = "godot-server"
 
 
