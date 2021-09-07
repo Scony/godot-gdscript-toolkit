@@ -120,8 +120,8 @@ expr: type_cast
     | assnmnt_expr
 assnmnt_expr: attr_expr _assnmnt_op type_cast
 !_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | ">>=" | "<<="
-!?type_cast: test_expr
-           | actual_type_cast
+?type_cast: test_expr
+          | actual_type_cast
 !?actual_type_cast: test_expr ("as" TYPE)+
 !?test_expr: or_test ["if" asless_or_test "else" asless_test_expr]
            | actual_type_cast "if" asless_or_test "else" asless_test_expr
@@ -132,11 +132,11 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?and_test: not_test (("and" | "&&") asless_not_test)*
           | actual_type_cast (("and" | "&&") asless_not_test)+
 !?asless_and_test: asless_not_test (("and" | "&&") asless_not_test)*
-!?not_test: content_test
-          | asless_actual_not_test
+?not_test: content_test
+         | asless_actual_not_test
 !?asless_actual_not_test: ("not" | "!") asless_not_test
-!?asless_not_test: asless_content_test
-                 | asless_actual_not_test
+?asless_not_test: asless_content_test
+                | asless_actual_not_test
 !?content_test: comparison ("in" asless_comparison)*
               | actual_type_cast ("in" asless_comparison)+
 !?asless_content_test: asless_comparison ("in" asless_comparison)*
@@ -162,30 +162,28 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?mdr_expr: neg_expr (("*" | "/" | "%") asless_neg_expr)*
           | actual_type_cast (("*" | "/" | "%") asless_neg_expr)+
 !?asless_mdr_expr: asless_neg_expr (("*" | "/" | "%") asless_neg_expr)*
-!?neg_expr: bitw_not
-          | asless_actual_neg_expr
+?neg_expr: bitw_not
+         | asless_actual_neg_expr
 !?asless_actual_neg_expr: "-" asless_neg_expr
-!?asless_neg_expr: asless_bitw_not
-                 | asless_actual_neg_expr
-!?bitw_not: type_test
-          | asless_actual_bitw_not
+?asless_neg_expr: asless_bitw_not
+                | asless_actual_neg_expr
+?bitw_not: type_test
+         | asless_actual_bitw_not
 !?asless_actual_bitw_not: "~" asless_bitw_not
-!?asless_bitw_not: asless_type_test
-                 | asless_actual_bitw_not
-!?type_test: _call_expr ("is" TYPE)*
+?asless_bitw_not: asless_type_test
+                | asless_actual_bitw_not
+!?type_test: call_expr ("is" TYPE)*
            | actual_type_cast ("is" TYPE)+
-!?asless_type_test: _call_expr ("is" TYPE)*
-_call_expr: attr_expr
-          | standalone_call
-          | getattr_call
-!standalone_call: NAME _call_arglist
-!getattr_call: getattr _call_arglist
+!?asless_type_test: call_expr ("is" TYPE)*
+?call_expr: attr_expr
+          | NAME _call_arglist -> standalone_call
+          | getattr _call_arglist -> getattr_call
 _call_arglist: "(" [type_cast ("," type_cast)* [trailing_comma]] ")"
-!?attr_expr: subscr_expr
-           | getattr
-getattr: _call_expr _attr+
+?attr_expr: subscr_expr
+          | getattr
+getattr: call_expr _attr+
 !_attr: ("." NAME)
-?subscr_expr: _call_expr "[" type_cast "]"
+?subscr_expr: call_expr "[" type_cast "]"
             | atom
 ?atom: "(" type_cast ")" -> par_expr
      | array
