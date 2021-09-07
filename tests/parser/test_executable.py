@@ -17,4 +17,12 @@ def test_pretty_printing_missing_file():
     )
     assert outcome.returncode == 1
     assert len(outcome.stdout.decode().splitlines()) == 0
-    assert len(outcome.stderr.decode().splitlines()) == 1
+    assert "Traceback" not in outcome.stderr.decode()
+
+
+def test_pretty_printing_unexpected_token():
+    outcome = subprocess.run(
+        ["gdparse", "-"], input=b"pass x", check=False, capture_output=True
+    )
+    assert outcome.returncode == 1
+    assert "Traceback" not in outcome.stderr.decode()
