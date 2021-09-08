@@ -71,22 +71,32 @@ def _format_stdin(line_length: int) -> None:
 
 def _check_files_formatting(files: List[str], line_length: int) -> None:
     formattable_files = set()
+    failed_files = set()
     for file_path in files:
-        with open(file_path, "r") as fh:
-            code = fh.read()
-            success, actually_formatted, _ = _format_code_with_checks(
-                code, line_length, file_path
+        try:
+            with open(file_path, "r") as fh:
+                code = fh.read()
+                success, actually_formatted, _ = _format_code_with_checks(
+                    code, line_length, file_path
+                )
+                if success and actually_formatted:
+                    print("would reformat {}".format(file_path), file=sys.stderr)
+                    formattable_files.add(file_path)
+                elif not success:
+                    failed_files.add(file_path)
+        except OSError as e:
+            print(
+                "Cannot open file '{}': {}".format(file_path, e.strerror),
+                file=sys.stderr,
             )
-            if success and actually_formatted:
-                print("would reformat {}".format(file_path), file=sys.stderr)
-                formattable_files.add(file_path)
+            failed_files.add(file_path)
     if len(formattable_files) == 0:
         print(
             "{} file{} would be left unchanged".format(
                 len(files), "s" if len(files) != 1 else ""
             )
         )
-        sys.exit(0)
+        sys.exit(0 if len(failed_files) == 0 else 1)
     formattable_num = len(formattable_files)
     left_unchanged_num = len(files) - formattable_num
     print(
@@ -103,18 +113,28 @@ def _check_files_formatting(files: List[str], line_length: int) -> None:
 
 def _format_files(files: List[str], line_length: int) -> None:
     formatted_files = set()
+    failed_files = set()
     for file_path in files:
-        with open(file_path, "r+") as fh:
-            code = fh.read()
-            success, actually_formatted, formatted_code = _format_code_with_checks(
-                code, line_length, file_path
+        try:
+            with open(file_path, "r+") as fh:
+                code = fh.read()
+                success, actually_formatted, formatted_code = _format_code_with_checks(
+                    code, line_length, file_path
+                )
+                if success and actually_formatted:
+                    print("reformatted {}".format(file_path))
+                    formatted_files.add(file_path)
+                    fh.seek(0)
+                    fh.truncate(0)
+                    fh.write(formatted_code)
+                elif not success:
+                    failed_files.add(file_path)
+        except OSError as e:
+            print(
+                "Cannot open file '{}': {}".format(file_path, e.strerror),
+                file=sys.stderr,
             )
-            if success and actually_formatted:
-                print("reformatted {}".format(file_path))
-                formatted_files.add(file_path)
-                fh.seek(0)
-                fh.truncate(0)
-                fh.write(formatted_code)
+            failed_files.add(file_path)
     reformatted_num = len(formatted_files)
     left_unchanged_num = len(files) - reformatted_num
     print(
@@ -125,6 +145,7 @@ def _format_files(files: List[str], line_length: int) -> None:
             "s" if left_unchanged_num != 1 else "",
         )
     )
+    sys.exit(0 if len(failed_files) == 0 else 1)
 
 
 def _format_code_with_checks(
