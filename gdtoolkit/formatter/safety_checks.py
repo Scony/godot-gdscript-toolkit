@@ -1,5 +1,4 @@
 from typing import Optional
-from dataclasses import dataclass
 import difflib
 
 from lark import Tree, Transformer, Token
@@ -8,32 +7,11 @@ from ..parser import parser
 from .formatter import format_code
 from .comments import gather_comments
 from .expression_to_str import expression_to_str
-
-
-@dataclass
-class TreeInvariantViolation(Exception):
-    diff: str
-
-    def __str__(self):
-        return '{}(diff="{}")'.format("TreeInvariantViolation", self.diff)
-
-
-@dataclass
-class FormattingStabilityViolation(Exception):
-    diff: str
-
-    def __str__(self):
-        return '{}(diff="{}")'.format("FormattingStabilityViolation", self.diff)
-
-
-@dataclass
-class CommentPersistenceViolation(Exception):
-    missing_comment: str
-
-    def __str__(self):
-        return '{}(missing_comment="{}")'.format(
-            "CommentPersistenceViolation", self.missing_comment
-        )
+from .exceptions import (
+    TreeInvariantViolation,
+    FormattingStabilityViolation,
+    CommentPersistenceViolation,
+)
 
 
 class LoosenTreeTransformer(Transformer):

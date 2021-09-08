@@ -33,11 +33,6 @@ def main():
             pkg_resources.get_distribution("gdtoolkit").version
         ),
     )
-
-    if not isinstance(arguments, dict):
-        print(arguments, file=sys.stderr)
-        sys.exit(0)
-
     files = arguments["<file>"]
 
     success = True
