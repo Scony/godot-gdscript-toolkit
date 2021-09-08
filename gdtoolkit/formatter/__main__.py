@@ -27,27 +27,9 @@ from docopt import docopt
 
 from gdtoolkit.formatter import format_code, check_formatting_safety
 from gdtoolkit.parser import parser
+from gdtoolkit.common.utils import find_gd_files_from_paths
 
 import lark
-
-
-def find_files_from(paths: List[str]) -> List[str]:
-    """Finds files in the list of paths and walks directories recursively to find
-    gdscript files.
-    Returns a list of file paths.
-    """
-    files = []
-    excluded_directories = {".git"}
-    for path in paths:
-        if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
-                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
-                files += [
-                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
-                ]
-        else:
-            files.append(path)
-    return files
 
 
 def pretty_print_format_error(e: lark.exceptions.UnexpectedInput, code):
@@ -80,7 +62,9 @@ def main():
             pkg_resources.get_distribution("gdtoolkit").version
         ),
     )
-    files: List[str] = find_files_from(arguments["<path>"])
+    files: List[str] = find_gd_files_from_paths(
+        arguments["<path>"], excluded_directories=set([".git"])
+    )
 
     line_length = int(arguments["--line-length"])
     if files == ["-"]:

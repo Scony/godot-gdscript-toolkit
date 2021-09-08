@@ -32,6 +32,7 @@ from gdtoolkit.common.exceptions import (
     lark_unexpected_token_to_str,
     lark_unexpected_input_to_str,
 )
+from gdtoolkit.common.utils import find_gd_files_from_paths
 
 
 Path = str
@@ -62,7 +63,9 @@ def main():
 
     problems_total = 0
 
-    files: List[Path] = _find_files_from(arguments["<path>"], config)
+    files: List[Path] = find_gd_files_from_paths(
+        arguments["<path>"], excluded_directories=set(config["excluded_directories"])
+    )
     for file_path in files:
         problems_total += _lint_file(file_path, config)
 
@@ -126,22 +129,6 @@ def _update_config_with_missing_entries_inplace(config: dict) -> None:
                 "Adding missing entry from defaults: %s", (key, DEFAULT_CONFIG[key])
             )
             config[key] = DEFAULT_CONFIG[key]
-
-
-def _find_files_from(paths: List[Path], config: dict) -> List[Path]:
-    """Finds files in directories recursively and combines results to the list"""
-    files = []
-    excluded_directories = set(config["excluded_directories"])
-    for path in paths:
-        if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
-                dirnames[:] = [d for d in dirnames if d not in excluded_directories]
-                files += [
-                    os.path.join(dirpath, f) for f in filenames if f.endswith(".gd")
-                ]
-        else:
-            files.append(path)
-    return files
 
 
 def _lint_file(file_path: str, config: MappingProxyType) -> int:
