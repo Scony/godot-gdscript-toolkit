@@ -1,5 +1,13 @@
 # Changelog
 
+## master
+
+### Fixed
+ - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
+
+### Changed
+ - Changed formatter to keep going despite failures
+
 ## [3.3.0] 2021-08-31
 
 ### Added
@@ -12,7 +20,7 @@
 ### Fixed
  - Fixed comment persistence check
  - Improved comments handling
- - Improved utf08 support
+ - Improved utf-8 support
  - Fixed type cast (e.g. `1 as String`) to always be in one line (this is forced by Godot's bug)
 
 ### Changed
