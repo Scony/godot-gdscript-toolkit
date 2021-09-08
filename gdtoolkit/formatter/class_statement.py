@@ -75,27 +75,29 @@ def _format_child_and_prepend_to_outcome(
 
 def _format_export_statement(statement: Tree, context: Context) -> Outcome:
     concrete_export_statement = statement.children[0]
-    puppet_present = any(
-        isinstance(child, Tree) and child.data == "puppet"
+    addons = [
+        child.data
         for child in concrete_export_statement.children
-    )
+        if isinstance(child, Tree) and child.data in ["puppet", "onready"]
+    ]
+    addon_present = len(addons) > 0
     if concrete_export_statement.data == "export_inf":
-        puppet = "puppet " if puppet_present else ""
+        addon = "{} ".format(addons[0]) if addon_present else ""
         var_statement = (
             Tree("fake_var_stmt", concrete_export_statement.children[1:])
-            if puppet_present
+            if addon_present
             else concrete_export_statement
         )
         return format_var_statement(
-            var_statement, context, prefix="export {}".format(puppet)
+            var_statement, context, prefix="export {}".format(addon)
         )
-    puppet = " puppet" if puppet_present else ""
+    addon = " {}".format(addons[0]) if addon_present else ""
     expression_context = ExpressionContext(
-        "export(", statement.line, "){}".format(puppet)
+        "export(", statement.line, "){}".format(addon)
     )
     export_hints = (
         concrete_export_statement.children[:-2]
-        if puppet_present
+        if addon_present
         else concrete_export_statement.children[:-1]
     )
     prefix_lines, _ = (
