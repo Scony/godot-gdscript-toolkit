@@ -46,10 +46,6 @@ def main():
         version="gdlint {}".format(pkg_resources.get_distribution("gdtoolkit").version),
     )
 
-    if not isinstance(arguments, dict):
-        print(arguments, file=sys.stderr)
-        sys.exit(0)
-
     if arguments["--verbose"]:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
