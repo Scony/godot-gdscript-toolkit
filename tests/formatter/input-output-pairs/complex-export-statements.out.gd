@@ -37,3 +37,4 @@ class X:
 		+ "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 	)
 	export(String, FILE) var e
+	export(NodePath) onready var path

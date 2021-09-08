@@ -2,6 +2,9 @@
 
 ## master
 
+### Added
+ - Added support for `export onready var` statement on `class` level
+
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
 

@@ -80,3 +80,5 @@ export(Color, RGBA) var col2 # Color is RGBA.
 # Another node in the scene can be exported, too.
 
 export(NodePath) var node
+
+export(NodePath) onready var or_node
