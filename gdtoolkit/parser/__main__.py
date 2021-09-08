@@ -35,7 +35,7 @@ def main():
     )
 
     if not isinstance(arguments, dict):
-        print(arguments)
+        print(arguments, file=sys.stderr)
         sys.exit(0)
 
     files = arguments["<file>"]
@@ -53,7 +53,7 @@ def main():
         sys.exit(1)
 
 
-def _parse_file(file_path: str, arguments: Dict):
+def _parse_file(file_path: str, arguments: Dict) -> bool:
     try:
         with open(file_path, "r") as fh:
             file_content = fh.read()
@@ -66,7 +66,7 @@ def _parse_file(file_path: str, arguments: Dict):
     return False
 
 
-def _parse_file_content(content: str, arguments: Dict, file_path: str = None):
+def _parse_file_content(content: str, arguments: Dict, file_path: str = None) -> bool:
     actual_file_path = "STDIN" if file_path is None else file_path
     try:
         tree = parser.parse(content)  # TODO: handle exceptions
