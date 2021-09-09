@@ -48,8 +48,14 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "master_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="master "
         ),
+        "mastersync_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="mastersync "
+        ),
         "puppet_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="puppet "
+        ),
+        "puppetsync_func_def": partial(
+            _format_child_and_prepend_to_outcome, prefix="puppetsync "
         ),
         "sync_func_def": partial(_format_child_and_prepend_to_outcome, prefix="sync "),
     }  # type: Dict[str, Callable]

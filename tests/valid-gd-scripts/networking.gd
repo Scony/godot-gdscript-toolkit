@@ -7,7 +7,13 @@ remotesync func bar():
 master func baz():
 	return null
 
+mastersync func baz_sync():
+	return null
+
 puppet func asd():
+	return null
+
+puppetsync func asd_sync():
 	return null
 
 sync func qwe():
