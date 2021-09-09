@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for `export onready var` statement on `class` level
+ - Added support for `mastersync` and `puppetsync` functions
 
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
