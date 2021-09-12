@@ -20,10 +20,10 @@ class F:
 	pass
 
 
-class X:
+class G:
 	class Y:
 		pass
 
 
 class Z:
-	extends X.Y
+	extends G.Y

@@ -12,9 +12,9 @@ class E extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd":
 class F extends E:
 	pass
 
-class X:
+class G:
 	class Y:
 		pass
 
 class Z:
-	extends X.Y
+	extends G.Y
