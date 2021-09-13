@@ -10,6 +10,9 @@ Usage:
 Options:
   -c --check                 Don't write the files back,
                              just check if formatting is possible.
+  -d --diff                  Don't write the files back,
+                             just suggest formatting changes
+                             (implies --check).
   -l --line-length=<int>     How many characters per line to allow.
                              [default: 100]
   -h --help                  Show this screen.
@@ -20,6 +23,7 @@ Examples:
 """
 import sys
 import pkg_resources
+import difflib
 from typing import List, Tuple
 
 from docopt import docopt
@@ -48,6 +52,10 @@ def main():
             pkg_resources.get_distribution("gdtoolkit").version
         ),
     )
+
+    if arguments["--diff"]:
+        arguments["--check"] = True
+
     line_length = int(arguments["--line-length"])
     files: List[str] = find_gd_files_from_paths(
         arguments["<path>"], excluded_directories=set(".git")
@@ -56,7 +64,7 @@ def main():
     if files == ["-"]:
         _format_stdin(line_length)
     elif arguments["--check"]:
-        _check_files_formatting(files, line_length)
+        _check_files_formatting(files, line_length, arguments["--diff"])
     else:
         _format_files(files, line_length)
 
@@ -69,14 +77,16 @@ def _format_stdin(line_length: int) -> None:
     print(formatted_code, end="")
 
 
-def _check_files_formatting(files: List[str], line_length: int) -> None:
+def _check_files_formatting(
+    files: List[str], line_length: int, print_diff: bool
+) -> None:
     formattable_files = set()
     failed_files = set()
     for file_path in files:
         try:
             with open(file_path, "r") as fh:
                 code = fh.read()
-                success, actually_formatted, _ = _format_code_with_checks(
+                success, actually_formatted, formatted_code = _format_code_with_checks(
                     code, line_length, file_path
                 )
                 if success and actually_formatted:
@@ -84,6 +94,17 @@ def _check_files_formatting(files: List[str], line_length: int) -> None:
                     formattable_files.add(file_path)
                 elif not success:
                     failed_files.add(file_path)
+                if print_diff:
+                    diff = "\n".join(
+                        difflib.unified_diff(
+                            code.splitlines(),
+                            formatted_code.splitlines(),
+                            file_path,
+                            file_path,
+                            lineterm="",
+                        )
+                    )
+                    print(diff, file=sys.stderr)
         except OSError as e:
             print(
                 "Cannot open file '{}': {}".format(file_path, e.strerror),

@@ -113,3 +113,16 @@ def test_valid_formatted_files_checking_with_invalid_one_keepgoing(tmp_path):
     assert len(outcome.stdout.decode().splitlines()) == 1
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
+
+
+def test_valid_unformatted_file_diff(tmp_path):
+    dummy_file = write_file(tmp_path, "script.gd", "pass;pass")
+    outcome = subprocess.run(
+        ["gdformat", "--diff", dummy_file],
+        check=False,
+        capture_output=True,
+    )
+    assert outcome.returncode == 1
+    assert len(outcome.stdout.decode().splitlines()) == 0
+    assert len(outcome.stderr.decode().splitlines()) > 2
+    assert "+++" in outcome.stderr.decode()
