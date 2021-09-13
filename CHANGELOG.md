@@ -5,6 +5,7 @@
 ### Added
  - Added support for `export onready var` statement on `class` level
  - Added support for `mastersync` and `puppetsync` functions
+ - Added `--diff` option to `gdformat` which acts the same as `--check`, but with additional difference printing
 
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
