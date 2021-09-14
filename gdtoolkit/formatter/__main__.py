@@ -91,20 +91,20 @@ def _check_files_formatting(
                 )
                 if success and actually_formatted:
                     print("would reformat {}".format(file_path), file=sys.stderr)
+                    if print_diff:
+                        diff = "\n".join(
+                            difflib.unified_diff(
+                                code.splitlines(),
+                                formatted_code.splitlines(),
+                                file_path,
+                                file_path,
+                                lineterm="",
+                            )
+                        )
+                        print(diff, file=sys.stderr)
                     formattable_files.add(file_path)
                 elif not success:
                     failed_files.add(file_path)
-                if print_diff:
-                    diff = "\n".join(
-                        difflib.unified_diff(
-                            code.splitlines(),
-                            formatted_code.splitlines(),
-                            file_path,
-                            file_path,
-                            lineterm="",
-                        )
-                    )
-                    print(diff, file=sys.stderr)
         except OSError as e:
             print(
                 "Cannot open file '{}': {}".format(file_path, e.strerror),
