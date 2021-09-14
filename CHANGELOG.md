@@ -10,6 +10,7 @@
 
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
+ - Fixed adding newlines around non-standard functions like `static func`, `master func` etc.
 
 ### Changed
  - Changed formatter to keep going despite failures
