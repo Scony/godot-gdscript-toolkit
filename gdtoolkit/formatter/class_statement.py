@@ -259,49 +259,10 @@ def _format_class_statement(statement: Node, context: Context) -> Outcome:
 
 
 def _format_func_statement(statement: Tree, context: Context) -> Outcome:
-    def _has_func_args(statement):
-        return (
-            len(statement.children) > 1
-            and isinstance(statement.children[1], Tree)
-            and statement.children[1].data == "func_args"
-        )
-
-    def _has_parent_call(statement):
-        return (
-            len(statement.children) > 1
-            and isinstance(statement.children[1], Tree)
-            and statement.children[1].data == "parent_call"
-        ) or (
-            len(statement.children) > 2
-            and isinstance(statement.children[2], Tree)
-            and statement.children[2].data == "parent_call"
-        )
-
-    def _has_return_type(statement):
-        return any(
-            isinstance(c, Token) and c.type == "TYPE"
-            for c in statement.children[1 : (3 + 1)]
-        )
-
-    first_statement_offset = 1
-    first_statement_offset = (
-        first_statement_offset + 1
-        if _has_func_args(statement)
-        else first_statement_offset
-    )
-    first_statement_offset = (
-        first_statement_offset + 1
-        if _has_parent_call(statement)
-        else first_statement_offset
-    )
-    first_statement_offset = (
-        first_statement_offset + 1
-        if _has_return_type(statement)
-        else first_statement_offset
-    )
-    formatted_lines, last_processed_line_no = _format_func_header(statement, context)
+    func_header = statement.children[0]
+    formatted_lines, last_processed_line_no = _format_func_header(func_header, context)
     func_lines, last_processed_line_no = format_block(
-        statement.children[first_statement_offset:],
+        statement.children[1:],
         format_func_statement,
         context.create_child_context(last_processed_line_no),
     )
@@ -315,7 +276,8 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     name = name_token.value
     func_args = (
         statement.children[1]
-        if isinstance(statement.children[1], Tree)
+        if len(statement.children) > 1
+        and isinstance(statement.children[1], Tree)
         and statement.children[1].data == "func_args"
         else None
     )
@@ -332,7 +294,8 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         ]
     parent_call = (
         statement.children[1]
-        if isinstance(statement.children[1], Tree)
+        if len(statement.children) > 1
+        and isinstance(statement.children[1], Tree)
         and statement.children[1].data == "parent_call"
         else None
     )
@@ -357,7 +320,8 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         )
     return_type = (
         statement.children[1]
-        if isinstance(statement.children[1], Token)
+        if len(statement.children) > 1
+        and isinstance(statement.children[1], Token)
         and statement.children[1].type == "TYPE"
         else None
     )
@@ -396,7 +360,5 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         formatted_lines = formatted_lines[:-1] + [
             (last_line_no, "{}:".format(last_line))
         ]
-    return (
-        formatted_lines,
-        formatted_lines[-1][0],  # type: ignore
-    )
+    # import pdb;pdb.set_trace()
+    return (formatted_lines, statement.end_line)

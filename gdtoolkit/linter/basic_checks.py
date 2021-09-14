@@ -112,13 +112,15 @@ def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
 def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for func_def in parse_tree.find_data("func_def"):
+        func_header = func_def.children[0]
         if (
-            isinstance(func_def.children[1], Tree)
-            and func_def.children[1].data == "func_args"
+            len(func_header.children) > 1
+            and isinstance(func_header.children[1], Tree)
+            and func_header.children[1].data == "func_args"
         ):
             argument_definitions = {}  # type: Dict[str, int]
             argument_tokens = {}
-            func_args = func_def.children[1]
+            func_args = func_header.children[1]
             for func_arg in func_args.children:
                 arg_name_token = find_name_token_among_children(func_arg)
                 arg_name = arg_name_token.value
