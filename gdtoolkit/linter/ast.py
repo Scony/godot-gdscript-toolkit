@@ -9,7 +9,8 @@ class Function:
     """Abstract representation of function"""
 
     def __init__(self, func_def: Tree):
-        name_token = find_name_token_among_children(func_def)
+        func_header = func_def.children[0]
+        name_token = find_name_token_among_children(func_header)
         self.name = name_token.value
 
 

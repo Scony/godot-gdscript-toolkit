@@ -38,14 +38,16 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
 def _function_args_num_check(threshold, parse_tree: Tree) -> List[Problem]:
     problems = []
     for func_def in parse_tree.find_data("func_def"):
-        func_name_token = func_def.children[0]
+        func_header = func_def.children[0]
+        func_name_token = func_header.children[0]
         assert func_name_token.type == "NAME"
         func_name = func_name_token.value
         if (
-            isinstance(func_def.children[1], Tree)
-            and func_def.children[1].data == "func_args"
+            len(func_header.children) > 1
+            and isinstance(func_header.children[1], Tree)
+            and func_header.children[1].data == "func_args"
         ):
-            args_num = len(func_def.children[1].children)
+            args_num = len(func_header.children[1].children)
             if args_num > threshold:
                 problems.append(
                     Problem(

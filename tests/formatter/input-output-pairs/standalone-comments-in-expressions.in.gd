@@ -39,8 +39,9 @@ func bar(
 		# qq4
 		a,
 		# ww4
-		b
+		b# TODO: move to standalone after 'b' and fix this to be in paren
 	):
+	# rr4
 	pass
 
 func baz():
