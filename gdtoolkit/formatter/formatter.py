@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional
 
 from lark import Tree
@@ -12,6 +13,8 @@ from .comments import (
     gather_standalone_comments,
     gather_inline_comments,
 )
+
+INDENT_REGEX = re.compile(r"^\t+")
 
 
 def format_code(
@@ -52,10 +55,11 @@ def format_code(
         GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
     )
     formatted_lines.append((None, ""))
-    formatted_lines_with_inlined_comments = _add_inline_comments(
-        formatted_lines, context.inline_comments
+    formatted_lines = _add_inline_comments(formatted_lines, context.inline_comments)
+    formatted_lines = _add_standalone_comments(
+        formatted_lines, context.standalone_comments
     )
-    return "\n".join([line for _, line in formatted_lines_with_inlined_comments])
+    return "\n".join([line for _, line in formatted_lines])
 
 
 def _add_inline_comments(
@@ -80,3 +84,42 @@ def _add_inline_comments(
             postprocessed_lines.append((line_no, line))
 
     return list(reversed(postprocessed_lines))
+
+
+def _add_standalone_comments(
+    formatted_lines: FormattedLines, standalone_comments: List[Optional[str]]
+) -> FormattedLines:
+    remaining_comments = standalone_comments[:]
+    postprocessed_lines = []  # type: FormattedLines
+    currently_inside_expression = False
+    last_experssion_line_no = None
+
+    for line_no, line in reversed(formatted_lines):
+        if line_no is None:
+            postprocessed_lines.append((line_no, line))
+            currently_inside_expression = False
+            continue
+        if not currently_inside_expression:
+            postprocessed_lines.append((line_no, line))
+            currently_inside_expression = True
+            last_experssion_line_no = line_no
+            continue
+        comments = remaining_comments[line_no:last_experssion_line_no]
+        remaining_comments = remaining_comments[:line_no]
+        indent = _get_greater_indent(line, postprocessed_lines[-1][1])
+        postprocessed_lines += [
+            (None, f"{indent}{comment}")
+            for comment in reversed(comments)
+            if comment is not None
+        ]
+        postprocessed_lines.append((line_no, line))
+
+    return list(reversed(postprocessed_lines))
+
+
+def _get_greater_indent(line_a: str, line_b: str):
+    line_a_match = INDENT_REGEX.search(line_a)
+    line_b_match = INDENT_REGEX.search(line_b)
+    line_a_indent = "" if line_a_match is None else line_a_match.group(0)
+    line_b_indent = "" if line_b_match is None else line_b_match.group(0)
+    return line_a_indent if len(line_a_indent) > len(line_b_indent) else line_b_indent
