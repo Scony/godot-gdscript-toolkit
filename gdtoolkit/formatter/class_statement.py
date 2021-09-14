@@ -99,7 +99,10 @@ def _format_export_statement(statement: Tree, context: Context) -> Outcome:
         )
     addon = " {}".format(addons[0]) if addon_present else ""
     expression_context = ExpressionContext(
-        "export(", statement.line, "){}".format(addon)
+        "export(",
+        statement.line,
+        "){}".format(addon),
+        concrete_export_statement.children[-1].line,
     )
     export_hints = (
         concrete_export_statement.children[:-2]
@@ -129,12 +132,14 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
         )
     else:
         raise NotImplementedError
-    expression_context = ExpressionContext(prefix, statement.line, "")
+    expression_context = ExpressionContext(
+        prefix, statement.line, "", statement.end_line
+    )
     return format_expression(statement.children[-1], expression_context, context)
 
 
 def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
-    expression_context = ExpressionContext("", statement.line, "")
+    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
     return format_expression(statement.children[0], expression_context, context)
 
 
@@ -144,7 +149,10 @@ def _format_signal_statement(statement: Node, context: Context) -> Outcome:
             "signal {}".format(statement.children[0].value), statement, context
         )
     expression_context = ExpressionContext(
-        "signal {}(".format(statement.children[0].value), statement.line, ")"
+        "signal {}(".format(statement.children[0].value),
+        statement.line,
+        ")",
+        statement.end_line,
     )
     return (
         format_comma_separated_list(
@@ -313,7 +321,7 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     )
     if func_args is not None:
         expression_context = ExpressionContext(
-            "func {}(".format(name), statement.line, ")"
+            "func {}(".format(name), statement.line, ")", func_args.end_line
         )
         formatted_lines = format_comma_separated_list(
             func_args.children, expression_context, context
@@ -338,7 +346,10 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     if parent_call is not None:
         last_line_no, last_line = formatted_lines[-1]
         expression_context = ExpressionContext(
-            "{}.(".format(last_line.strip()), last_line_no, ")"  # type: ignore
+            "{}.(".format(last_line.strip()),
+            last_line_no,  # type: ignore
+            ")",
+            parent_call.end_line,
         )
         elements = [e for e in parent_call.children[1:-1] if not is_any_comma(e)]
         formatted_lines = formatted_lines[:-1] + format_comma_separated_list(
@@ -367,7 +378,10 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     if return_type is not None:
         last_line_no, last_line = formatted_lines[-1]
         expression_context = ExpressionContext(
-            "{} -> ".format(last_line.strip()), last_line_no, ":"  # type: ignore
+            "{} -> ".format(last_line.strip()),
+            last_line_no,  # type: ignore
+            ":",
+            return_type.end_line,
         )
         formatted_lines = formatted_lines[:-1] + [
             (
@@ -378,11 +392,11 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
             )
         ]
     else:
-        last_line_no, last_line = formatted_lines[-1]  # type: ignore
+        last_line_no, last_line = formatted_lines[-1]
         formatted_lines = formatted_lines[:-1] + [
             (last_line_no, "{}:".format(last_line))
         ]
     return (
         formatted_lines,
-        statement.line,
+        formatted_lines[-1][0],  # type: ignore
     )

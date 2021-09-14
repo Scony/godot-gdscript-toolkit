@@ -2,6 +2,7 @@ from functools import partial
 from typing import Dict, Callable, List
 
 from lark import Tree
+from lark.tree import Meta
 
 from .context import Context, ExpressionContext
 from .types import Node, Outcome, FormattedLines
@@ -35,8 +36,13 @@ def format_comma_separated_list(
 ) -> FormattedLines:
     elements = [node for node in a_list if not is_any_comma(node)]
     child_context = context.create_child_context(expression_context.prefix_line)
-    fake_expression = Tree("fake", a_list)
-    multiline_mode_forced = is_expression_forcing_multiple_lines(fake_expression)
+    fake_meta = Meta()
+    fake_meta.line = expression_context.prefix_line
+    fake_meta.end_line = expression_context.suffix_line
+    fake_expression = Tree("fake", a_list, fake_meta)
+    multiline_mode_forced = is_expression_forcing_multiple_lines(
+        fake_expression, context.standalone_comments
+    )
     if not multiline_mode_forced or "preload" in expression_context.prefix_string:
         strings_to_join = list(map(standalone_expression_to_str, elements))
         single_line_expression = "{}{}{}".format(
@@ -136,7 +142,7 @@ def _format_concrete_expression(
 def _format_foldable(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
-    if is_expression_forcing_multiple_lines(expression):
+    if is_expression_forcing_multiple_lines(expression, context.standalone_comments):
         return _format_foldable_to_multiple_lines(
             expression, expression_context, context
         )
@@ -383,6 +389,7 @@ def _format_call_expression_to_multiline_line(
         "{}{}{}(".format(expression_context.prefix_string, dot, callee),
         callee_node.line,
         "){}".format(expression_context.suffix_string),
+        expression.end_line,
     )
     return (
         format_comma_separated_list(
