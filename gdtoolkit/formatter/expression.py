@@ -74,13 +74,17 @@ def format_comma_separated_list(
                     ),
                 ),
                 (
-                    a_list[-1].end_line,
+                    a_list[-1].end_line
+                    if len(a_list) > 0
+                    else expression_context.suffix_line,
                     "{}{}".format(
                         child_context.indent_string, indented_single_line_expression
                     ),
                 ),
                 (
-                    a_list[-1].end_line,
+                    a_list[-1].end_line
+                    if len(a_list) > 0
+                    else expression_context.suffix_line,
                     "{}{}".format(
                         context.indent_string, expression_context.suffix_string
                     ),
@@ -92,7 +96,7 @@ def format_comma_separated_list(
             "{}{}".format(context.indent_string, expression_context.prefix_string),
         )
     ]  # type: FormattedLines
-    trailing_comma_present = is_trailing_comma(a_list[-1])
+    trailing_comma_present = is_trailing_comma(a_list[-1]) if len(a_list) > 0 else False
     for i, element in enumerate(elements):
         suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
         child_expression_context = ExpressionContext("", element.line, suffix)
