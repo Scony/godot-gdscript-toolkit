@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## [3.3.1] 2021-09-15
 
 ### Added
  - Added support for `export onready var` statement on `class` level
