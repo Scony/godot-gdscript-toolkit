@@ -11,10 +11,15 @@ EXCEPTIONS = set(
     [
         "if-corner-case.in.gd",
         "if-corner-case.out.gd",
+        # TODO:
+        "simple-match-statements.in.gd",
+        "simple-match-statements.out.gd",
         # complex expressions where Godot does more than just parsing
         "type-cast-corner-case-expressions.in.gd",
         "type-cast-corner-case-expressions.out.gd",
         # godot bugs:
+        "standalone-comments-in-expressions.in.gd",
+        "standalone-comments-in-expressions.out.gd",
         "complex-trailing-comma-scenarios.in.gd",
         "complex-trailing-comma-scenarios.out.gd",
         "parentheses-expressions-preservation.in.gd",

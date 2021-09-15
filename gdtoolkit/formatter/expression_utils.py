@@ -14,23 +14,14 @@ def remove_outer_parentheses(expression: Node) -> Node:
 def is_foldable(expression: Node) -> bool:
     if _is_multiline_string(expression):
         return True
-    return not isinstance(expression, Token) and expression.data not in [
-        "string",
-        "get_node",
-        "node_path",
-        "string_name",
-    ]
-
-
-def _is_multiline_string(expression: Node) -> bool:
     return (
         not isinstance(expression, Token)
         and expression.data
         not in [
             "string",
-            "node_path",
             "get_node",
-            "type_cast",
+            "node_path",
+            "string_name",
         ]
         and not expression.data.endswith("_pattern")
     )
@@ -74,6 +65,15 @@ def is_any_comma(expression: Node) -> bool:
 
 def is_any_parentheses(expression: Node) -> bool:
     return isinstance(expression, Token) and expression.type in ["LPAR", "RPAR"]
+
+
+def _is_multiline_string(expression: Node) -> bool:
+    return (
+        isinstance(expression, Tree)
+        and expression.data == "string"
+        and expression.children[0].type == "LONG_STRING"
+        and len(expression.children[0].value.splitlines()) > 1
+    )
 
 
 def _has_standalone_comments(

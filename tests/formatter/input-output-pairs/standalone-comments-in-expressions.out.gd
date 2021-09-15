@@ -5,13 +5,14 @@ signal s(
 	b
 	# ee1
 )
-export(
-	# qq2
-	int,
-	# ww2
-	20
-	# ee2
-) var x
+# TODO: change to annotation
+# export(
+# 	# qq2
+# 	int,
+# 	# ww2
+# 	20
+# 	# ee2
+# ) var x
 
 
 func foo():

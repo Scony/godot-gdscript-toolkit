@@ -125,7 +125,9 @@ def expression_to_str(expression: Node) -> str:
         "wildcard_pattern": lambda _: "_",
         "array_pattern": _array_to_str,
         "dict_pattern": _dict_to_str,
-        "kv_pair_pattern": lambda e: _dict_element_to_str(e.children[0]),
+        "kv_pair_pattern": lambda e: "{}: {}".format(
+            expression_to_str(e.children[0]), expression_to_str(e.children[1])
+        ),
     }[expression.data](expression)
 
 

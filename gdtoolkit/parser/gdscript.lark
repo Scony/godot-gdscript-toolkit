@@ -44,7 +44,6 @@ enum_element: NAME ["=" test_expr]
 
 func_def: func_header _func_suite
 func_header: "func" NAME "(" [func_args] ")" ["->" TYPE] ":"
-parent_call: _call_arglist
 func_args: func_arg ("," func_arg)* [trailing_comma]
 ?func_arg: func_arg_regular
          | func_arg_inf
@@ -197,6 +196,8 @@ getattr: call_expr _attr+
         | get_node
         | "^" string -> node_path
         | "&" string -> string_name
+HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
+BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string)
 path: NAME ("/" NAME)*
 array: "[" [type_cast ("," type_cast)* [trailing_comma]] "]"
