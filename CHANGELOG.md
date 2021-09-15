@@ -8,6 +8,7 @@
  - Added support for standalone comments in expressions (except for few corner-cases)
  - Added `--diff` option to `gdformat` which acts the same as `--check`, but with additional difference printing
  - Added support for single line pattern formatting (forced for now)
+ - Added `--fast` option to `gdformat` to skip safety checks (thus being faster)
 
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
