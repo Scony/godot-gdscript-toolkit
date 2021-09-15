@@ -13,6 +13,7 @@ Options:
   -d --diff                  Don't write the files back,
                              just suggest formatting changes
                              (implies --check).
+  -f --fast                  Skip safety checks.
   -l --line-length=<int>     How many characters per line to allow.
                              [default: 100]
   -h --help                  Show this screen.
@@ -57,28 +58,29 @@ def main():
         arguments["--check"] = True
 
     line_length = int(arguments["--line-length"])
+    safety_checks = not arguments["--fast"]
     files: List[str] = find_gd_files_from_paths(
         arguments["<path>"], excluded_directories=set(".git")
     )
 
     if files == ["-"]:
-        _format_stdin(line_length)
+        _format_stdin(line_length, safety_checks)
     elif arguments["--check"]:
-        _check_files_formatting(files, line_length, arguments["--diff"])
+        _check_files_formatting(files, line_length, arguments["--diff"], safety_checks)
     else:
-        _format_files(files, line_length)
+        _format_files(files, line_length, safety_checks)
 
 
-def _format_stdin(line_length: int) -> None:
+def _format_stdin(line_length: int, safety_checks: bool) -> None:
     code = sys.stdin.read()
-    success, _, formatted_code = _format_code_with_checks(code, line_length, "STDIN")
+    success, _, formatted_code = _format_code(code, line_length, "STDIN", safety_checks)
     if not success:
         sys.exit(1)
     print(formatted_code, end="")
 
 
 def _check_files_formatting(
-    files: List[str], line_length: int, print_diff: bool
+    files: List[str], line_length: int, print_diff: bool, safety_checks: bool
 ) -> None:
     formattable_files = set()
     failed_files = set()
@@ -86,22 +88,24 @@ def _check_files_formatting(
         try:
             with open(file_path, "r") as fh:
                 code = fh.read()
-                success, actually_formatted, formatted_code = _format_code_with_checks(
-                    code, line_length, file_path
+                success, actually_formatted, formatted_code = _format_code(
+                    code, line_length, file_path, safety_checks
                 )
                 if success and actually_formatted:
                     print("would reformat {}".format(file_path), file=sys.stderr)
                     if print_diff:
-                        diff = "\n".join(
-                            difflib.unified_diff(
-                                code.splitlines(),
-                                formatted_code.splitlines(),
-                                file_path,
-                                file_path,
-                                lineterm="",
-                            )
+                        print(
+                            "\n".join(
+                                difflib.unified_diff(
+                                    code.splitlines(),
+                                    formatted_code.splitlines(),
+                                    file_path,
+                                    file_path,
+                                    lineterm="",
+                                )
+                            ),
+                            file=sys.stderr,
                         )
-                        print(diff, file=sys.stderr)
                     formattable_files.add(file_path)
                 elif not success:
                     failed_files.add(file_path)
@@ -132,15 +136,15 @@ def _check_files_formatting(
     sys.exit(1)
 
 
-def _format_files(files: List[str], line_length: int) -> None:
+def _format_files(files: List[str], line_length: int, safety_checks: bool) -> None:
     formatted_files = set()
     failed_files = set()
     for file_path in files:
         try:
             with open(file_path, "r+") as fh:
                 code = fh.read()
-                success, actually_formatted, formatted_code = _format_code_with_checks(
-                    code, line_length, file_path
+                success, actually_formatted, formatted_code = _format_code(
+                    code, line_length, file_path, safety_checks
                 )
                 if success and actually_formatted:
                     print("reformatted {}".format(file_path))
@@ -169,8 +173,8 @@ def _format_files(files: List[str], line_length: int) -> None:
     sys.exit(0 if len(failed_files) == 0 else 1)
 
 
-def _format_code_with_checks(
-    code: str, line_length: int, file_path: str
+def _format_code(
+    code: str, line_length: int, file_path: str, safety_checks: bool
 ) -> Tuple[bool, bool, str]:
     success = True
     actually_formatted = False
@@ -187,13 +191,14 @@ def _format_code_with_checks(
         )
         if formatted_code != code:
             actually_formatted = True
-            check_formatting_safety(
-                code,
-                formatted_code,
-                max_line_length=line_length,
-                given_code_parse_tree=code_parse_tree,
-                given_code_comment_parse_tree=comment_parse_tree,
-            )
+            if safety_checks:
+                check_formatting_safety(
+                    code,
+                    formatted_code,
+                    max_line_length=line_length,
+                    given_code_parse_tree=code_parse_tree,
+                    given_code_comment_parse_tree=comment_parse_tree,
+                )
     except lark.exceptions.UnexpectedToken as e:
         success = False
         print(
