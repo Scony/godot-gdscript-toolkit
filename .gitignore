@@ -5,3 +5,4 @@ gdtoolkit.egg-info/
 .mypy_cache/
 dist/
 /logs
+build
