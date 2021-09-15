@@ -9,6 +9,8 @@ DATA_DIR = "./input-output-pairs"
 GODOT_SERVER = "godot-server"
 EXCEPTIONS = set(  # TODO: fix wherever possible
     [
+        "if-corner-case.in.gd",
+        "if-corner-case.out.gd",
         "type-cast-expressions.in.gd",  # godot bug
         "type-cast-expressions.out.gd",  # godot bug
         "multiline-preload-workaround.in.gd",  # godot bug

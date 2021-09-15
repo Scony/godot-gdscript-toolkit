@@ -382,8 +382,11 @@ def _format_call_expression_to_multiline_line(
             [
                 (
                     expression_context.prefix_line,
-                    "{}{}{}()".format(
-                        context.indent_string, expression_context.prefix_string, callee
+                    "{}{}{}(){}".format(
+                        context.indent_string,
+                        expression_context.prefix_string,
+                        callee,
+                        expression_context.suffix_string,
                     ),
                 )
             ],
