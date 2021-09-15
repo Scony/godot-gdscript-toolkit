@@ -8,6 +8,7 @@ from .expression_utils import (
     is_any_parentheses,
     has_leading_dot,
     remove_outer_parentheses,
+    has_trailing_comma,
 )
 
 
@@ -82,9 +83,34 @@ def expression_to_str(expression: Node) -> str:
             else "",
         ),
         # patterns (fake expressions):
-        "wildcard_pattern": lambda _: "_",
-        "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
+        "test_pattern": _operator_chain_based_expression_to_str,
+        "or_pattern": _operator_chain_based_expression_to_str,
+        "and_pattern": _operator_chain_based_expression_to_str,
+        "not_pattern": lambda e: "{}{}{}".format(
+            expression_to_str(e.children[0]),
+            "" if e.children[0].value == "!" else " ",
+            expression_to_str(e.children[1]),
+        ),
+        "comp_pattern": _operator_chain_based_expression_to_str,
+        "bitw_or_pattern": _operator_chain_based_expression_to_str,
+        "bitw_xor_pattern": _operator_chain_based_expression_to_str,
+        "bitw_and_pattern": _operator_chain_based_expression_to_str,
+        "shift_pattern": _operator_chain_based_expression_to_str,
+        "arith_pattern": _operator_chain_based_expression_to_str,
+        "mdr_pattern": _operator_chain_based_expression_to_str,
+        "neg_pattern": lambda e: "-{}".format(expression_to_str(e.children[1])),
+        "bitw_not_pattern": lambda e: "~{}".format(expression_to_str(e.children[1])),
+        "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
+        "par_pattern": lambda e: "({})".format(expression_to_str(e.children[0])),
+        "var_capture_pattern": lambda e: "var {}".format(
+            expression_to_str(e.children[0])
+        ),
+        "etc_pattern": lambda _: "..",
+        "wildcard_pattern": lambda _: "_",
+        "array_pattern": _array_to_str,
+        "dict_pattern": _dict_to_str,
+        "kv_pair_pattern": lambda e: _dict_element_to_str(e.children[0]),
     }[expression.data](expression)
 
 
@@ -133,7 +159,8 @@ def _array_to_str(array: Tree) -> str:
         for child in array.children
         if not is_any_comma(child)
     ]
-    return "[{}]".format(", ".join(elements))
+    trailing_comma = "," if has_trailing_comma(array) else ""
+    return "[{}{}]".format(", ".join(elements), trailing_comma)
 
 
 def _dict_to_str(a_dict: Tree) -> str:
@@ -149,7 +176,7 @@ def _subscription_to_str(subscription: Tree) -> str:
 
 
 def _dict_element_to_str(dict_element: Tree) -> str:
-    template = "{}: {}" if dict_element.data == "c_dict_element" else "{} = {}"
+    template = "{}: {}" if dict_element.data.startswith("c_dict_") else "{} = {}"
     return template.format(
         standalone_expression_to_str(dict_element.children[0]),
         standalone_expression_to_str(dict_element.children[1]),
