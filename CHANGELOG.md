@@ -13,6 +13,7 @@
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
  - Fixed adding newlines around non-standard functions like `static func`, `master func` etc.
+ - Fixed if-stmt-related corner case where formatting shred a colon
 
 ### Changed
  - Changed formatter to keep going despite failures
