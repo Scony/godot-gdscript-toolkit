@@ -7,6 +7,7 @@
  - Added support for `mastersync` and `puppetsync` functions
  - Added support for standalone comments in expressions (except for few corner-cases)
  - Added `--diff` option to `gdformat` which acts the same as `--check`, but with additional difference printing
+ - Added support for single line pattern formatting (forced for now)
 
 ### Fixed
  - Fixed exception handling in `gdparse`, `gdlint`, and `gdformat`
