@@ -1,9 +1,6 @@
 import lark
 
 
-# TODO: use in formatter/linter
-
-
 def lark_unexpected_input_to_str(exception: lark.exceptions.UnexpectedInput):
     return str(exception).strip()
 

@@ -192,7 +192,6 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-# TODO: refactor that beast ^^
 def _format_func_header(statement: Tree, context: Context) -> Outcome:
     name_token = statement.children[0]
     name = name_token.value
@@ -249,5 +248,4 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
         formatted_lines = formatted_lines[:-1] + [
             (last_line_no, "{}:".format(last_line))
         ]
-    # import pdb;pdb.set_trace()
     return (formatted_lines, statement.end_line)

@@ -23,7 +23,7 @@ class Indenter(indenter.Indenter):
     tab_len = 4
 
 
-# When upgrading to Python 3.8, replace with functools.cached_property
+# TODO: when upgrading to Python 3.8, replace with functools.cached_property
 class cached_property:
     """A property that is only computed once per instance and then replaces
     itself with an ordinary attribute. Deleting the attribute resets the
@@ -56,7 +56,7 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
-        code += "\n"  # to overcome lark bug (#489)
+        code += "\n"  # to overcome lark bug (#489), TODO: bump & remove
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -65,7 +65,7 @@ class Parser:
 
     def parse_comments(self, code: str) -> Tree:
         """Parses GDScript code and returns comments - both standalone, and inline."""
-        code += "\n"  # to overcome lark bug (#489)
+        code += "\n"  # to overcome lark bug (#489), TODO: bump & remove
         return self._comment_parser.parse(code)
 
     def disable_grammar_caching(self) -> None:
