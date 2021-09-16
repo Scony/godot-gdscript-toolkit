@@ -1,12 +1,13 @@
 # Changelog
 
-## master
+## [4.0.0] (to be released)
 
 ### Added
  - Added some new GDScript `2.0` constructs to the core testcases
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
+ - Updated `lark` dependency to the latest release - `0.12.0`
 
 ## [3.3.1] 2021-09-15
 

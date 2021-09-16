@@ -6,7 +6,7 @@ from ..common import write_file
 def test_valid_file_formatting(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
     outcome = subprocess.run(["gdformat", dummy_file], check=False, capture_output=True)
-    assert outcome.returncode == 0
+    assert outcome.returncode == 0, outcome.stderr.decode()
     assert len(outcome.stdout.decode().splitlines()) == 2
     assert len(outcome.stderr.decode().splitlines()) == 0
 

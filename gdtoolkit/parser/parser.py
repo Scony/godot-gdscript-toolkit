@@ -4,13 +4,10 @@ Provides a function to parse GDScript code
 and to get an intermediate representation as a Lark Tree.
 """
 import os
-import pickle
 import sys
 import pkg_resources
 
 from lark import Lark, Tree, indenter
-from lark.grammar import Rule
-from lark.lexer import TerminalDef
 
 
 class Indenter(indenter.Indenter):
@@ -78,30 +75,22 @@ class Parser:
         grammar_filename: str = "gdscript.lark",
     ) -> Tree:
         version: str = pkg_resources.get_distribution("gdtoolkit").version
-
-        tree: Tree = None
-        cache_filepath: str = (
-            os.path.join(self._cache_dirpath, version, name) + ".pickle"
-        )
+        cache_dirpath: str = os.path.join(self._cache_dirpath, version)
+        cache_filepath: str = os.path.join(cache_dirpath, name) + ".pickle"
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
 
-        tree = None
-        if os.path.exists(cache_filepath) and self._use_grammar_cache:
-            try:
-                tree = self.load(cache_filepath)
-            except ValueError:
-                # pickle errors on unsupported protocols - newer python versions (#93)
-                pass
-        if tree is None:
-            tree = Lark.open(
-                grammar_filepath,
-                parser="lalr",
-                start="start",
-                postlex=Indenter(),
-                propagate_positions=add_metadata,
-                maybe_placeholders=False,
-            )
-            self.save(tree, cache_filepath)
+        if not os.path.exists(cache_dirpath):
+            os.makedirs(cache_dirpath)
+
+        tree = Lark.open(
+            grammar_filepath,
+            parser="lalr",
+            start="start",
+            postlex=Indenter(),
+            propagate_positions=add_metadata,
+            maybe_placeholders=False,
+            cache=cache_filepath,
+        )
 
         return tree
 
@@ -118,36 +107,6 @@ class Parser:
         return self._get_parser(
             "parser_comments", add_metadata=True, grammar_filename="comments.lark"
         )
-
-    @staticmethod
-    def save(a_parser: Tree, path: str) -> None:
-        """Serializes the Lark parser and saves it to the disk."""
-
-        data, memo = a_parser.memo_serialize([TerminalDef, Rule])
-        write_data: dict = {
-            "data": data,
-            "memo": memo,
-        }
-
-        dirpath: str = os.path.dirname(path)
-        if not os.path.exists(dirpath):
-            os.makedirs(dirpath)
-        with open(path, "wb") as file_parser:
-            pickle.dump(write_data, file_parser)
-
-    @staticmethod
-    def load(path: str) -> Tree:
-        """Loads the Lark parser from the disk and deserializes it."""
-        with open(path, "rb") as file_parser:
-            data: dict = pickle.load(file_parser)
-            namespace = {"Rule": Rule, "TerminalDef": TerminalDef}
-            return Lark.deserialize(
-                data["data"],
-                namespace,
-                data["memo"],
-                transformer=None,
-                postlex=Indenter(),
-            )
 
 
 def get_cache_directory() -> str:
