@@ -35,10 +35,9 @@ class Context:
         )
 
 
-# TODO: remove optional from suffix line and align codebase
 @dataclass
 class ExpressionContext:
     prefix_string: str
     prefix_line: int  # earliest line number of prefix string
     suffix_string: str
-    suffix_line: Optional[int] = None  # earliest line number of suffix string
+    suffix_line: int  # earliest line number of suffix string

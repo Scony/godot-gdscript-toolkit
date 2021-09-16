@@ -46,7 +46,7 @@ def _format_var_assigned_statement(
     name = statement.children[0].value
     expr = statement.children[1]
     expression_context = ExpressionContext(
-        "{}var {} = ".format(prefix, name), statement.line, ""
+        "{}var {} = ".format(prefix, name), statement.line, "", statement.end_line
     )
     return format_expression(expr, expression_context, context)
 
@@ -57,7 +57,7 @@ def _format_var_inferred_statement(
     name = statement.children[0].value
     expr = statement.children[1]
     expression_context = ExpressionContext(
-        "{}var {} := ".format(prefix, name), statement.line, ""
+        "{}var {} := ".format(prefix, name), statement.line, "", statement.end_line
     )
     return format_expression(expr, expression_context, context)
 
@@ -69,6 +69,9 @@ def _format_var_typed_assigned_statement(
     type_name = statement.children[1].value
     expr = statement.children[2]
     expression_context = ExpressionContext(
-        "{}var {}: {} = ".format(prefix, var_name, type_name), statement.line, ""
+        "{}var {}: {} = ".format(prefix, var_name, type_name),
+        statement.line,
+        "",
+        statement.end_line,
     )
     return format_expression(expr, expression_context, context)

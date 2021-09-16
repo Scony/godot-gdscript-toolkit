@@ -95,7 +95,9 @@ def format_comma_separated_list(
     trailing_comma_present = is_trailing_comma(a_list[-1]) if len(a_list) > 0 else False
     for i, element in enumerate(elements):
         suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
-        child_expression_context = ExpressionContext("", element.line, suffix)
+        child_expression_context = ExpressionContext(
+            "", element.line, suffix, element.end_line
+        )
         lines, _ = _format_standalone_expression(
             element, child_expression_context, child_context
         )
@@ -255,13 +257,16 @@ def _format_kv_pair_to_multiple_lines(
 ) -> Outcome:
     suffix = ":" if expression.data == "c_dict_element" else " ="
     key_expression_context = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, suffix
+        expression_context.prefix_string,
+        expression_context.prefix_line,
+        suffix,
+        expression_context.suffix_line,
     )
     key_lines, _ = _format_standalone_expression(
         expression.children[0], key_expression_context, context
     )
     value_expression_context = ExpressionContext(
-        "", -1, expression_context.suffix_string
+        "", -1, expression_context.suffix_string, expression_context.suffix_line
     )
     value_lines, _ = _format_standalone_expression(
         expression.children[1], value_expression_context, context
@@ -332,6 +337,7 @@ def _format_assignment_expression_to_multiline_line(
         ),
         expression_context.prefix_line,
         expression_context.suffix_string,
+        expression_context.suffix_line,
     )
     return _format_concrete_expression(
         expression.children[2], new_expression_context, context
@@ -364,6 +370,7 @@ def _format_func_arg_to_multiple_lines(
         template.format(expression.children[0].value),
         expression_context.prefix_line,
         expression_context.suffix_string,
+        expression_context.suffix_line,
     )
     return format_expression(expression.children[-1], new_expression_context, context)
 
@@ -407,7 +414,10 @@ def _format_subscription_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> Outcome:
     subscriptee_expression_context = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, ""
+        expression_context.prefix_string,
+        expression_context.prefix_line,
+        "",
+        expression_context.suffix_line,
     )
     subscriptee = expression.children[0]
     subscriptee_lines, last_line = _format_concrete_expression(
@@ -417,6 +427,7 @@ def _format_subscription_to_multiple_lines(
         "{}[".format(subscriptee_lines[-1][1].strip()),
         last_line,
         "]{}".format(expression_context.suffix_string),
+        expression_context.suffix_line,
     )
     subscript = expression.children[1]
     subscript_lines, _ = _format_standalone_expression(
@@ -435,6 +446,7 @@ def _format_attribute_expression_to_multiple_lines(
         expression_context.prefix_string,
         expression_context.prefix_line,
         ".{}{}".format(suffix, expression_context.suffix_string),
+        expression_context.suffix_line,
     )
     base = expression.children[0]
     return _format_concrete_expression(base, base_expression_context, context)
@@ -463,14 +475,16 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     child_context = context.create_child_context(expression_context.prefix_line)
     value = expression.children[0]
     lines, _ = _format_concrete_expression(
-        value, ExpressionContext("", value.line, ""), child_context
+        value, ExpressionContext("", value.line, "", value.end_line), child_context
     )
     formatted_lines += lines
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
     for operator, child in operator_expr_chain:
         lines, _ = _format_concrete_expression(
             child,
-            ExpressionContext("{} ".format(operator.value), child.line, ""),
+            ExpressionContext(
+                "{} ".format(operator.value), child.line, "", child.end_line
+            ),
             child_context,
         )
         formatted_lines += lines
@@ -496,6 +510,7 @@ def _append_to_expression_context_and_pass(
         "{}{}{}".format(expression_context.prefix_string, str_to_append, spacing),
         expression_context.prefix_line,
         expression_context.suffix_string,
+        expression_context.suffix_line,
     )
     return _format_concrete_expression(
         expression.children[1], new_expression_context, context

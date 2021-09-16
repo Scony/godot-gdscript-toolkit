@@ -29,7 +29,7 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
 
 def _format_expr_statement(statement: Node, context: Context) -> Outcome:
     expr = statement.children[0]
-    expression_context = ExpressionContext("", statement.line, "")
+    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
     return format_expression(expr, expression_context, context)
 
 
@@ -37,7 +37,9 @@ def _format_return_statement(statement: Node, context: Context) -> Outcome:
     if len(statement.children) == 0:
         return format_simple_statement("return", statement, context)
     expr = statement.children[0]
-    expression_context = ExpressionContext("return ", statement.line, "")
+    expression_context = ExpressionContext(
+        "return ", statement.line, "", statement.end_line
+    )
     return format_expression(expr, expression_context, context)
 
 
@@ -95,7 +97,9 @@ def _format_branch(
 ) -> Outcome:
     if expr_position is not None:
         expr = statement.children[expr_position]
-        expression_context = ExpressionContext(prefix, statement.line, suffix)
+        expression_context = ExpressionContext(
+            prefix, statement.line, suffix, statement.end_line
+        )
         header_lines, last_processed_line_no = format_expression(
             expr, expression_context, context
         )

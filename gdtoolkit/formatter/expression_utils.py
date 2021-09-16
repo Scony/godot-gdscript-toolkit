@@ -79,7 +79,6 @@ def _is_multiline_string(expression: Node) -> bool:
 def _has_standalone_comments(
     expression: Tree, standalone_comments: List[Optional[str]]
 ):
-    assert expression.end_line is not None  # TODO: remove once non-optional anymore
     return any(
         comment is not None
         for comment in standalone_comments[expression.line : expression.end_line]
