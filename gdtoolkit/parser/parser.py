@@ -53,7 +53,7 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
-        code += "\n"  # to overcome lark bug (#489), TODO: bump & remove
+        code += "\n"  # TODO: fix grammar and remove
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -62,7 +62,7 @@ class Parser:
 
     def parse_comments(self, code: str) -> Tree:
         """Parses GDScript code and returns comments - both standalone, and inline."""
-        code += "\n"  # to overcome lark bug (#489), TODO: bump & remove
+        code += "\n"  # TODO: fix grammar and remove
         return self._comment_parser.parse(code)
 
     def disable_grammar_caching(self) -> None:
@@ -73,37 +73,39 @@ class Parser:
         name: str,
         add_metadata: bool = False,
         grammar_filename: str = "gdscript.lark",
-    ) -> Tree:
+    ) -> Lark:
         version: str = pkg_resources.get_distribution("gdtoolkit").version
         cache_dirpath: str = os.path.join(self._cache_dirpath, version)
         cache_filepath: str = os.path.join(cache_dirpath, name) + ".pickle"
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
 
+        # TODO: catch IO exception
         if not os.path.exists(cache_dirpath):
             os.makedirs(cache_dirpath)
 
-        tree = Lark.open(
+        # TODO: catch IO exception
+        a_parser = Lark.open(
             grammar_filepath,
             parser="lalr",
             start="start",
-            postlex=Indenter(),
+            postlex=Indenter(),  # type: ignore
             propagate_positions=add_metadata,
             maybe_placeholders=False,
             cache=cache_filepath,
         )
 
-        return tree
+        return a_parser
 
     @cached_property
-    def _parser(self) -> Tree:
+    def _parser(self) -> Lark:
         return self._get_parser("parser")
 
     @cached_property
-    def _parser_with_metadata(self) -> Tree:
+    def _parser_with_metadata(self) -> Lark:
         return self._get_parser("parser_with_metadata", add_metadata=True)
 
     @cached_property
-    def _comment_parser(self) -> Tree:
+    def _comment_parser(self) -> Lark:
         return self._get_parser(
             "parser_comments", add_metadata=True, grammar_filename="comments.lark"
         )

@@ -36,7 +36,7 @@ def format_and_check_safety(input_code):
     suppress_health_check=(HealthCheck.filter_too_much,),
     max_examples=500,
 )
-@given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))
+@given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))  # type: ignore
 def test_expression_parsing(expression):
     print(expression)
     gdscript_code = "func foo():{}".format(expression)
@@ -49,7 +49,7 @@ def test_expression_parsing(expression):
     suppress_health_check=(HealthCheck.filter_too_much,),
     max_examples=500,
 )
-@given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))
+@given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))  # type: ignore
 def test_expression_formatting(expression):
     print(expression)
     gdscript_code = "func foo():{}".format(expression)
