@@ -2,7 +2,7 @@ from typing import List
 
 from lark import Tree
 
-from .helpers import find_name_token_among_children
+from .utils import find_name_token_among_children
 
 
 class Function:

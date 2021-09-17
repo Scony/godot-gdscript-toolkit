@@ -4,8 +4,10 @@ from typing import Callable, List, Tuple
 
 from lark import Token, Tree
 
+from ..common.utils import find_name_token_among_children
+
 from .problem import Problem
-from .helpers import find_name_token_among_children, is_function_public
+from .helpers import is_function_public
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
