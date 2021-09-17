@@ -8,9 +8,7 @@ from .context import Context
 from .constants import INLINE_COMMENT_OFFSET, GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
 from .types import FormattedLines
 from .block import format_block
-from .class_statement import (  # type: ignore
-    format_class_statement,  # TODO: fix type
-)
+from .class_statement import format_class_statement
 from .comments import (
     gather_standalone_comments,
     gather_inline_comments,

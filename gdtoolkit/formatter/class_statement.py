@@ -1,11 +1,9 @@
-# TODO: fix
-# type: ignore
 from typing import Dict, Callable
 from functools import partial
 
 from lark import Tree, Token
 
-from .types import Outcome, Node
+from .types import FormattedLines, Outcome
 from .context import Context, ExpressionContext
 from .block import format_block
 from .function_statement import format_func_statement
@@ -16,7 +14,7 @@ from .expression_to_str import expression_to_str
 from .expression import format_comma_separated_list, format_expression
 
 
-def format_class_statement(statement: Node, context: Context) -> Outcome:
+def format_class_statement(statement: Tree, context: Context) -> Outcome:
     handlers = {
         "pass_stmt": partial(format_simple_statement, "pass"),
         "class_var_stmt": format_var_statement,
@@ -36,7 +34,7 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
 
 
 def _format_child_and_prepend_to_outcome(
-    statement: Node, context: Context, prefix: str
+    statement: Tree, context: Context, prefix: str
 ) -> Outcome:
     lines, last_processed_line = format_class_statement(statement.children[0], context)
     first_line_no, first_line = lines[0]
@@ -67,7 +65,7 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
     return format_expression(statement.children[-1], expression_context, context)
 
 
-def _format_signal_statement(statement: Node, context: Context) -> Outcome:
+def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
     if len(statement.children) == 1:
         return format_simple_statement(
             "signal {}".format(statement.children[0].value), statement, context
@@ -86,14 +84,14 @@ def _format_signal_statement(statement: Node, context: Context) -> Outcome:
     )
 
 
-def _format_classname_statement(statement: Node, context: Context) -> Outcome:
+def _format_classname_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     optional_string = (
         ""
         if len(statement.children) == 1
         else ", {}".format(expression_to_str(statement.children[1]))
     )
-    formatted_lines = [
+    formatted_lines: FormattedLines = [
         (
             statement.line,
             "{}class_name {}{}".format(
@@ -104,7 +102,7 @@ def _format_classname_statement(statement: Node, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_extends_statement(statement: Node, context: Context) -> Outcome:
+def _format_extends_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     optional_attributes = (
         ""
@@ -113,7 +111,7 @@ def _format_extends_statement(statement: Node, context: Context) -> Outcome:
             ".".join([expression_to_str(child) for child in statement.children[1:]])
         )
     )
-    formatted_lines = [
+    formatted_lines: FormattedLines = [
         (
             statement.line,
             "{}extends {}{}".format(
@@ -126,7 +124,7 @@ def _format_extends_statement(statement: Node, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_classname_extends_statement(statement: Node, context: Context) -> Outcome:
+def _format_classname_extends_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     optional_string = (
         ""
@@ -152,7 +150,7 @@ def _format_classname_extends_statement(statement: Node, context: Context) -> Ou
             )
         )
     )
-    formatted_lines = [
+    formatted_lines: FormattedLines = [
         (
             statement.line,
             "{}class_name {}{} extends {}{}".format(
@@ -167,10 +165,10 @@ def _format_classname_extends_statement(statement: Node, context: Context) -> Ou
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_class_statement(statement: Node, context: Context) -> Outcome:
+def _format_class_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     name = statement.children[0].value
-    formatted_lines = [
+    formatted_lines: FormattedLines = [
         (statement.line, "{}class {}:".format(context.indent_string, name))
     ]
     class_lines, last_processed_line_no = format_block(

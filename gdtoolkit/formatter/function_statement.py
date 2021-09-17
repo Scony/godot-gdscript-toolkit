@@ -1,17 +1,17 @@
-# TODO: fix
-# type: ignore
 from functools import partial
 from typing import Dict, Callable, Optional
 
+from lark import Tree
+
 from .context import Context, ExpressionContext
-from .types import Outcome, Node, FormattedLines
+from .types import Outcome, FormattedLines
 from .expression import format_expression
 from .block import format_block, reconstruct_blank_lines_in_range
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 
 
-def format_func_statement(statement: Node, context: Context) -> Outcome:
+def format_func_statement(statement: Tree, context: Context) -> Outcome:
     handlers = {
         "pass_stmt": partial(format_simple_statement, "pass"),
         "func_var_stmt": format_var_statement,
@@ -29,13 +29,13 @@ def format_func_statement(statement: Node, context: Context) -> Outcome:
     return handlers[statement.data](statement, context)
 
 
-def _format_expr_statement(statement: Node, context: Context) -> Outcome:
+def _format_expr_statement(statement: Tree, context: Context) -> Outcome:
     expr = statement.children[0]
     expression_context = ExpressionContext("", statement.line, "", statement.end_line)
     return format_expression(expr, expression_context, context)
 
 
-def _format_return_statement(statement: Node, context: Context) -> Outcome:
+def _format_return_statement(statement: Tree, context: Context) -> Outcome:
     if len(statement.children) == 0:
         return format_simple_statement("return", statement, context)
     expr = statement.children[0]
@@ -45,7 +45,7 @@ def _format_return_statement(statement: Node, context: Context) -> Outcome:
     return format_expression(expr, expression_context, context)
 
 
-def _format_if_statement(statement: Node, context: Context) -> Outcome:
+def _format_if_statement(statement: Tree, context: Context) -> Outcome:
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = None
     for branch in statement.children:
@@ -69,21 +69,21 @@ def _format_if_statement(statement: Node, context: Context) -> Outcome:
     return (formatted_lines, previously_processed_line_number)  # type: ignore
 
 
-def _format_for_statement(statement: Node, context: Context) -> Outcome:
+def _format_for_statement(statement: Tree, context: Context) -> Outcome:
     prefix = "for {} in ".format(statement.children[0].value)
     suffix = ":"
     expr_position = 1
     return _format_branch(prefix, suffix, expr_position, statement, context)
 
 
-def _format_match_statement(statement: Node, context: Context) -> Outcome:
+def _format_match_statement(statement: Tree, context: Context) -> Outcome:
     prefix = "match "
     suffix = ":"
     expr_position = 0
     return _format_branch(prefix, suffix, expr_position, statement, context)
 
 
-def _format_match_branch(statement: Node, context: Context) -> Outcome:
+def _format_match_branch(statement: Tree, context: Context) -> Outcome:
     prefix = ""
     suffix = ":"
     expr_position = 0
@@ -94,7 +94,7 @@ def _format_branch(
     prefix: str,
     suffix: str,
     expr_position: Optional[int],
-    statement: Node,
+    statement: Tree,
     context: Context,
 ) -> Outcome:
     if expr_position is not None:
