@@ -122,7 +122,7 @@ def _format_concrete_expression(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     if is_foldable(expression):
-        return _format_foldable(expression, expression_context, context)
+        return _format_foldable(expression, expression_context, context)  # type: ignore
     return [
         (
             expression_context.prefix_line,
@@ -137,7 +137,7 @@ def _format_concrete_expression(
 
 
 def _format_foldable(
-    expression: Node, expression_context: ExpressionContext, context: Context
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     if is_expression_forcing_multiple_lines(expression, context.standalone_comments):
         return _format_foldable_to_multiple_lines(
@@ -162,7 +162,7 @@ def _format_foldable(
 
 
 def _format_foldable_to_multiple_lines(
-    expression: Node, expression_context: ExpressionContext, context: Context
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     handlers = {
         "assnmnt_expr": _format_assignment_expression_to_multiline_line,
