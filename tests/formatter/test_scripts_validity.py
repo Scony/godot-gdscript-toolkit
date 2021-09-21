@@ -18,17 +18,8 @@ EXCEPTIONS = set(
         "type-cast-corner-case-expressions.in.gd",
         "type-cast-corner-case-expressions.out.gd",
         # godot bugs:
-        "standalone-comments-in-expressions.in.gd",
-        "standalone-comments-in-expressions.out.gd",
         "complex-trailing-comma-scenarios.in.gd",
         "complex-trailing-comma-scenarios.out.gd",
-        "parentheses-expressions-preservation.in.gd",
-        "parentheses-expressions-preservation.out.gd",
-        "blockless-class.in.gd",
-        "blockless-class.out.gd",
-        "blockless-func-n-func-suite.in.gd",
-        "blockless-func-n-func-suite.out.gd",
-        "complex-signal-statements.out.gd",
     ]
 )
 
