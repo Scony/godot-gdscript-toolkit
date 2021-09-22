@@ -78,8 +78,8 @@ def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
         "",
         statement.end_line,
     )
-    signal_body = statement.children[-1]
-    return format_concrete_expression(signal_body, expression_context, context)
+    signal_args = statement.children[-1]
+    return format_concrete_expression(signal_args, expression_context, context)
 
 
 def _format_classname_statement(statement: Tree, context: Context) -> Outcome:

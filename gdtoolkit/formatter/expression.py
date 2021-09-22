@@ -238,7 +238,7 @@ def _format_foldable_to_multiple_lines(
         "func_arg_inf": _format_func_arg_to_multiple_lines,
         "func_arg_typed": _format_func_arg_to_multiple_lines,
         "enum_body": _format_dict_to_multiple_lines,
-        "signal_body": _format_args_to_multiple_lines,
+        "signal_args": _format_args_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
