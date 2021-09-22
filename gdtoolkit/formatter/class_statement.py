@@ -20,15 +20,15 @@ from .expression import (
 def format_class_statement(statement: Tree, context: Context) -> Outcome:
     handlers = {
         "pass_stmt": partial(format_simple_statement, "pass"),
-        "class_var_stmt": format_var_statement,
+        "enum_stmt": _format_enum_statement,
+        "signal_stmt": _format_signal_statement,
         "extends_stmt": _format_extends_statement,
-        "class_def": _format_class_statement,
-        "func_def": _format_func_statement,
-        "enum_def": _format_enum_statement,
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
-        "signal_stmt": _format_signal_statement,
+        "class_var_stmt": format_var_statement,
         "const_stmt": _format_const_statement,
+        "class_def": _format_class_statement,
+        "func_def": _format_func_statement,
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),

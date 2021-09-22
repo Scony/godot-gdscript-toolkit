@@ -3,18 +3,24 @@ start: _class_stmt+
 _class_stmt: (_simple_class_stmt _NL) | compound_class_stmt | _NL
 _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
 ?single_class_stmt: pass_stmt
+                  | enum_stmt
                   | signal_stmt
                   | extends_stmt
+                  | classname_extends_stmt
                   | classname_stmt
                   | class_var_stmt
                   | const_stmt
-                  | classname_extends_stmt
-                  | enum_def    // TODO: stmt
 ?compound_class_stmt: class_def
                     | func_def
                     | "static" func_def -> static_func_def
 
 pass_stmt: "pass"
+enum_stmt: enum_regular
+         | enum_named
+enum_regular: "enum" enum_body
+enum_named: "enum" NAME enum_body
+enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
+enum_element: NAME ["=" test_expr]
 signal_stmt: "signal" NAME ["(" [NAME ("," NAME)* [trailing_comma]] ")"]
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME ["," string]
@@ -35,12 +41,6 @@ var_inf: "var" NAME ":" "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT _class_stmt+ _DEDENT
-
-enum_def: (enum_regular | enum_named)
-enum_regular: "enum" enum_body
-enum_named: "enum" NAME enum_body
-enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
-enum_element: NAME ["=" test_expr]
 
 func_def: func_header _func_suite
 func_header: "func" NAME "(" [func_args] ")" ["->" TYPE] ":"
