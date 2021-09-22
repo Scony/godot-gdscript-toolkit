@@ -65,6 +65,11 @@ class LoosenTreeTransformer(Transformer):
         string_token = args[0]
         return expression_to_str(string_token)
 
+    def signal_stmt(self, args):  # pylint: disable=R0201
+        if len(args) > 1 and len(args[1].children) == 0:
+            return Tree("signal_stmt", args[:-1])
+        return Tree("signal_stmt", args)
+
 
 def check_tree_invariant(
     given_code: str,

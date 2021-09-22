@@ -69,22 +69,18 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
-    if len(statement.children) == 1:
+    if len(statement.children) == 1 or len(statement.children[1].children) == 0:
         return format_simple_statement(
             "signal {}".format(statement.children[0].value), statement, context
         )
     expression_context = ExpressionContext(
-        "signal {}(".format(statement.children[0].value),
+        "signal {}".format(statement.children[0].value),
         statement.line,
-        ")",
+        "",
         statement.end_line,
     )
-    return (
-        format_comma_separated_list(
-            statement.children[1:], expression_context, context
-        ),
-        statement.end_line,
-    )
+    signal_body = statement.children[-1]
+    return format_concrete_expression(signal_body, expression_context, context)
 
 
 def _format_classname_statement(statement: Tree, context: Context) -> Outcome:

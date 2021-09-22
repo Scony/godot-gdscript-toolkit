@@ -99,6 +99,7 @@ def expression_to_str(expression: Node) -> str:
         ),
         "enum_body": _enum_body_to_str,
         "enum_element": _enum_element_to_str,
+        "signal_body": _signal_body_to_str,
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -208,6 +209,11 @@ def _enum_element_to_str(enum_element: Tree) -> str:
         value = standalone_expression_to_str(enum_element.children[1])
         return f"{name} = {value}"
     return name
+
+
+def _signal_body_to_str(signal_body: Tree) -> str:
+    assert len(signal_body.children) > 0
+    return "({})".format(", ".join(map(expression_to_str, signal_body.children)))
 
 
 def _long_string_to_str(string: Token) -> str:
