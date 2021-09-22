@@ -26,6 +26,15 @@ def format_expression(
     )
 
 
+def format_concrete_expression(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> Outcome:
+    return (
+        _format_concrete_expression(expression, expression_context, context),
+        expression.end_line,
+    )
+
+
 # TOOD: refactor
 # pylint: disable=too-many-locals
 def format_comma_separated_list(
@@ -60,6 +69,23 @@ def format_comma_separated_list(
             len(indented_single_line_expression) + child_context.indent
             <= context.max_line_length
         ):
+            if len(a_list) == 0:
+                return [
+                    (
+                        expression_context.prefix_line,
+                        "{}{}".format(
+                            context.indent_string, expression_context.prefix_string
+                        ),
+                    ),
+                    (
+                        a_list[-1].end_line
+                        if len(a_list) > 0
+                        else expression_context.suffix_line,
+                        "{}{}".format(
+                            context.indent_string, expression_context.suffix_string
+                        ),
+                    ),
+                ]
             return [
                 (
                     expression_context.prefix_line,
@@ -210,6 +236,7 @@ def _format_foldable_to_multiple_lines(
         "func_arg_regular": _format_func_arg_to_multiple_lines,
         "func_arg_inf": _format_func_arg_to_multiple_lines,
         "func_arg_typed": _format_func_arg_to_multiple_lines,
+        "enum_body": _format_dict_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 

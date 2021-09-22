@@ -7,11 +7,14 @@ from .types import FormattedLines, Outcome
 from .context import Context, ExpressionContext
 from .block import format_block
 from .function_statement import format_func_statement
-from .enum import format_enum
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
-from .expression import format_comma_separated_list, format_expression
+from .expression import (
+    format_comma_separated_list,
+    format_expression,
+    format_concrete_expression,
+)
 
 
 def format_class_statement(statement: Tree, context: Context) -> Outcome:
@@ -21,7 +24,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "extends_stmt": _format_extends_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
-        "enum_def": format_enum,
+        "enum_def": _format_enum_statement,
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
         "signal_stmt": _format_signal_statement,
@@ -249,3 +252,17 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
             (last_line_no, "{}:".format(last_line))
         ]
     return (formatted_lines, statement.end_line)
+
+
+def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
+    actual_enum = statement.children[0]
+    prefix = (
+        "enum {} ".format(actual_enum.children[0].value)
+        if len(actual_enum.children) == 2
+        else "enum "
+    )
+    expression_context = ExpressionContext(
+        prefix, statement.line, "", statement.end_line
+    )
+    enum_body = actual_enum.children[-1]
+    return format_concrete_expression(enum_body, expression_context, context)

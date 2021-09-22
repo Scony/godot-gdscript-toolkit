@@ -80,7 +80,7 @@ def expression_to_str(expression: Node) -> str:
         "path": lambda e: "/".join([name_token.value for name_token in e.children]),
         "node_path": lambda e: "^{}".format(expression_to_str(e.children[0])),
         "string_name": lambda e: "&{}".format(expression_to_str(e.children[0])),
-        # # fake expressions:
+        # fake expressions:
         "func_arg_regular": lambda e: "{}{}".format(
             e.children[0].value,
             " = {}".format(standalone_expression_to_str(e.children[1]))
@@ -97,6 +97,8 @@ def expression_to_str(expression: Node) -> str:
             if len(e.children) > 2
             else "",
         ),
+        "enum_body": _enum_body_to_str,
+        "enum_element": _enum_element_to_str,
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -191,6 +193,21 @@ def _dict_element_to_str(dict_element: Tree) -> str:
         standalone_expression_to_str(dict_element.children[0]),
         standalone_expression_to_str(dict_element.children[1]),
     )
+
+
+def _enum_body_to_str(enum_body: Tree) -> str:
+    if len(enum_body.children) == 0:
+        return "{}"
+    elements = map(expression_to_str, enum_body.children)
+    return "{{ {} }}".format(", ".join(elements))
+
+
+def _enum_element_to_str(enum_element: Tree) -> str:
+    name = standalone_expression_to_str(enum_element.children[0])
+    if len(enum_element.children) > 1:
+        value = standalone_expression_to_str(enum_element.children[1])
+        return f"{name} = {value}"
+    return name
 
 
 def _long_string_to_str(string: Token) -> str:

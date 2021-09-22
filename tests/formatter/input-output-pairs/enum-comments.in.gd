@@ -11,3 +11,7 @@ class X:
 	enum Fifth {  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 		A  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	}  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	enum Sixth { A, B, }  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	enum Seventh {  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+		A,  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	}  # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
