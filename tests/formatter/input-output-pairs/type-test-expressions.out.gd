@@ -14,4 +14,7 @@ class X:
 			is bool
 			is bool
 			is bool
+			is bool
+			is bool
+			is bool
 		)

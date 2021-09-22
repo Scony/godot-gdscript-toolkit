@@ -2,11 +2,11 @@ class X:
 	func foo():
 		var a = (
 			"xxxxxxxxxxxxxxxxxxxxxxxxxxx"
-			> "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+			> "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
 		)
 		var b = (
 			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-			in [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+			in [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 		)
 		var c = not not not not not not not not not not not not not not not not not not not not !true
 		var d = (
@@ -25,6 +25,10 @@ class X:
 		var e = (
 			true
 			|| true
+			or true
+			or true
+			or true
+			or true
 			or true
 			or true
 			or true

@@ -151,6 +151,9 @@ def _format_foldable_to_multiple_lines(
         "contextless_comma_separated_list": (
             _format_contextless_comma_separated_list_to_multiple_lines
         ),
+        "contextless_operator_chain_based_expression": (
+            _format_contextless_operator_chain_based_expression_to_multiple_lines
+        ),
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -396,6 +399,19 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     )
     lpar = "" if inside_par else "("
     rpar = "" if inside_par else ")"
+    child_context = context.create_child_context(expression_context.prefix_line)
+    child_expression_context = ExpressionContext(
+        "",
+        expression_context.prefix_line,
+        "",
+        expression_context.suffix_line,
+    )
+    fake_meta = Meta()
+    fake_meta.line = expression_context.prefix_line
+    fake_meta.end_line = expression_context.suffix_line
+    fake_expression = Tree(
+        "contextless_operator_chain_based_expression", expression.children, fake_meta
+    )
     formatted_lines = [
         (
             expression_context.prefix_line,
@@ -404,10 +420,27 @@ def _format_operator_chain_based_expression_to_multiple_lines(
             ),
         )
     ]  # type: FormattedLines
-    child_context = context.create_child_context(expression_context.prefix_line)
+    formatted_lines += _format_concrete_expression(
+        fake_expression, child_expression_context, child_context
+    )
+    formatted_lines.append(
+        (
+            expression.children[-1].line,
+            "{}{}{}".format(
+                context.indent_string, rpar, expression_context.suffix_string
+            ),
+        )
+    )
+    return formatted_lines
+
+
+def _format_contextless_operator_chain_based_expression_to_multiple_lines(
+    expression: Tree, _: ExpressionContext, context: Context
+) -> FormattedLines:
+    formatted_lines = []  # type: FormattedLines
     value = expression.children[0]
     lines = _format_concrete_expression(
-        value, ExpressionContext("", value.line, "", value.end_line), child_context
+        value, ExpressionContext("", value.line, "", value.end_line), context
     )
     formatted_lines += lines
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
@@ -417,17 +450,9 @@ def _format_operator_chain_based_expression_to_multiple_lines(
             ExpressionContext(
                 "{} ".format(operator.value), child.line, "", child.end_line
             ),
-            child_context,
+            context,
         )
         formatted_lines += lines
-    formatted_lines.append(
-        (
-            expression.children[-1].line,
-            "{}{}{}".format(
-                context.indent_string, rpar, expression_context.suffix_string
-            ),
-        )
-    )
     return formatted_lines
 
 
