@@ -233,11 +233,12 @@ def _format_foldable_to_multiple_lines(
         "c_dict_element": _format_kv_pair_to_multiple_lines,
         "eq_dict_element": _format_kv_pair_to_multiple_lines,
         # fake expressions:
+        "func_args": _format_args_to_multiple_lines,
         "func_arg_regular": _format_func_arg_to_multiple_lines,
         "func_arg_inf": _format_func_arg_to_multiple_lines,
         "func_arg_typed": _format_func_arg_to_multiple_lines,
         "enum_body": _format_dict_to_multiple_lines,
-        "signal_body": _format_signal_body_to_multiple_lines,
+        "signal_body": _format_args_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -266,18 +267,16 @@ def _format_dict_to_multiple_lines(
     return format_comma_separated_list(a_dict.children, new_expression_context, context)
 
 
-def _format_signal_body_to_multiple_lines(
-    signal_body: Tree, expression_context: ExpressionContext, context: Context
+def _format_args_to_multiple_lines(
+    args: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
         "{}(".format(expression_context.prefix_string),
         expression_context.prefix_line,
         "){}".format(expression_context.suffix_string),
-        signal_body.end_line,
+        args.end_line,
     )
-    return format_comma_separated_list(
-        signal_body.children, new_expression_context, context
-    )
+    return format_comma_separated_list(args.children, new_expression_context, context)
 
 
 def _format_kv_pair_to_multiple_lines(

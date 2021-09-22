@@ -11,7 +11,6 @@ from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
 from .expression import (
-    format_comma_separated_list,
     format_expression,
     format_concrete_expression,
 )
@@ -192,62 +191,16 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_func_header(statement: Tree, context: Context) -> Outcome:
-    name_token = statement.children[0]
-    name = name_token.value
-    func_args = (
-        statement.children[1]
-        if len(statement.children) > 1
-        and isinstance(statement.children[1], Tree)
-        and statement.children[1].data == "func_args"
-        else None
+    name = statement.children[0].value
+    has_return_type = len(statement.children) > 2
+    expression_context = ExpressionContext(
+        f"func {name}",
+        statement.line,
+        f" -> {statement.children[2].value}:" if has_return_type else ":",
+        statement.end_line,
     )
-    if func_args is not None:
-        expression_context = ExpressionContext(
-            "func {}(".format(name), statement.line, ")", func_args.end_line
-        )
-        formatted_lines = format_comma_separated_list(
-            func_args.children, expression_context, context
-        )
-    else:
-        formatted_lines = [
-            (name_token.line, "{}func {}()".format(context.indent_string, name))
-        ]
-    return_type = (
-        statement.children[1]
-        if len(statement.children) > 1
-        and isinstance(statement.children[1], Token)
-        and statement.children[1].type == "TYPE"
-        else None
-    )
-    return_type = (
-        statement.children[2]
-        if len(statement.children) > 2
-        and isinstance(statement.children[2], Token)
-        and statement.children[2].type == "TYPE"
-        else return_type
-    )
-    if return_type is not None:
-        last_line_no, last_line = formatted_lines[-1]
-        expression_context = ExpressionContext(
-            "{} -> ".format(last_line.strip()),
-            last_line_no,  # type: ignore
-            ":",
-            return_type.end_line,
-        )
-        formatted_lines = formatted_lines[:-1] + [
-            (
-                last_line_no,
-                "{}{} -> {}:".format(
-                    context.indent_string, last_line.strip(), return_type.value
-                ),
-            )
-        ]
-    else:
-        last_line_no, last_line = formatted_lines[-1]
-        formatted_lines = formatted_lines[:-1] + [
-            (last_line_no, "{}:".format(last_line))
-        ]
-    return (formatted_lines, statement.end_line)
+    func_args = statement.children[1]
+    return format_concrete_expression(func_args, expression_context, context)
 
 
 def _format_enum_statement(statement: Tree, context: Context) -> Outcome:

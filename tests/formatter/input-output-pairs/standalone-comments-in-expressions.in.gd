@@ -40,7 +40,8 @@ func bar(
 		# qq4
 		a,
 		# ww4
-		b# TODO: move to standalone after 'b' and fix this to be in paren
+		b
+		# ee4
 	):
 	# rr4
 	pass
