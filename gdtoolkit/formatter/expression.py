@@ -13,7 +13,7 @@ from .expression_utils import (
     is_any_comma,
     is_trailing_comma,
 )
-from .expression_to_str import expression_to_str, standalone_expression_to_str
+from .expression_to_str import expression_to_str
 
 
 def format_expression(
@@ -33,108 +33,6 @@ def format_concrete_expression(
         _format_concrete_expression(expression, expression_context, context),
         expression.end_line,
     )
-
-
-# TOOD: refactor
-# pylint: disable=too-many-locals
-def format_comma_separated_list(
-    a_list: List[Node], expression_context: ExpressionContext, context: Context
-) -> FormattedLines:
-    elements = [node for node in a_list if not is_any_comma(node)]
-    child_context = context.create_child_context(expression_context.prefix_line)
-    fake_meta = Meta()
-    fake_meta.line = expression_context.prefix_line
-    fake_meta.end_line = expression_context.suffix_line
-    fake_expression = Tree("fake", a_list, fake_meta)
-    multiline_mode_forced = is_expression_forcing_multiple_lines(
-        fake_expression, context.standalone_comments
-    )
-    if not multiline_mode_forced:
-        strings_to_join = list(map(standalone_expression_to_str, elements))
-        single_line_expression = "{}{}{}".format(
-            expression_context.prefix_string,
-            ", ".join(strings_to_join),
-            expression_context.suffix_string,
-        )
-        single_line_length = len(single_line_expression) + context.indent
-        if single_line_length <= context.max_line_length:
-            return [
-                (
-                    expression_context.prefix_line,
-                    "{}{}".format(context.indent_string, single_line_expression),
-                )
-            ]
-        indented_single_line_expression = ", ".join(strings_to_join)
-        if (
-            len(indented_single_line_expression) + child_context.indent
-            <= context.max_line_length
-        ):
-            if len(a_list) == 0:
-                return [
-                    (
-                        expression_context.prefix_line,
-                        "{}{}".format(
-                            context.indent_string, expression_context.prefix_string
-                        ),
-                    ),
-                    (
-                        a_list[-1].end_line
-                        if len(a_list) > 0
-                        else expression_context.suffix_line,
-                        "{}{}".format(
-                            context.indent_string, expression_context.suffix_string
-                        ),
-                    ),
-                ]
-            return [
-                (
-                    expression_context.prefix_line,
-                    "{}{}".format(
-                        context.indent_string, expression_context.prefix_string
-                    ),
-                ),
-                (
-                    a_list[-1].end_line
-                    if len(a_list) > 0
-                    else expression_context.suffix_line,
-                    "{}{}".format(
-                        child_context.indent_string, indented_single_line_expression
-                    ),
-                ),
-                (
-                    a_list[-1].end_line
-                    if len(a_list) > 0
-                    else expression_context.suffix_line,
-                    "{}{}".format(
-                        context.indent_string, expression_context.suffix_string
-                    ),
-                ),
-            ]
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}".format(context.indent_string, expression_context.prefix_string),
-        )
-    ]  # type: FormattedLines
-    trailing_comma_present = is_trailing_comma(a_list[-1]) if len(a_list) > 0 else False
-    for i, element in enumerate(elements):
-        suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
-        child_expression_context = ExpressionContext(
-            "", element.line, suffix, element.end_line
-        )
-        lines = _format_standalone_expression(
-            element, child_expression_context, child_context
-        )
-        formatted_lines += lines
-    formatted_lines.append(
-        (
-            expression_context.suffix_line
-            if expression_context.suffix_line is not None
-            else a_list[-1].end_line,
-            "{}{}".format(context.indent_string, expression_context.suffix_string),
-        )
-    )
-    return formatted_lines
 
 
 def _format_standalone_expression(
@@ -160,6 +58,16 @@ def _format_concrete_expression(
             ),
         )
     ]
+
+
+def _format_comma_separated_list(
+    a_list: List[Node], expression_context: ExpressionContext, context: Context
+) -> FormattedLines:
+    fake_meta = Meta()
+    fake_meta.line = expression_context.prefix_line
+    fake_meta.end_line = expression_context.suffix_line
+    fake_expression = Tree("comma_separated_list", a_list, fake_meta)
+    return _format_concrete_expression(fake_expression, expression_context, context)
 
 
 def _format_foldable(
@@ -239,6 +147,10 @@ def _format_foldable_to_multiple_lines(
         "func_arg_typed": _format_func_arg_to_multiple_lines,
         "enum_body": _format_dict_to_multiple_lines,
         "signal_args": _format_args_to_multiple_lines,
+        "comma_separated_list": _format_comma_separated_list_to_multiple_lines,
+        "contextless_comma_separated_list": (
+            _format_contextless_comma_separated_list_to_multiple_lines
+        ),
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -252,7 +164,7 @@ def _format_array_to_multiple_lines(
         "]{}".format(expression_context.suffix_string),
         array.end_line,
     )
-    return format_comma_separated_list(array.children, new_expression_context, context)
+    return _format_comma_separated_list(array.children, new_expression_context, context)
 
 
 def _format_dict_to_multiple_lines(
@@ -264,7 +176,9 @@ def _format_dict_to_multiple_lines(
         "}}{}".format(expression_context.suffix_string),
         a_dict.end_line,
     )
-    return format_comma_separated_list(a_dict.children, new_expression_context, context)
+    return _format_comma_separated_list(
+        a_dict.children, new_expression_context, context
+    )
 
 
 def _format_args_to_multiple_lines(
@@ -276,7 +190,7 @@ def _format_args_to_multiple_lines(
         "){}".format(expression_context.suffix_string),
         args.end_line,
     )
-    return format_comma_separated_list(args.children, new_expression_context, context)
+    return _format_comma_separated_list(args.children, new_expression_context, context)
 
 
 def _format_kv_pair_to_multiple_lines(
@@ -422,7 +336,7 @@ def _format_call_expression_to_multiline_line(
         "){}".format(expression_context.suffix_string),
         expression.end_line,
     )
-    return format_comma_separated_list(
+    return _format_comma_separated_list(
         expression.children[1:], new_expression_context, context
     )
 
@@ -514,6 +428,59 @@ def _format_operator_chain_based_expression_to_multiple_lines(
             ),
         )
     )
+    return formatted_lines
+
+
+def _format_comma_separated_list_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> FormattedLines:
+    a_list = expression.children
+    child_context = context.create_child_context(expression_context.prefix_line)
+    child_expression_context = ExpressionContext(
+        "",
+        expression_context.prefix_line,
+        "",
+        expression_context.suffix_line,
+    )
+    fake_meta = Meta()
+    fake_meta.line = expression_context.prefix_line
+    fake_meta.end_line = expression_context.suffix_line
+    fake_expression = Tree("contextless_comma_separated_list", a_list, fake_meta)
+    formatted_lines = [
+        (
+            expression_context.prefix_line,
+            "{}{}".format(context.indent_string, expression_context.prefix_string),
+        )
+    ]  # type: FormattedLines
+    if len(a_list) > 0:
+        formatted_lines += _format_concrete_expression(
+            fake_expression, child_expression_context, child_context
+        )
+    formatted_lines.append(
+        (
+            expression_context.suffix_line,
+            "{}{}".format(context.indent_string, expression_context.suffix_string),
+        )
+    )
+    return formatted_lines
+
+
+def _format_contextless_comma_separated_list_to_multiple_lines(
+    expression: Tree, _: ExpressionContext, context: Context
+) -> FormattedLines:
+    a_list = expression.children
+    elements = [node for node in a_list if not is_any_comma(node)]
+    formatted_lines = []  # type: FormattedLines
+    trailing_comma_present = is_trailing_comma(a_list[-1]) if len(a_list) > 0 else False
+    for i, element in enumerate(elements):
+        suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
+        child_expression_context = ExpressionContext(
+            "", element.line, suffix, element.end_line
+        )
+        lines = _format_standalone_expression(
+            element, child_expression_context, context
+        )
+        formatted_lines += lines
     return formatted_lines
 
 
