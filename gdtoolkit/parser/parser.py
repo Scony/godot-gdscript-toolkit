@@ -53,7 +53,6 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
-        code += "\n"  # TODO: fix grammar and remove
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -62,7 +61,6 @@ class Parser:
 
     def parse_comments(self, code: str) -> Tree:
         """Parses GDScript code and returns comments - both standalone, and inline."""
-        code += "\n"  # TODO: fix grammar and remove
         return self._comment_parser.parse(code)
 
     def disable_grammar_caching(self) -> None:
