@@ -51,3 +51,19 @@ def test_pretty_printing_unexpected_token():
     assert len(outcome.stdout.decode().splitlines()) == 0
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
+
+
+def test_pretty_printing_lark_corner_case():
+    code = b"""
+func args(a, b):
+	print(a)
+	print(b)
+
+func test():
+	args(1,2"""
+    outcome = subprocess.run(
+        ["gdparse", "-"], input=code, check=False, capture_output=True
+    )
+    assert outcome.returncode == 1
+    assert len(outcome.stdout.decode().splitlines()) == 0
+    assert len(outcome.stderr.decode().splitlines()) > 0

@@ -1,5 +1,10 @@
 # Changelog
 
+## master
+
+### Fixed
+ - Workarounded a lark error impacting pretty print in frontends
+
 ## [3.3.1] 2021-09-15
 
 ### Added
