@@ -46,13 +46,9 @@ def test_parsing_success(gdscript_ok_path):
 def test_godot_check_only_success(gdscript_ok_path):
     process = subprocess.Popen(
         [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_ok_path],
-        stderr=subprocess.PIPE,
     )
     process.wait()
-    _, stderr = process.communicate()
-    assert stderr == b""
-    # TODO: fix once godot4 build is working
-    # assert process.returncode == 0
+    assert process.returncode == 0
 
 
 def test_parsing_failure(gdscript_nok_path):
@@ -70,13 +66,9 @@ def test_parsing_failure(gdscript_nok_path):
 def test_godot_check_only_failure(gdscript_nok_path):
     process = subprocess.Popen(
         [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_nok_path],
-        stderr=subprocess.PIPE,
     )
     process.wait()
-    _, stderr = process.communicate()
-    assert stderr != b""
-    # TODO: fix once godot4 build is working
-    # assert process.returncode != 0
+    assert process.returncode != 0
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
@@ -84,10 +76,6 @@ def test_godot_check_only_failure(gdscript_nok_path):
 def test_godot_check_only_potential_bugs(gdscript_bug_path):
     process = subprocess.Popen(
         [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_bug_path],
-        stderr=subprocess.PIPE,
     )
     process.wait()
-    _, stderr = process.communicate()
-    assert stderr != b""
-    # TODO: fix once godot4 build is working
-    # assert process.returncode != 0
+    assert process.returncode != 0

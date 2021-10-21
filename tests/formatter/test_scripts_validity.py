@@ -42,10 +42,6 @@ def test_script_is_valid(gdscript_path):
     gdscript_full_path = os.path.join(directory_tests, gdscript_path)
     process = subprocess.Popen(
         [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_full_path],
-        stderr=subprocess.PIPE,
     )
     process.wait()
-    _, stderr = process.communicate()
-    assert stderr == b""
-    # TODO: fix once godot4 build is working
-    # assert process.returncode == 0
+    assert process.returncode == 0
