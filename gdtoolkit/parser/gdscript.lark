@@ -1,7 +1,7 @@
-start: _class_stmt* [_simple_class_stmt]
+start: _class_stmt* [_simple_class_stmt | annotation+]
 
-_class_stmt: (_simple_class_stmt _NL) | compound_class_stmt | _NL
-_simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
+_class_stmt: (_simple_class_stmt _NL) | (annotation* compound_class_stmt) | (annotation* _NL)
+_simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_stmt)* [";"]
 ?single_class_stmt: pass_stmt
                   | enum_stmt
                   | signal_stmt
@@ -13,6 +13,8 @@ _simple_class_stmt: single_class_stmt (";" single_class_stmt)* [";"]
 ?compound_class_stmt: class_def
                     | func_def
                     | "static" func_def -> static_func_def
+annotation: "@" NAME [annotation_args]
+annotation_args: "(" test_expr ("," test_expr)* [trailing_comma] ")"
 
 pass_stmt: "pass"
 enum_stmt: enum_regular
@@ -41,7 +43,7 @@ var_inf: "var" NAME ":" "=" expr
 !const_stmt: "const" NAME [":" [TYPE]] "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
-_class_body: _NL _INDENT (_class_stmt+ | _class_stmt* _simple_class_stmt) _DEDENT
+_class_body: _NL _INDENT (_class_stmt+ | _class_stmt* (_simple_class_stmt | annotation+)) _DEDENT
 
 func_def: func_header _func_suite
 func_header: "func" NAME func_args ["->" TYPE] ":"

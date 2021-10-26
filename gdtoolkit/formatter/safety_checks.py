@@ -70,6 +70,26 @@ class LoosenTreeTransformer(Transformer):
             return Tree("signal_stmt", args[:-1])
         return Tree("signal_stmt", args)
 
+    def start(self, args):  # pylint: disable=R0201
+        return Tree(
+            "start",
+            [
+                arg
+                for arg in args
+                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+            ],
+        )
+
+    def class_def(self, args):  # pylint: disable=R0201
+        return Tree(
+            "class_def",
+            [
+                arg
+                for arg in args
+                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+            ],
+        )
+
 
 def check_tree_invariant(
     given_code: str,

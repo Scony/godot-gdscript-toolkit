@@ -92,6 +92,8 @@ def _class_definitions_order_check_for_class(
     for class_child in class_children:
         if not isinstance(class_child, Tree):
             continue
+        if class_child.data in ["annotation"]:
+            continue
         stmt = class_child.data
         if stmt == "class_var_stmt":
             visibility = _class_var_stmt_visibility(class_child)
