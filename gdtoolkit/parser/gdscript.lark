@@ -13,6 +13,7 @@ _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_
                   | class_var_stmt
                   | const_stmt
 ?compound_class_stmt: class_def
+                    | property_body_def
                     | func_def
                     | "static" func_def -> static_func_def
 annotation: "@" NAME [annotation_args]
@@ -36,16 +37,27 @@ _var_stmt: var_empty
          | var_typed
          | var_typed_assgnd
          | var_inf
-var_empty: "var" NAME
-var_assigned: "var" NAME "=" expr
+var_empty: "var" NAME [inline_property_body]
+var_assigned: "var" NAME "=" expr [inline_property_body]
 _var_typed: "var" NAME ":" TYPE_HINT
-var_typed: _var_typed
-var_typed_assgnd: _var_typed "=" expr
-var_inf: "var" NAME ":" "=" expr
+var_typed: _var_typed [inline_property_body]
+var_typed_assgnd: _var_typed "=" expr [inline_property_body]
+var_inf: "var" NAME ":" "=" expr [inline_property_body]
+inline_property_body: ":" [property_delegate_set ["," property_delegate_get]]
+                    | ":" [property_delegate_get ["," property_delegate_set]]
 !const_stmt: "const" NAME [":" [TYPE_HINT]] "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT (_class_stmt+ | _class_stmt* (_simple_class_stmt | annotation+)) _DEDENT
+
+property_body_def: _INDENT _property_delegates _NL _DEDENT
+                 | _INDENT property_custom_etter+ _DEDENT
+_property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
+                   | property_delegate_get ["," [_NL] property_delegate_set]
+property_delegate_set: "set" "=" NAME
+property_delegate_get: "get" "=" NAME
+?property_custom_etter: "set" "(" NAME ")" ":" _func_suite -> property_custom_setter
+                      | "get" ":" _func_suite -> property_custom_getter
 
 func_def: func_header _func_suite
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
