@@ -1,6 +1,8 @@
 start: _class_stmt* [_simple_class_stmt | annotation+]
 
-_class_stmt: (_simple_class_stmt _NL) | (annotation* compound_class_stmt) | (annotation* _NL)
+_class_stmt: _simple_class_stmt _NL
+           | annotation* compound_class_stmt
+           | annotation* _NL
 _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_stmt)* [";"]
 ?single_class_stmt: pass_stmt
                   | enum_stmt
