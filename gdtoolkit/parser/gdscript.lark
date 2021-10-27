@@ -36,24 +36,24 @@ _var_stmt: var_empty
          | var_inf
 var_empty: "var" NAME
 var_assigned: "var" NAME "=" expr
-_var_typed: "var" NAME ":" TYPE
+_var_typed: "var" NAME ":" TYPE_HINT
 var_typed: _var_typed
 var_typed_assgnd: _var_typed "=" expr
 var_inf: "var" NAME ":" "=" expr
-!const_stmt: "const" NAME [":" [TYPE]] "=" expr
+!const_stmt: "const" NAME [":" [TYPE_HINT]] "=" expr
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT (_class_stmt+ | _class_stmt* (_simple_class_stmt | annotation+)) _DEDENT
 
 func_def: func_header _func_suite
-func_header: "func" NAME func_args ["->" TYPE] ":"
+func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
 func_args: "(" [func_arg ("," func_arg)* [trailing_comma]] ")"
 ?func_arg: func_arg_regular
          | func_arg_inf
          | func_arg_typed
 func_arg_regular: NAME ["=" expr]
 func_arg_inf: NAME ":" "=" expr
-func_arg_typed: NAME ":" TYPE ["=" expr]
+func_arg_typed: NAME ":" TYPE_HINT ["=" expr]
 _func_suite: _func_body
            | _func_stmt
 _func_body: _NL _INDENT (_func_stmt+ | _func_stmt* _simple_func_stmt) _DEDENT
@@ -124,7 +124,7 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | ">>=" | "<<="
 ?type_cast: test_expr
           | actual_type_cast
-!?actual_type_cast: test_expr ("as" TYPE)+
+!?actual_type_cast: test_expr ("as" TYPE_HINT)+
 !?test_expr: or_test ["if" asless_or_test "else" asless_test_expr]
            | actual_type_cast "if" asless_or_test "else" asless_test_expr
 !?asless_test_expr: asless_or_test ["if" asless_or_test "else" asless_test_expr]
@@ -212,6 +212,7 @@ c_dict_element: type_cast ":" type_cast
 eq_dict_element: NAME "=" type_cast
 
 TYPE: NAME ([" "] "." [" "] NAME)*
+TYPE_HINT: NAME ([" "] "." [" "] NAME)* ["[" NAME "]"]
 NUMBER: ["+"|"-"] (FLOAT | INT)
 FLOAT: INT _EXP | DECIMAL _EXP?
 _EXP: ("e"|"E") SIGNED_INT
