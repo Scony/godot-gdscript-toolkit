@@ -13,11 +13,16 @@ def format_var_statement(
 ) -> Outcome:
     concrete_var_stmt = statement.children[0]
     handlers = {
-        "var_empty": _format_var_empty_statement,
-        "var_assigned": _format_var_assigned_statement,
-        "var_typed": _format_var_typed_statement,
-        "var_typed_assgnd": _format_var_typed_assigned_statement,
-        "var_inf": _format_var_inferred_statement,
+        "class_var_empty": _format_var_empty_statement,
+        "class_var_assigned": _format_var_assigned_statement,
+        "class_var_typed": _format_var_typed_statement,
+        "class_var_typed_assgnd": _format_var_typed_assigned_statement,
+        "class_var_inf": _format_var_inferred_statement,
+        "func_var_empty": _format_var_empty_statement,
+        "func_var_assigned": _format_var_assigned_statement,
+        "func_var_typed": _format_var_typed_statement,
+        "func_var_typed_assgnd": _format_var_typed_assigned_statement,
+        "func_var_inf": _format_var_inferred_statement,
     }  # type: Dict[str, Callable]
     return handlers[concrete_var_stmt.data](concrete_var_stmt, context, prefix)
 

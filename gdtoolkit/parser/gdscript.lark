@@ -31,18 +31,17 @@ signal_args: "(" [NAME ("," NAME)* [trailing_comma]] ")"
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME ["," string]
 !classname_extends_stmt: "class_name" NAME ["," string] "extends" (NAME | string) ("." NAME)*
-class_var_stmt: _var_stmt
-_var_stmt: var_empty
-         | var_assigned
-         | var_typed
-         | var_typed_assgnd
-         | var_inf
-var_empty: "var" NAME [inline_property_body]
-var_assigned: "var" NAME "=" expr [inline_property_body]
+class_var_stmt: class_var_empty
+              | class_var_assigned
+              | class_var_typed
+              | class_var_typed_assgnd
+              | class_var_inf
+class_var_empty: "var" NAME [inline_property_body]
+class_var_assigned: "var" NAME "=" expr [inline_property_body]
 _var_typed: "var" NAME ":" TYPE_HINT
-var_typed: _var_typed [inline_property_body]
-var_typed_assgnd: _var_typed "=" expr [inline_property_body]
-var_inf: "var" NAME ":" "=" expr [inline_property_body]
+class_var_typed: _var_typed [inline_property_body]
+class_var_typed_assgnd: _var_typed "=" expr [inline_property_body]
+class_var_inf: "var" NAME ":" "=" expr [inline_property_body]
 inline_property_body: ":" [property_delegate_set ["," property_delegate_get]]
                     | ":" [property_delegate_get ["," property_delegate_set]]
 !const_stmt: "const" NAME [":" [TYPE_HINT]] "=" expr
@@ -84,7 +83,16 @@ _simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
                    | for_stmt
                    | match_stmt
 return_stmt: "return" [expr]
-func_var_stmt: _var_stmt
+func_var_stmt: func_var_empty
+             | func_var_assigned
+             | func_var_typed
+             | func_var_typed_assgnd
+             | func_var_inf
+func_var_empty: "var" NAME
+func_var_assigned: "var" NAME "=" expr
+func_var_typed: _var_typed
+func_var_typed_assgnd: _var_typed "=" expr
+func_var_inf: "var" NAME ":" "=" expr
 break_stmt.2: "break"
 continue_stmt.2: "continue"
 expr_stmt: expr
@@ -209,11 +217,14 @@ getattr: call_expr _attr+
      | HEX
      | BIN
      | literal
+     | inline_lambda
 ?literal: NUMBER
         | string
         | get_node
         | "^" string -> node_path
         | "&" string -> string_name
+inline_lambda: lambda_header _simple_func_stmt
+lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
 HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string)
