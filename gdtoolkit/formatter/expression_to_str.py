@@ -64,6 +64,10 @@ def expression_to_str(expression: Node) -> str:
         "type_test": _operator_chain_based_expression_to_str,
         "asless_type_test": _operator_chain_based_expression_to_str,
         "actual_type_cast": _operator_chain_based_expression_to_str,
+        "await_expr": lambda e: "{} {}".format(
+            " ".join(t.value for t in e.children[:-1]),
+            expression_to_str(e.children[-1]),
+        ),
         "standalone_call": _standalone_call_to_str,
         "getattr_call": _getattr_call_to_str,
         "getattr": lambda e: "".join(map(expression_to_str, e.children)),

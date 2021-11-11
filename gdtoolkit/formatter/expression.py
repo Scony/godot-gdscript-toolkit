@@ -130,6 +130,7 @@ def _format_foldable_to_multiple_lines(
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
+        "await_expr": _format_await_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiline_line,
         "getattr_call": _format_call_expression_to_multiline_line,
         "getattr": _format_attribute_expression_to_multiple_lines,
@@ -524,4 +525,21 @@ def _append_to_expression_context_and_pass(
     )
     return _format_concrete_expression(
         expression.children[1], new_expression_context, context
+    )
+
+
+def _format_await_expression_to_multiple_lines(
+    expression: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    str_to_append = " ".join(token.value for token in expression.children[:-1])
+    new_expression_context = ExpressionContext(
+        "{}{} ".format(expression_context.prefix_string, str_to_append),
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+        expression_context.suffix_line,
+    )
+    return _format_concrete_expression(
+        expression.children[-1], new_expression_context, context
     )

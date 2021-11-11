@@ -3,7 +3,8 @@
 ## [4.0.0] (to be released)
 
 ### Added
- - Added some new GDScript `2.0` constructs to the core testcases
+ - Added new GDScript `2.0` constructs to the core testcases
+ - Added support for `await` in parser & formatter
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases

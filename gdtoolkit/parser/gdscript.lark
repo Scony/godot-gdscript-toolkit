@@ -199,7 +199,7 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?type_test: await_expr ("is" TYPE)*
            | actual_type_cast ("is" TYPE)+
 !?asless_type_test: await_expr ("is" TYPE)*
-?await_expr: ("await")* call_expr
+!?await_expr: ("await")* call_expr
 ?call_expr: attr_expr
           | NAME _call_arglist -> standalone_call
           | getattr _call_arglist -> getattr_call
