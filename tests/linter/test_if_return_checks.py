@@ -30,7 +30,12 @@ func foo():
 """
 ])
 def test_elif_branch_returns_nok(code):
-    simple_nok_check(code, "no-else-return", line=7)
+    outcome = lint_code(code, DEFAULT_CONFIG)
+    assert len(outcome) == 2
+    assert outcome[0].name == "no-elif-return"
+    assert outcome[0].line == 5
+    assert outcome[1].name == "no-else-return"
+    assert outcome[1].line == 7
 
 
 @pytest.mark.parametrize('code', [
@@ -105,6 +110,45 @@ def test_nested_match_nok(code):
 func foo():
     if true:
         return 'foo'
+    elif true:
+        var a = 'bar'
+    else:
+        return 'foo'
+"""
+])
+def test_elif_branch_doesnt_return_nok(code):
+    simple_nok_check(code, "no-elif-return", line=5)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    if true:
+        return 'foo'
+    elif true:
+        return 'bar'
+    elif true:
+        var a = 'foo'
+    elif true:
+        var a = 'bar'
+    else:
+        return 'foo'
+"""
+])
+def test_elif_branch_returns_nok(code):
+    outcome = lint_code(code, DEFAULT_CONFIG)
+    assert len(outcome) == 2
+    assert outcome[0].name == "no-elif-return"
+    assert outcome[0].line == 5
+    assert outcome[1].name == "no-elif-return"
+    assert outcome[1].line == 7
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    if true:
+        return 'foo'
     return 'bar'
 """
 ])
@@ -117,13 +161,12 @@ def test_if_branch_returns_ok(code):
 func foo():
     if true:
         return 'foo'
-    elif true:
-        var a = 'bar'
     else:
-        return 'foo'
+        var x := 1
+    var x := 2
 """
 ])
-def test_elif_branch_doesnt_return_ok(code):
+def test_var_avoids_error_ok(code):
     simple_ok_check(code)
 
 
@@ -133,24 +176,13 @@ func foo():
     if true:
         if true:
             return 'foo'
-    else:
+    elif true:
         return 'bar'
+    else:
+        return 'foo'
 """
 ])
 def test_nested_if_doesnt_always_returns_ok(code):
-    simple_ok_check(code)
-
-
-@pytest.mark.parametrize('code', [
-"""
-func foo():
-    if true:
-        return 'foo'
-    elif true:
-        return 'bar'
-"""
-])
-def test_allows_elif_ok(code):
     simple_ok_check(code)
 
 
@@ -200,34 +232,9 @@ def test_nested_match_ok(code):
 func foo():
     if true:
         return 'foo'
-    elif true:
-        return 'bar'
-    else:
-        return 'foo'
-"""
-])
-def test_doesnt_allow_elif_nok(code):
-    config = DEFAULT_CONFIG.copy()
-    config.update({"no-else-return": {"allow-elif": False}})
-    outcome = lint_code(code, config)
-    assert len(outcome) == 2
-    assert outcome[0].name == "no-else-return"
-    assert outcome[0].line == 5
-    assert outcome[1].name == "no-else-return"
-    assert outcome[1].line == 7
-
-
-@pytest.mark.parametrize('code', [
-"""
-func foo():
-    if true:
-        return 'foo'
     if true:
         return 'bar'
 """
 ])
 def test_doesnt_allow_elif_ok(code):
-    config = DEFAULT_CONFIG.copy()
-    config.update({"no-else-return": {"allow-elif": False}})
-    outcome = lint_code(code, config)
-    assert len(outcome) == 0
+    simple_ok_check(code)

@@ -81,9 +81,8 @@ DEFAULT_CONFIG = MappingProxyType(
         "mixed-tabs-and-spaces": None,
         # misc
         "excluded_directories": {".git"},
-        "no-else-return": {
-            "allow-elif": True
-        },
+        "no-elif-return": None,
+        "no-else-return": None,
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
         # consider-using-in
