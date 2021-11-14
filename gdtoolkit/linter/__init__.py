@@ -6,7 +6,14 @@ from typing import List, Dict, Set
 from .problem import Problem
 from ..parser import parser
 from .types import Range
-from . import basic_checks, class_checks, design_checks, format_checks, name_checks, misc_checks
+from . import (
+    basic_checks,
+    class_checks,
+    design_checks,
+    format_checks,
+    name_checks,
+    misc_checks,
+)
 
 PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
 SNAKE_CASE = r"[a-z][a-z0-9]*(_[a-z0-9]+)*"

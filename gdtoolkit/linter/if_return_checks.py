@@ -4,6 +4,7 @@ from lark import Tree
 
 from .problem import Problem
 
+
 def no_elif_return_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for if_stmt in _find_if_stmts(parse_tree):
@@ -32,7 +33,7 @@ def _check_elif_problems(if_stmt: Tree) -> List[Problem]:
         problems.append(
             Problem(
                 name="no-elif-return",
-                description="Unnecessary \"elif\" after \"return\"",
+                description='Unnecessary "elif" after "return"',
                 line=elif_branch.line,
                 column=elif_branch.column,
             )
@@ -57,7 +58,7 @@ def _find_trees_with_if_stmts(parse_tree: Tree) -> List[Tree]:
 
 def _find_var_names(tree: Tree) -> List[str]:
     func_var_stmts = _find_func_var_stmts_among_children(tree)
-    return map(_find_var_name, func_var_stmts)
+    return list(map(_find_var_name, func_var_stmts))
 
 
 def _check_else_problems(if_stmt: Tree, parent_var_names: List[str]) -> List[Problem]:
@@ -70,7 +71,7 @@ def _check_else_problems(if_stmt: Tree, parent_var_names: List[str]) -> List[Pro
     return [
         Problem(
             name="no-else-return",
-            description="Unnecessary \"else\" after \"return\"",
+            description='Unnecessary "else" after "return"',
             line=else_branch.line,
             column=else_branch.column,
         )
@@ -141,7 +142,7 @@ def _has_wildcard_pattern_branch(match_stmt: List[Tree]) -> bool:
 
 
 def _find_var_name(func_var_stmt: List[Tree]) -> str:
-    return func_var_stmt.children[0].children[0].value
+    return func_var_stmt.children[0].children[0].value  # type: ignore
 
 
 def _find_func_var_stmts_among_children(tree: Tree) -> List[Tree]:

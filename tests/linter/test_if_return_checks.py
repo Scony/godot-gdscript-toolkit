@@ -4,6 +4,7 @@ from .common import simple_ok_check, simple_nok_check
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
 
 
+# fmt: off
 @pytest.mark.parametrize('code', [
 """
 func foo():
@@ -135,7 +136,7 @@ func foo():
         return 'foo'
 """
 ])
-def test_elif_branch_returns_nok(code):
+def test_elif_branch_returns_nok_2(code):
     outcome = lint_code(code, DEFAULT_CONFIG)
     assert len(outcome) == 2
     assert outcome[0].name == "no-elif-return"
