@@ -2,6 +2,10 @@
 
 ## master
 
+### Added
+ - Added `no-elif-return` linter check
+ - Added `no-else-return` linter check
+
 ### Fixed
  - Workarounded a lark error impacting pretty print in frontends
 
