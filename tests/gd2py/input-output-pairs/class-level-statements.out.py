@@ -1,4 +1,8 @@
 pass
+pass
+pass
+pass
+pass
 a = None
 b = 1
 c = None
@@ -13,6 +17,8 @@ C = 1
 """asd"""
 class C:
 	pass
+pass
+pass
 def foo():
 	pass
 def bar():
