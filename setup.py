@@ -16,6 +16,7 @@ setup(
         "gdtoolkit.formatter",
         "gdtoolkit.parser",
         "gdtoolkit.common",
+        "gdtoolkit.gd2py",
     ],
     package_data={"gdtoolkit.parser": ["gdscript.lark", "comments.lark"]},
     entry_points={
@@ -23,6 +24,7 @@ setup(
             "gdparse = gdtoolkit.parser.__main__:main",
             "gdlint = gdtoolkit.linter.__main__:main",
             "gdformat = gdtoolkit.formatter.__main__:main",
+            "gd2py = gdtoolkit.gd2py.__main__:main",
         ]
     },
     include_package_data=True,
