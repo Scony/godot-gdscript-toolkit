@@ -33,32 +33,40 @@ def _convert_statement(statement: Node, context: Context) -> List[str]:
         # class statements:
         "tool_stmt": _ignore,
         "pass_stmt": lambda s, c: [f"{c.indent_string}pass"],
-        "class_var_stmt": lambda s, c: _convert_statement(s.children[0], c),
+        "class_var_stmt": _convert_first_child_as_statement,
         "var_empty": lambda s, c: [f"{c.indent_string}{s.children[0].value} = None"],
-        "var_assigned": lambda s, c: [],  # TODO: implement
+        "var_assigned": _convert_var_statement_with_expression,
         "var_typed": lambda s, c: [f"{c.indent_string}{s.children[0].value} = None"],
-        "var_typed_assgnd": lambda s, c: [],  # TODO: implement
-        "var_inf": lambda s, c: [],  # TODO: implement
+        "var_typed_assgnd": _convert_var_statement_with_expression,
+        "var_inf": _convert_var_statement_with_expression,
         "extends_stmt": _ignore,
         "class_def": _convert_class_def,
-        "func_def": lambda s, c: [],  # TODO: implement
-        "enum_def": lambda s, c: [],  # TODO: implement
+        "func_def": _convert_func_def,
+        "enum_def": _ignore,  # TODO: implement
         "classname_stmt": _ignore,
-        # "classname_extends_stmt": _format_classname_extends_statement,
+        "classname_extends_stmt": _ignore,
         "signal_stmt": _ignore,
-        "docstr_stmt": lambda s, c: [],  # TODO: implement
-        "const_stmt": lambda s, c: [],  # TODO: implement
-        "export_stmt": lambda s, c: [],  # TODO: implement
-        "onready_stmt": lambda s, c: [],  # TODO: implement
-        # "puppet_var_stmt": lambda s, c: format_var_statement(
-        # "static_func_def": partial(
-        # "remote_func_def": partial(
-        # "remotesync_func_def": partial(
-        # "master_func_def": partial(
-        # "mastersync_func_def": partial(
-        # "puppet_func_def": partial(
-        # "puppetsync_func_def": partial(
-        # "sync_func_def":
+        "docstr_stmt": lambda s, c: [
+            f"{c.indent_string}{s.children[0].children[0].value}"
+        ],
+        "const_stmt": lambda s, c: [
+            "{}{} = {}".format(
+                c.indent_string,
+                s.children[1].value,
+                _convert_expression_to_str(s.children[-1]),
+            )
+        ],
+        "export_stmt": _convert_export_statement,
+        "onready_stmt": lambda s, c: _convert_statement(s.children[-1], c),
+        "puppet_var_stmt": _convert_first_child_as_statement,
+        "static_func_def": _convert_first_child_as_statement,
+        "remote_func_def": _convert_first_child_as_statement,
+        "remotesync_func_def": _convert_first_child_as_statement,
+        "master_func_def": _convert_first_child_as_statement,
+        "mastersync_func_def": _convert_first_child_as_statement,
+        "puppet_func_def": _convert_first_child_as_statement,
+        "puppetsync_func_def": _convert_first_child_as_statement,
+        "sync_func_def": _convert_first_child_as_statement,
         # ----
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
@@ -68,7 +76,41 @@ def _ignore(_statement: Node, _context: Context) -> List[str]:
     return []
 
 
+def _convert_first_child_as_statement(statement: Node, context: Context) -> List[str]:
+    return _convert_statement(statement.children[0], context)
+
+
+def _convert_var_statement_with_expression(
+    statement: Node, context: Context
+) -> List[str]:
+    return [
+        "{}{} = {}".format(
+            context.indent_string,
+            statement.children[0].value,
+            _convert_expression_to_str(statement.children[-1]),
+        )
+    ]
+
+
+def _convert_export_statement(statement: Node, context: Context) -> List[str]:
+    actual_statement = statement.children[0]
+    if actual_statement.children[-1].data == "setget":
+        return _convert_statement(actual_statement.children[-2], context)
+    return _convert_statement(actual_statement.children[-1], context)
+
+
 def _convert_class_def(statement: Node, context: Context) -> List[str]:
     return [
         f"{context.indent_string}class {statement.children[0].value}:"
     ] + _convert_block(statement.children[1:], context.create_child_context(-1))
+
+
+def _convert_func_def(statement: Node, context: Context) -> List[str]:
+    # TODO: handle func args
+    return [
+        f"{context.indent_string}def {statement.children[0].children[0].value}():",
+    ] + _convert_block(statement.children[1:], context.create_child_context(-1))
+
+
+def _convert_expression_to_str(_expression: Node) -> str:
+    return "1"
