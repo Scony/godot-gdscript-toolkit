@@ -1,3 +1,4 @@
+from functools import partial
 from typing import List, Callable, Dict
 
 from ..parser import parser
@@ -67,7 +68,38 @@ def _convert_statement(statement: Node, context: Context) -> List[str]:
         "puppet_func_def": _convert_first_child_as_statement,
         "puppetsync_func_def": _convert_first_child_as_statement,
         "sync_func_def": _convert_first_child_as_statement,
-        # ----
+        # func statements:
+        "func_var_stmt": _convert_first_child_as_statement,
+        "expr_stmt": _convert_first_child_as_statement,
+        "expr": lambda s, c: [
+            f"{c.indent_string}{_convert_expression_to_str(s.children[0])}"
+        ],
+        "return_stmt": lambda s, c: [
+            f"{c.indent_string}return"
+            + (
+                f" {_convert_expression_to_str(s.children[0])}"
+                if len(s.children) > 0
+                else ""
+            )
+        ],
+        "break_stmt": lambda s, c: [f"{c.indent_string}break"],
+        "continue_stmt": lambda s, c: [f"{c.indent_string}continue"],
+        "if_stmt": lambda s, c: _convert_block(s.children, c),
+        "if_branch": partial(_convert_branch_with_expression, "if"),
+        "elif_branch": partial(_convert_branch_with_expression, "elif"),
+        "else_branch": lambda s, c: [f"{c.indent_string}else:"]
+        + _convert_block(s.children, c.create_child_context(-1)),
+        "while_stmt": partial(_convert_branch_with_expression, "while"),
+        "for_stmt": lambda s, c: [
+            "{}for {} in {}:".format(
+                c.indent_string,
+                s.children[0].value,
+                _convert_expression_to_str(s.children[1]),
+            )
+        ]
+        + _convert_block(s.children[2:], c.create_child_context(-1)),
+        "match_stmt": _convert_match_statement,
+        "match_branch": partial(_convert_branch_with_expression, "elif"),
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
@@ -112,5 +144,28 @@ def _convert_func_def(statement: Node, context: Context) -> List[str]:
     ] + _convert_block(statement.children[1:], context.create_child_context(-1))
 
 
+def _convert_branch_with_expression(
+    prefix: str, statement: Node, context: Context
+) -> List[str]:
+    return [
+        "{}{} {}:".format(
+            context.indent_string,
+            prefix,
+            _convert_expression_to_str(statement.children[0]),
+        ),
+    ] + _convert_block(statement.children[1:], context.create_child_context(-1))
+
+
+def _convert_match_statement(statement: Node, context: Context) -> List[str]:
+    # TODO: proper implementation
+    return [
+        "{}if {}:".format(
+            context.indent_string, _convert_expression_to_str(statement.children[0])
+        ),
+        f"{context.create_child_context(-1).indent_string}pass",
+    ] + _convert_block(statement.children[1:], context)
+
+
 def _convert_expression_to_str(_expression: Node) -> str:
+    # TODO: handle
     return "1"
