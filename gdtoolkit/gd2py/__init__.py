@@ -104,8 +104,8 @@ def _convert_statement(statement: Node, context: Context) -> List[str]:
     return handlers[statement.data](statement, context)
 
 
-def _ignore(_statement: Node, _context: Context) -> List[str]:
-    return []
+def _ignore(_statement: Node, context: Context) -> List[str]:
+    return [f"{context.indent_string}pass"]
 
 
 def _convert_first_child_as_statement(statement: Node, context: Context) -> List[str]:
