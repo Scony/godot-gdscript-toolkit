@@ -11,6 +11,7 @@ var b = 1
 var c: int
 var d: int = 1
 var e := 1
+puppet var f = 1
 export(float) var aa
 onready var aaa
 
@@ -33,4 +34,8 @@ enum Named { AAA, BBB }
 
 
 func foo():
+	pass
+
+
+static func bar():
 	pass
