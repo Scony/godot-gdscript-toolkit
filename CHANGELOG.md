@@ -5,6 +5,7 @@
 ### Added
  - Added `no-elif-return` linter check
  - Added `no-else-return` linter check
+ - Added `gd2py` (GDScript-to-python) converter tool
 
 ### Fixed
  - Workarounded a lark error impacting pretty print in frontends
