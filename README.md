@@ -13,10 +13,15 @@ This project provides a set of tools for daily work with `GDScript`. At the mome
 
 To install this project you need `python3` and `pip`. 
 
-Use this command in your terminal to install from this git repository:
+Use this command in your terminal to install from PyPI repository:
 
 ```
-pip3 install gdtoolkit
+pip3 install 'gdtoolkit==3.*'
+```
+
+Alternatively, you can install latest (potentially unstable) version directly from git:
+```
+pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
 ```
 
 ## Linting with gdlint
