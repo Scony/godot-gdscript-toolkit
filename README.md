@@ -24,9 +24,9 @@ Alternatively, you can install latest (potentially unstable) version directly fr
 pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
 ```
 
-## Linting with gdlint
+## Linting with gdlint [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/3.-Linter)
 
-To run a linter you need to perform installation first. Once done, you can run e.g.:
+To run a linter you need to execute `gdlint` command like:
 
 ```
 $ gdlint misc/MarkovianPCG.gd
@@ -39,39 +39,11 @@ misc/MarkovianPCG.gd:96: Error: Function argument name "aOrigin" is not valid (f
 misc/MarkovianPCG.gd:96: Error: Function argument name "aPos" is not valid (function-argument-name)
 ```
 
-To tweak the default check settings, you can dump the default config to a file:
-
-```
-$ gdlint -d
-$ cat gdlintrc
-class-load-variable-name: (([A-Z][a-z0-9]*)+|_?[a-z][a-z0-9]*(_[a-z0-9]+)*)
-class-name: ([A-Z][a-z0-9]*)+
-class-variable-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-constant-name: '[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
-disable: []
-enum-element-name: '[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
-enum-name: ([A-Z][a-z0-9]*)+
-function-argument-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-function-arguments-number: 10
-function-preload-variable-name: ([A-Z][a-z0-9]*)+
-function-name: (_on_([A-Z][a-z0-9]*)+(_[a-z0-9]+)*|_?[a-z][a-z0-9]*(_[a-z0-9]+)*)
-function-variable-name: '[a-z][a-z0-9]*(_[a-z0-9]+)*'
-load-constant-name: (([A-Z][a-z0-9]*)+|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)
-loop-variable-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-signal-name: '[a-z][a-z0-9]*(_[a-z0-9]+)*'
-sub-class-name: _?([A-Z][a-z0-9]*)+
-```
-
-Once the dump is performed, you can modify the `gdlintrc` file and optionally rename it to `.gdlintrc`.
-From now on, linter will use this config file to override the default config.
-
-## Formatting with gdformat
+## Formatting with gdformat [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/4.-Formatter)
 
 **Formatting may lead to data loss, so it's highly recommended to use it along with Version Control System (VCS) e.g. `git`**
 
-`gdformat` is the uncompromising GDScript code formatter. The only configurable thing is max line length allowed (`--line-length`). The rest will be taken care of by `gdformat` in a one, consistent way.
-
-To run a formatter you need to perform installation first. Once done, given a `test.gd` file:
+To run a formatter you need to execute `gdformat` on the file you want to format. So, given a `test.gd` file:
 
 ```
 class X:
@@ -85,7 +57,7 @@ func bar():
 	print('bar')
 ```
 
-when you run `gdformat test.gd`, the `test.gd` file will be reformatted as follows:
+when you execute `gdformat test.gd` command, the `test.gd` file will be reformatted as follows:
 
 ```
 class X:
@@ -105,11 +77,9 @@ func bar():
 	print('bar')
 ```
 
-If the program formats your files successfully, it will return the exit code `0`. Non-zero code will be returned otherwise.
+## Parsing with gdparse [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/2.-Parser)
 
-## Parsing with gdparse
-
-To parse a file, use the `gdparse` program:
+To run a parser you need to execute the `gdparse` command like:
 
 ```
 gdparse tests/valid-gd-scripts/recursive_tool.gd -p
@@ -131,8 +101,6 @@ start
       signal_stmt	sss
   tool_stmt
 ```
-
-If the program parses your file sucessfully, it will return the exit code `0`.
 
 ## Running tests
 
