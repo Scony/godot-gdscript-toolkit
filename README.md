@@ -13,7 +13,7 @@ This project provides a set of tools for daily work with `GDScript`. At the mome
 
 To install this project you need `python3` and `pip`. 
 
-Use this command in your terminal to install from PyPI repository:
+Use this command to install `gdtoolkit` for `Godot 3` from PyPI repository:
 
 ```
 pip3 install 'gdtoolkit==3.*'
@@ -102,30 +102,6 @@ start
   tool_stmt
 ```
 
-## Running tests
+## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
 
-To run tests you need [tox](https://tox.readthedocs.io/en/latest/), a tool to automate testing in Python.
-
-Install it with:
-
-```
-pip3 install tox
-```
-
-To invoke entire test suite, in the `godot-gdscript-toolkit` project directory, run:
-
-```
-tox
-```
-
-You can run only selected test cases:
-
-```
-tox -e py3 -- -k lint
-```
-
-For manual testing, you can consider installing package in editable mode:
-
-```
-pip3 install -e .
-```
+Everyone is free to fix bugs or introduce new features. For that, however, please refer to existing issue or create one before starting implementation.
