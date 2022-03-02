@@ -9,6 +9,7 @@
 
 ### Fixed
  - Workarounded a lark error impacting pretty print in frontends
+ - Fixed lack of trailing comma handler in some corner cases
 
 ## [3.3.1] 2021-09-15
 
