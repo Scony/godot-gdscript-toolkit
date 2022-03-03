@@ -174,7 +174,8 @@ _call_expr: standalone_call
 getattr: _call_expr _attr+
 !_attr: ("." NAME)
 ?subscr_expr: _call_expr "[" test_expr "]"
-            | atom
+            | _plus_atom
+_plus_atom: ["+"] atom
 ?atom: "(" test_expr ")" -> par_expr
      | array
      | dict

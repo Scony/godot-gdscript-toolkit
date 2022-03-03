@@ -10,6 +10,7 @@
 ### Fixed
  - Workarounded a lark error impacting pretty print in frontends
  - Fixed lack of trailing comma handler in some corner cases
+ - Fixed lack of support for plus prefixed expressions
 
 ## [3.3.1] 2021-09-15
 
