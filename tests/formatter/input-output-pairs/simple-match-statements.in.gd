@@ -30,6 +30,8 @@ class X:
 				pass
 			-1:
 				pass
+			+1:
+				pass
 			1*1:
 				pass
 			1+1:
