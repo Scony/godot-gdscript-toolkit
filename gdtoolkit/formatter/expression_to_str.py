@@ -103,6 +103,9 @@ def expression_to_str(expression: Node) -> str:
         "neg_pattern": lambda e: "-{}".format(expression_to_str(e.children[1])),
         "bitw_not_pattern": lambda e: "~{}".format(expression_to_str(e.children[1])),
         "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
+        "call_pattern": lambda e: "{}({})".format(
+            expression_to_str(e.children[0]), expression_to_str(e.children[1])
+        ),
         "par_pattern": lambda e: "({})".format(expression_to_str(e.children[0])),
         "var_capture_pattern": lambda e: "var {}".format(
             expression_to_str(e.children[0])

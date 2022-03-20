@@ -121,7 +121,9 @@ pattern: list_pattern
              | bitw_not_pattern
 !?bitw_not_pattern: "~" bitw_not_pattern
                   | attr_pattern
-!?attr_pattern: atom_pattern ("." atom_pattern)*
+!?attr_pattern: call_pattern ("." call_pattern)*
+?call_pattern: NAME "(" list_pattern ")"
+             | atom_pattern
 ?atom_pattern: "(" test_pattern ")" -> par_pattern
              | "var" NAME -> var_capture_pattern
              | ".." -> etc_pattern
