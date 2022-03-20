@@ -39,6 +39,9 @@ func foo(x):
 			pass
 		_:
 			pass
+	match Vector3(1, 1+1, 2):
+		Vector3(1, 1+1, 2):
+			pass
 
 func bar(x):
 	match x:
