@@ -17,6 +17,7 @@ setup(
         "gdtoolkit.parser",
         "gdtoolkit.common",
         "gdtoolkit.gd2py",
+        "gdtoolkit.gdradon",
     ],
     package_data={"gdtoolkit.parser": ["gdscript.lark", "comments.lark"]},
     entry_points={
@@ -25,6 +26,7 @@ setup(
             "gdlint = gdtoolkit.linter.__main__:main",
             "gdformat = gdtoolkit.formatter.__main__:main",
             "gd2py = gdtoolkit.gd2py.__main__:main",
+            "gdradon = gdtoolkit.gdradon.__main__:main",
         ]
     },
     include_package_data=True,
@@ -32,6 +34,7 @@ setup(
         "lark-parser==0.8.0",
         "docopt>=0.6.2",
         "pyyaml>=5.1",
+        "radon>=5.1",
     ],
     python_requires=">=3.7",
     classifiers=[
