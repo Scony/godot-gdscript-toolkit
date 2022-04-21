@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## [3.4.0] 2022-04-21
 
 ### Added
  - Added `no-elif-return` linter check
