@@ -8,6 +8,7 @@ This project provides a set of tools for daily work with `GDScript`. At the mome
 - A parser that produces a parse tree for debugging and educational purposes.
 - A linter that performs a static analysis according to some predefined configuration.
 - A formatter that formats the code according to some predefined rules.
+- A code metrics calculator which calculates cyclomatic complexity of functions and classes.
 
 ## Installation
 
@@ -100,6 +101,27 @@ start
       tool_stmt
       signal_stmt	sss
   tool_stmt
+```
+
+## Calculating cyclomatic complexity with gdradon
+
+To run cyclomatic complexity calculator you need to execute the `gdradon` command like:
+
+```
+gdradon cc tests/formatter/input-output-pairs/simple-function-statements.in.gd tests/gd2py/input-output-pairs/
+```
+
+The command outputs calculated metrics just like [Radon cc command](https://radon.readthedocs.io/en/latest/commandline.html#the-cc-command) does for Python code:
+```
+tests/formatter/input-output-pairs/simple-function-statements.in.gd
+    C 1:0 X - A (2)
+    F 2:1 foo - A (1)
+tests/gd2py/input-output-pairs/class-level-statements.in.gd
+    F 22:0 foo - A (1)
+    F 24:0 bar - A (1)
+    C 18:0 C - A (1)
+tests/gd2py/input-output-pairs/func-level-statements.in.gd
+    F 1:0 foo - B (8)
 ```
 
 ## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
