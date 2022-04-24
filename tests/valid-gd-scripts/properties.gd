@@ -11,35 +11,35 @@ var p2 : int = 1:
 	set(value): pass;pass
 	
 var p3:
-	get = _get,
-	set = _set
+	get = __get,
+	set = __set
 	
 var p4:
-	set = _set,
-	get = _get
+	set = __set,
+	get = __get
 	
 var p5:
-	get = _get,	set = _set
+	get = __get,	set = __set
 	
 var p6:
-	set = _set, get = _get
+	set = __set, get = __get
 	
 #var p7:
 #	set(v):
 #		pass
-#	get = _get
+#	get = __get
 
 var p8:
-	set = _set
+	set = __set
 
-var p9: set = _set
-var p10: set = _set, get = _get
+var p9: set = __set
+var p10: set = __set, get = __get
 #var p11: get: return 1
 	
-func _get():
+func __get():
 	return 1
 	
-func _set(v):
+func __set(v):
 	pass
 	
 class Foo:
@@ -54,33 +54,33 @@ class Foo:
 		set(value): pass;pass
 		
 	var p3:
-		get = _get,
-		set = _set
+		get = __get,
+		set = __set
 		
 	var p4:
-		set = _set,
-		get = _get
+		set = __set,
+		get = __get
 		
 	var p5:
-		get = _get,	set = _set
+		get = __get,	set = __set
 		
 	var p6:
-		set = _set, get = _get
+		set = __set, get = __get
 		
 	#var p7:
 	#	set(v):
 	#		pass
-	#	get = _get
+	#	get = __get
 
 	var p8:
-		set = _set
+		set = __set
 
-	var p9: set = _set
-	var p10: set = _set, get = _get
+	var p9: set = __set
+	var p10: set = __set, get = __get
 	#var p11: get: return 1
 		
-	func _get():
+	func __get():
 		return 1
 		
-	func _set(v):
+	func __set(v):
 		pass
