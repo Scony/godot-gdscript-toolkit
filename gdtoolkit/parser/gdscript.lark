@@ -29,8 +29,8 @@ enum_element: NAME ["=" test_expr]
 signal_stmt: "signal" NAME [signal_args]
 signal_args: "(" [NAME ("," NAME)* [trailing_comma]] ")"
 extends_stmt: "extends" (NAME | string) ("." NAME)*
-classname_stmt: "class_name" NAME ["," string]
-!classname_extends_stmt: "class_name" NAME ["," string] "extends" (NAME | string) ("." NAME)*
+classname_stmt: "class_name" NAME
+!classname_extends_stmt: "class_name" NAME "extends" (NAME | string) ("." NAME)*
 class_var_stmt: class_var_empty
               | class_var_assigned
               | class_var_typed

@@ -1,7 +1,7 @@
 from typing import Dict, Callable
 from functools import partial
 
-from lark import Tree, Token
+from lark import Tree
 
 from .types import FormattedLines, Outcome
 from .context import Context, ExpressionContext
@@ -84,16 +84,11 @@ def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
 
 def _format_classname_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
-    optional_string = (
-        ""
-        if len(statement.children) == 1
-        else ", {}".format(expression_to_str(statement.children[1]))
-    )
     formatted_lines: FormattedLines = [
         (
             statement.line,
-            "{}class_name {}{}".format(
-                context.indent_string, statement.children[0].value, optional_string
+            "{}class_name {}".format(
+                context.indent_string, statement.children[0].value
             ),
         )
     ]
@@ -124,18 +119,7 @@ def _format_extends_statement(statement: Tree, context: Context) -> Outcome:
 
 def _format_classname_extends_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
-    optional_string = (
-        ""
-        if isinstance(statement.children[2], Token)
-        and statement.children[2].value == "extends"
-        else ", {}".format(expression_to_str(statement.children[3]))
-    )
-    extendee_pos = (
-        2 + 1
-        if isinstance(statement.children[2], Token)
-        and statement.children[2].value == "extends"
-        else 4 + 1
-    )
+    extendee_pos = 2 + 1
     optional_attributes = (
         ""
         if len(statement.children) <= extendee_pos + 1
@@ -151,10 +135,9 @@ def _format_classname_extends_statement(statement: Tree, context: Context) -> Ou
     formatted_lines: FormattedLines = [
         (
             statement.line,
-            "{}class_name {}{} extends {}{}".format(
+            "{}class_name {} extends {}{}".format(
                 context.indent_string,
                 statement.children[1].value,
-                optional_string,
                 expression_to_str(statement.children[extendee_pos]),
                 optional_attributes,
             ),
