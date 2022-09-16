@@ -1,6 +1,8 @@
 from functools import partial
 from typing import List, Callable, Dict
 
+from lark import Tree
+
 from ..parser import parser
 from ..formatter.context import Context
 from ..formatter.types import Node  # TODO: extract to common
@@ -22,14 +24,14 @@ def convert_code(gdscript_code: str) -> str:
     return "\n".join(converted_lines + [""])
 
 
-def _convert_block(statements: List[Node], context: Context) -> List[str]:
+def _convert_block(statements: List[Tree], context: Context) -> List[str]:
     converted_lines = []  # List[str]
     for statement in statements:
         converted_lines += _convert_statement(statement, context)
     return converted_lines
 
 
-def _convert_statement(statement: Node, context: Context) -> List[str]:
+def _convert_statement(statement: Tree, context: Context) -> List[str]:
     handlers = {
         # class statements:
         "tool_stmt": _ignore,
@@ -108,12 +110,12 @@ def _ignore(_statement: Node, context: Context) -> List[str]:
     return [f"{context.indent_string}pass"]
 
 
-def _convert_first_child_as_statement(statement: Node, context: Context) -> List[str]:
+def _convert_first_child_as_statement(statement: Tree, context: Context) -> List[str]:
     return _convert_statement(statement.children[0], context)
 
 
 def _convert_var_statement_with_expression(
-    statement: Node, context: Context
+    statement: Tree, context: Context
 ) -> List[str]:
     return [
         "{}{} = {}".format(
@@ -124,20 +126,20 @@ def _convert_var_statement_with_expression(
     ]
 
 
-def _convert_export_statement(statement: Node, context: Context) -> List[str]:
+def _convert_export_statement(statement: Tree, context: Context) -> List[str]:
     actual_statement = statement.children[0]
     if actual_statement.children[-1].data == "setget":
         return _convert_statement(actual_statement.children[-2], context)
     return _convert_statement(actual_statement.children[-1], context)
 
 
-def _convert_class_def(statement: Node, context: Context) -> List[str]:
+def _convert_class_def(statement: Tree, context: Context) -> List[str]:
     return [
         f"{context.indent_string}class {statement.children[0].value}:"
     ] + _convert_block(statement.children[1:], context.create_child_context(-1))
 
 
-def _convert_func_def(statement: Node, context: Context) -> List[str]:
+def _convert_func_def(statement: Tree, context: Context) -> List[str]:
     # TODO: handle func args
     return [
         f"{context.indent_string}def {statement.children[0].children[0].value}():",
@@ -145,7 +147,7 @@ def _convert_func_def(statement: Node, context: Context) -> List[str]:
 
 
 def _convert_branch_with_expression(
-    prefix: str, statement: Node, context: Context
+    prefix: str, statement: Tree, context: Context
 ) -> List[str]:
     return [
         "{}{} {}:".format(
@@ -156,7 +158,7 @@ def _convert_branch_with_expression(
     ] + _convert_block(statement.children[1:], context.create_child_context(-1))
 
 
-def _convert_match_statement(statement: Node, context: Context) -> List[str]:
+def _convert_match_statement(statement: Tree, context: Context) -> List[str]:
     # TODO: proper implementation
     return [
         "{}if {}:".format(

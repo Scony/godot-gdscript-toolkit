@@ -25,7 +25,7 @@ const C := 1
 
 
 # compounds
-class C:
+class D:
 	pass
 
 

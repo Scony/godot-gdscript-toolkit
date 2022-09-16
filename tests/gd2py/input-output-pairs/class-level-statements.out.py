@@ -15,7 +15,7 @@ A = 1
 B = 1
 C = 1
 """asd"""
-class C:
+class D:
 	pass
 pass
 pass

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Iterator
 
 from lark import Tree
 
@@ -22,7 +22,7 @@ def no_else_return_check(parse_tree: Tree) -> List[Problem]:
     return problems
 
 
-def _find_if_stmts(parse_tree: Tree) -> List[Tree]:
+def _find_if_stmts(parse_tree: Tree) -> Iterator[Tree]:
     return parse_tree.find_pred(_is_if_stmt)
 
 
@@ -52,7 +52,7 @@ def _find_elif_branches_to_remove(if_stmt: Tree) -> List[Tree]:
     return elif_branches_to_remove
 
 
-def _find_trees_with_if_stmts(parse_tree: Tree) -> List[Tree]:
+def _find_trees_with_if_stmts(parse_tree: Tree) -> Iterator[Tree]:
     return parse_tree.find_pred(_has_if_stmt)
 
 
@@ -136,12 +136,12 @@ def _has_match_stmt_that_always_returns(tree: Tree) -> bool:
     )
 
 
-def _has_wildcard_pattern_branch(match_stmt: List[Tree]) -> bool:
+def _has_wildcard_pattern_branch(match_stmt: Tree) -> bool:
     match_stmt_branches = _get_match_stmt_branches(match_stmt)
     return any(_is_wildcard_pattern_branch(branch) for branch in match_stmt_branches)
 
 
-def _find_var_name(func_var_stmt: List[Tree]) -> str:
+def _find_var_name(func_var_stmt: Tree) -> str:
     return func_var_stmt.children[0].children[0].value  # type: ignore
 
 
