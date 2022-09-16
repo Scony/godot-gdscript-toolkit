@@ -110,6 +110,7 @@ def expression_to_str(expression: Node) -> str:
         "contextless_operator_chain_based_expression": (
             _operator_chain_based_expression_to_str
         ),
+        "trailing_comma": lambda _: "",
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,

@@ -1,16 +1,11 @@
 import os
+from typing import Set
 
 from .common import format_and_compare
 
 
 DATA_DIR = "./input-output-pairs"
-EXCEPTIONS = set(
-    [
-        # TODO:
-        "bug-156-trailing-comma-corner-case",
-        "type-cast-expressions",
-    ]
-)
+EXCEPTIONS = set([])  # type: Set[str]
 
 
 def pytest_generate_tests(metafunc):

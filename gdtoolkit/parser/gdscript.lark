@@ -210,10 +210,10 @@ _call_arglist: "(" [type_cast ("," type_cast)* [trailing_comma]] ")"
           | getattr
 getattr: call_expr _attr+
 !_attr: ("." NAME)
-?subscr_expr: call_expr "[" test_expr "]"
+?subscr_expr: call_expr "[" type_cast "]"
             | _plus_atom
 _plus_atom: ["+"] atom
-?atom: "(" test_expr ")" -> par_expr
+?atom: "(" type_cast ")" -> par_expr
      | array
      | dict
      | NAME
