@@ -4,8 +4,10 @@ from typing import Callable, List, Tuple
 
 from lark import Token, Tree
 
+from ..common.utils import find_name_token_among_children
+
 from .problem import Problem
-from .helpers import find_name_token_among_children, is_function_public
+from .helpers import is_function_public
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
@@ -89,6 +91,8 @@ def _class_definitions_order_check_for_class(
     current_section = order[0]
     for class_child in class_children:
         if not isinstance(class_child, Tree):
+            continue
+        if class_child.data in ["annotation"]:
             continue
         stmt = class_child.data
         if stmt == "class_var_stmt":

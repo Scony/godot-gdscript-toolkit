@@ -1,5 +1,5 @@
 class X:
-	tool
+	pass
 
 	func foo():
 		pass

@@ -8,7 +8,8 @@ func foo():
 	'asdf'
 	"""single line"""
 	"""x"x"""
-	@"asdf/dfg"
+	^"asdf/dfg"
+	&"xxx"
 	$Node
 	$"../xxx"
 	0xaf01

@@ -6,13 +6,13 @@ var q
 
 var w
 class X:
-	tool
+	pass
 	func foo():
 		pass
 	func bar():
 		pass
 	class Y:
-		tool
+		pass
 	# xxx
 	func baz():
 		pass
@@ -37,4 +37,4 @@ var b
 
 # qqq
 class C:
-	tool
+	pass

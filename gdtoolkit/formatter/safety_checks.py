@@ -18,16 +18,77 @@ class LoosenTreeTransformer(Transformer):
     def par_expr(self, args):  # pylint: disable=R0201
         return args[0] if len(args) > 0 else args
 
-    def neg_expr(self, args):  # pylint: disable=R0201
+    def asless_actual_neg_expr(self, args):  # pylint: disable=R0201
         return (
             Token("NUMBER", "-{}".format(args[1].value))
             if isinstance(args[1], Token) and args[1].type == "NUMBER"
-            else Tree("neg_expr", args)
+            else Tree("asless_actual_neg_expr", args)
         )
+
+    def asless_comparison(self, args):  # pylint: disable=R0201
+        return Tree("comparison", args)
+
+    def asless_and_test(self, args):  # pylint: disable=R0201
+        return Tree("and_test", args)
+
+    def asless_or_test(self, args):  # pylint: disable=R0201
+        return Tree("or_test", args)
+
+    def asless_bitw_or(self, args):  # pylint: disable=R0201
+        return Tree("bitw_or", args)
+
+    def asless_bitw_xor(self, args):  # pylint: disable=R0201
+        return Tree("bitw_xor", args)
+
+    def asless_bitw_and(self, args):  # pylint: disable=R0201
+        return Tree("bitw_and", args)
+
+    def asless_shift_expr(self, args):  # pylint: disable=R0201
+        return Tree("shift_expr", args)
+
+    def asless_type_test(self, args):  # pylint: disable=R0201
+        return Tree("type_test", args)
+
+    def asless_content_test(self, args):  # pylint: disable=R0201
+        return Tree("content_test", args)
+
+    def asless_test_expr(self, args):  # pylint: disable=R0201
+        return Tree("test_expr", args)
+
+    def asless_arith_expr(self, args):  # pylint: disable=R0201
+        return Tree("arith_expr", args)
+
+    def asless_mdr_expr(self, args):  # pylint: disable=R0201
+        return Tree("mdr_expr", args)
 
     def string(self, args):  # pylint: disable=R0201
         string_token = args[0]
         return expression_to_str(string_token)
+
+    def signal_stmt(self, args):  # pylint: disable=R0201
+        if len(args) > 1 and len(args[1].children) == 0:
+            return Tree("signal_stmt", args[:-1])
+        return Tree("signal_stmt", args)
+
+    def start(self, args):  # pylint: disable=R0201
+        return Tree(
+            "start",
+            [
+                arg
+                for arg in args
+                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+            ],
+        )
+
+    def class_def(self, args):  # pylint: disable=R0201
+        return Tree(
+            "class_def",
+            [
+                arg
+                for arg in args
+                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+            ],
+        )
 
 
 def check_tree_invariant(

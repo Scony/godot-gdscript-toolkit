@@ -4,13 +4,10 @@ Provides a function to parse GDScript code
 and to get an intermediate representation as a Lark Tree.
 """
 import os
-import pickle
 import sys
 import pkg_resources
 
 from lark import Lark, Tree, indenter
-from lark.grammar import Rule
-from lark.lexer import TerminalDef
 
 
 class Indenter(indenter.Indenter):
@@ -23,7 +20,7 @@ class Indenter(indenter.Indenter):
     tab_len = 4
 
 
-# When upgrading to Python 3.8, replace with functools.cached_property
+# TODO: when upgrading to Python 3.8, replace with functools.cached_property
 class cached_property:
     """A property that is only computed once per instance and then replaces
     itself with an ordinary attribute. Deleting the attribute resets the
@@ -56,7 +53,6 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
-        code += "\n"  # to overcome lark bug (#489)
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -65,7 +61,6 @@ class Parser:
 
     def parse_comments(self, code: str) -> Tree:
         """Parses GDScript code and returns comments - both standalone, and inline."""
-        code += "\n"  # to overcome lark bug (#489)
         return self._comment_parser.parse(code)
 
     def disable_grammar_caching(self) -> None:
@@ -76,78 +71,42 @@ class Parser:
         name: str,
         add_metadata: bool = False,
         grammar_filename: str = "gdscript.lark",
-    ) -> Tree:
+    ) -> Lark:
         version: str = pkg_resources.get_distribution("gdtoolkit").version
-
-        tree: Tree = None
-        cache_filepath: str = (
-            os.path.join(self._cache_dirpath, version, name) + ".pickle"
-        )
+        cache_dirpath: str = os.path.join(self._cache_dirpath, version)
+        cache_filepath: str = os.path.join(cache_dirpath, name) + ".pickle"
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
 
-        tree = None
-        if os.path.exists(cache_filepath) and self._use_grammar_cache:
-            try:
-                tree = self.load(cache_filepath)
-            except ValueError:
-                # pickle errors on unsupported protocols - newer python versions (#93)
-                pass
-        if tree is None:
-            tree = Lark.open(
-                grammar_filepath,
-                parser="lalr",
-                start="start",
-                postlex=Indenter(),
-                propagate_positions=add_metadata,
-                maybe_placeholders=False,
-            )
-            self.save(tree, cache_filepath)
+        # TODO: catch IO exception
+        if not os.path.exists(cache_dirpath):
+            os.makedirs(cache_dirpath)
 
-        return tree
+        # TODO: catch IO exception
+        a_parser = Lark.open(
+            grammar_filepath,
+            parser="lalr",
+            start="start",
+            postlex=Indenter(),  # type: ignore
+            propagate_positions=add_metadata,
+            maybe_placeholders=False,
+            cache=cache_filepath,
+        )
+
+        return a_parser
 
     @cached_property
-    def _parser(self) -> Tree:
+    def _parser(self) -> Lark:
         return self._get_parser("parser")
 
     @cached_property
-    def _parser_with_metadata(self) -> Tree:
+    def _parser_with_metadata(self) -> Lark:
         return self._get_parser("parser_with_metadata", add_metadata=True)
 
     @cached_property
-    def _comment_parser(self) -> Tree:
+    def _comment_parser(self) -> Lark:
         return self._get_parser(
             "parser_comments", add_metadata=True, grammar_filename="comments.lark"
         )
-
-    @staticmethod
-    def save(a_parser: Tree, path: str) -> None:
-        """Serializes the Lark parser and saves it to the disk."""
-
-        data, memo = a_parser.memo_serialize([TerminalDef, Rule])
-        write_data: dict = {
-            "data": data,
-            "memo": memo,
-        }
-
-        dirpath: str = os.path.dirname(path)
-        if not os.path.exists(dirpath):
-            os.makedirs(dirpath)
-        with open(path, "wb") as file_parser:
-            pickle.dump(write_data, file_parser)
-
-    @staticmethod
-    def load(path: str) -> Tree:
-        """Loads the Lark parser from the disk and deserializes it."""
-        with open(path, "rb") as file_parser:
-            data: dict = pickle.load(file_parser)
-            namespace = {"Rule": Rule, "TerminalDef": TerminalDef}
-            return Lark.deserialize(
-                data["data"],
-                namespace,
-                data["memo"],
-                transformer=None,
-                postlex=Indenter(),
-            )
 
 
 def get_cache_directory() -> str:

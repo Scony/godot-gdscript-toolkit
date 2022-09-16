@@ -1,6 +1,6 @@
 func foo(aaa,
-		 bbb,
-		 ccc,ddd):
+		bbb,
+		ccc,ddd):
 	pass
 
 func bar(

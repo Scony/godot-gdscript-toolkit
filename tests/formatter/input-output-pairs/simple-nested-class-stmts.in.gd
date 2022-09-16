@@ -1,7 +1,7 @@
 class X:
 
 	# aaa
-	tool
+	pass
 	var x
 	# bbb
 

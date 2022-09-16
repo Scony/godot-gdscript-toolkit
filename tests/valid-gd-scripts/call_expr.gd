@@ -4,7 +4,6 @@ func bar():
 func foo():
 	var xxx
 	bar()
-	.foo(1,2,3)
 	xxx.aaa()
 	xxx.yyy.aaa()
 	xxx[0].aaa()

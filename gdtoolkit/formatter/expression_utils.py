@@ -19,9 +19,9 @@ def is_foldable(expression: Node) -> bool:
         and expression.data
         not in [
             "string",
-            "node_path",
             "get_node",
-            "type_cast",
+            "node_path",
+            "string_name",
         ]
         and not expression.data.endswith("_pattern")
     )
@@ -67,13 +67,6 @@ def is_any_parentheses(expression: Node) -> bool:
     return isinstance(expression, Token) and expression.type in ["LPAR", "RPAR"]
 
 
-def has_leading_dot(expression: Node) -> bool:
-    return (
-        isinstance(expression.children[0], Token)
-        and expression.children[0].type == "DOT"
-    )
-
-
 def _is_multiline_string(expression: Node) -> bool:
     return (
         isinstance(expression, Tree)
@@ -86,7 +79,6 @@ def _is_multiline_string(expression: Node) -> bool:
 def _has_standalone_comments(
     expression: Tree, standalone_comments: List[Optional[str]]
 ):
-    assert expression.end_line is not None  # TODO: remove once non-optional anymore
     return any(
         comment is not None
         for comment in standalone_comments[expression.line : expression.end_line]

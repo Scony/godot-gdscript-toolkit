@@ -10,7 +10,7 @@ from gdtoolkit.parser import parser
 OK_DATA_DIR = "../valid-gd-scripts"
 NOK_DATA_DIR = "../invalid-gd-scripts"
 BUGS_DATA_DIR = "../potential-godot-bugs"
-GODOT_SERVER = "godot-server"
+GODOT_SERVER = "godot4"
 
 
 def pytest_generate_tests(metafunc):
@@ -42,8 +42,11 @@ def test_parsing_success(gdscript_ok_path):
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
+@pytest.mark.godot_check_only
 def test_godot_check_only_success(gdscript_ok_path):
-    process = subprocess.Popen([GODOT_SERVER, "--check-only", "-s", gdscript_ok_path])
+    process = subprocess.Popen(
+        [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_ok_path],
+    )
     process.wait()
     assert process.returncode == 0
 
@@ -59,14 +62,20 @@ def test_parsing_failure(gdscript_nok_path):
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
+@pytest.mark.godot_check_only
 def test_godot_check_only_failure(gdscript_nok_path):
-    process = subprocess.Popen([GODOT_SERVER, "--check-only", "-s", gdscript_nok_path])
+    process = subprocess.Popen(
+        [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_nok_path],
+    )
     process.wait()
     assert process.returncode != 0
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
+@pytest.mark.godot_check_only
 def test_godot_check_only_potential_bugs(gdscript_bug_path):
-    process = subprocess.Popen([GODOT_SERVER, "--check-only", "-s", gdscript_bug_path])
+    process = subprocess.Popen(
+        [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_bug_path],
+    )
     process.wait()
     assert process.returncode != 0

@@ -5,8 +5,9 @@ from types import MappingProxyType
 
 from lark import Tree
 
+from ..common.utils import find_name_token_among_children
+
 from .problem import Problem
-from .helpers import find_name_token_among_children
 
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:

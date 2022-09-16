@@ -1,3 +1,3 @@
 class X:
 	class Y:
-		tool
+		pass

@@ -1,7 +1,14 @@
 extends Node
+
 const XXXX = preload('functions.gd')
+
+class XNode extends Node:
+	class YNode extends Node:
+		pass
+
 func bar():
 	pass
+
 func foo():
 	var x
 	1 if true else 2
@@ -48,6 +55,8 @@ func foo():
 	1_000_000 > 0
 	1_000.000 > 0.0
 	0xff_99_00 > 0
+	x as XNode.YNode
+	x as XNode . YNode
 
 class Foo:
 	pass

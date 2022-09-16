@@ -7,8 +7,8 @@ from .common import format_and_compare
 @pytest.mark.parametrize("input_code,expected_output_code", [
 ("", ""),
 (
-"tool",
-"""tool
+"pass",
+"""pass
 """,
 ),
 ])

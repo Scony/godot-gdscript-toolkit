@@ -1,0 +1,2 @@
+func bar(,):
+	pass

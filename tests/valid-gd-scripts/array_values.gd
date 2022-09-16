@@ -6,8 +6,8 @@ var xxxxx = [1,2,3,]
 var xxxxxx = [
 ]
 var xxxxxxx = [1
-			   ,
-			   2,
+				,
+				2,
 ]
 var xxxxxxxx = [
 	1,
@@ -15,13 +15,13 @@ var xxxxxxxx = [
 	3,
 ]
 var xxxxxxxxx = [1,
-				 2,
-				 3,]
+				2,
+				3,]
 var y = [1,
-		 2,
-		 3,
-		 ]
+		2,
+		3,
+		]
 var yy = [1,
-		  2,
-		  3
-    ]
+		2,
+		3
+	]

@@ -1,5 +1,5 @@
 # aaa
-tool
+pass
 var x
 # bbb
 

@@ -5,13 +5,14 @@ signal s(
 	b
 	# ee1
 )
-export(
-	# qq2
-	int,
-	# ww2
-	20
-	# ee2
-) var x
+# TODO: change to annotation
+# export(
+# 	# qq2
+# 	int,
+# 	# ww2
+# 	20
+# 	# ee2
+# ) var x
 
 
 func foo():
@@ -47,7 +48,8 @@ func bar(
 	a,
 	# ww4
 	b
-):  # TODO: move to standalone after 'b' and fix this to be in paren
+	# ee4
+):
 	# rr4
 	pass
 

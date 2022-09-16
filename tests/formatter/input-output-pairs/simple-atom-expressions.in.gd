@@ -6,7 +6,6 @@ func foo():
 	var z = 0x99ff
 	var q = null
 	var w = 'xxx'
-	var e = @"../Node"
 	var r = """asd"""
 	var t = $Some/Path
 	var k = $"../Some/Stuff"
@@ -16,3 +15,5 @@ func foo():
 	var c = -0b001101
 	var v=+1
 	var n=+x
+	var d = ^"../Some/Stuff"
+	var e = &"xxx"

@@ -4,9 +4,9 @@ from ..common import write_file
 
 
 def test_valid_file_formatting(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool")
+    dummy_file = write_file(tmp_path, "script.gd", "pass")
     outcome = subprocess.run(["gdformat", dummy_file], check=False, capture_output=True)
-    assert outcome.returncode == 0
+    assert outcome.returncode == 0, outcome.stderr.decode()
     assert len(outcome.stdout.decode().splitlines()) == 2
     assert len(outcome.stderr.decode().splitlines()) == 0
 
@@ -52,7 +52,7 @@ def test_valid_files_formatting_with_invalid_one_keepgoing(tmp_path):
 
 
 def test_valid_formatted_file_checking(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool\n")
+    dummy_file = write_file(tmp_path, "script.gd", "pass\n")
     outcome = subprocess.run(
         ["gdformat", "--check", dummy_file], check=False, capture_output=True
     )
@@ -62,7 +62,7 @@ def test_valid_formatted_file_checking(tmp_path):
 
 
 def test_valid_unformatted_file_checking(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool;var x")
+    dummy_file = write_file(tmp_path, "script.gd", "pass;var x")
     outcome = subprocess.run(
         ["gdformat", "--check", dummy_file], check=False, capture_output=True
     )

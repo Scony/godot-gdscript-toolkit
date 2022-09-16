@@ -1,4 +1,4 @@
-func foo(x, var y, z: int, var q: int, w = 7, var e: int = 7, r: int = 7, t := 8, var u := 9):
+func foo(x, y, z: int, q: int, w = 7, e: int = 7, r: int = 7, t := 8, u := 9):
 	pass
 
 func bar() -> void:
@@ -15,7 +15,3 @@ func baz():
 
 func expr():
 	5 as int
-
-export var icon_32 : Texture
-export(Texture) var asdf : Texture
-export var qwe := 5

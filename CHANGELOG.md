@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0] (to be released)
+
+### Added
+ - Added new GDScript `2.0` constructs to the core testcases
+ - Added support for `await` in parser & formatter
+ - Added support for typed arrays in parser & formatter
+
+### Changed
+ - Removed support for legacy (Godot `3.x`) GDScript from core testcases
+ - Updated `lark` dependency to the latest release - `0.12.0`
+
 ## [3.4.0] 2022-04-21
 
 ### Added
@@ -47,11 +58,6 @@
  - Improved comments handling
  - Improved utf-8 support
  - Fixed type cast (e.g. `1 as String`) to always be in one line (this is forced by Godot's bug)
-
-### Changed
- - Removed support for legacy (godot `3.1`) parenthesesless `assert` (e.g. `assert 1 == 1`) due to grammar conflict with modern (godot `3.2` assert)
- - exclamation-mark-based not-test expression will be now formatted without space (`!(1==1)` instead of `! (1==1)`) while for `not` the behaviour remains the same (`not (1==1)`)
- - Removed whitespace from `export (...)` - will be formatted as `export(...)` from now on
 
 ## [3.2.8] 2020-09-15
 

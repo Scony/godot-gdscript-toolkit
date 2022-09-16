@@ -1,6 +1,8 @@
 import os
 from typing import FrozenSet, List
 
+from lark import Tree, Token
+
 Path = str
 
 
@@ -19,3 +21,10 @@ def find_gd_files_from_paths(
         else:
             files.append(path)
     return files
+
+
+def find_name_token_among_children(tree: Tree):
+    for child in tree.children:
+        if isinstance(child, Token) and child.type == "NAME":
+            return child
+    return None

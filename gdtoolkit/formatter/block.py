@@ -2,7 +2,9 @@ import re
 from types import MappingProxyType
 from typing import List, Callable
 
-from .types import Outcome, Node, FormattedLines
+from lark import Tree
+
+from .types import Outcome, FormattedLines
 from .context import Context
 from .constants import (
     INDENT_SIZE,
@@ -11,7 +13,7 @@ from .constants import (
 
 
 def format_block(
-    statements: List[Node],
+    statements: List[Tree],
     statement_formatter: Callable,
     context: Context,
     surrounding_empty_lines_table: MappingProxyType = DEFAULT_SURROUNDINGS_TABLE,

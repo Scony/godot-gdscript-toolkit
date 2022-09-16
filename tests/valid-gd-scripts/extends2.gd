@@ -1,1 +1,1 @@
-extends "recursive_tool.gd".X
+extends "res://tests/valid-gd-scripts/extends3.gd".X

@@ -4,7 +4,7 @@ from ..common import write_file
 
 
 def test_parsing_valid_file_succeeds(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool")
+    dummy_file = write_file(tmp_path, "script.gd", "pass")
     outcome = subprocess.run(["gdparse", dummy_file], check=False, capture_output=True)
     assert outcome.returncode == 0
     assert len(outcome.stdout.decode().splitlines()) == 0
@@ -12,7 +12,7 @@ def test_parsing_valid_file_succeeds(tmp_path):
 
 
 def test_parsing_valid_files_succeeds(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool")
+    dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file2 = write_file(tmp_path, "script2.gd", "pass;pass")
     outcome = subprocess.run(
         ["gdparse", dummy_file, dummy_file2], check=False, capture_output=True
@@ -23,7 +23,7 @@ def test_parsing_valid_files_succeeds(tmp_path):
 
 
 def test_pretty_printing_valid_files_succeeds(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "tool")
+    dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file2 = write_file(tmp_path, "script2.gd", "pass;pass")
     outcome = subprocess.run(
         ["gdparse", "-p", dummy_file, dummy_file2], check=False, capture_output=True

@@ -40,3 +40,11 @@ class X:
 		]
 	):
 		pass
+
+	func bab(
+		aaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+		bbbbbbbbbbbbbbbbbbbbbbb,
+		ccccccccccccccccccccc,
+		ddddddddddddddd,
+	):
+		pass

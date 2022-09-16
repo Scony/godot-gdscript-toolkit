@@ -76,6 +76,7 @@ def test_unnecessary_pass_nok(code):
     simple_nok_check(code, 'unnecessary-pass', disable=['expression-not-assigned'])
 
 
+@pytest.mark.skip(reason='to be fixed in a bundle')
 @pytest.mark.parametrize('code', [
 """
 const B = preload('b')
@@ -89,6 +90,7 @@ def test_duplicated_load_ok(code):
     simple_ok_check(code)
 
 
+@pytest.mark.skip(reason='to be fixed in a bundle')
 @pytest.mark.parametrize('code', [
 """
 const B = preload('b')

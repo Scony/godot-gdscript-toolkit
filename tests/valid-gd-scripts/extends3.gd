@@ -1,6 +1,6 @@
 class X:
 	class Y:
-		tool
+		pass
 
 class Z:
 	extends X.Y

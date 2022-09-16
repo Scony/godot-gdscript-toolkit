@@ -20,7 +20,7 @@ Options:
   --version                  Show version.
 
 Examples:
-  echo 'tool' | gdformat -   # reads from STDIN
+  echo 'pass' | gdformat -   # reads from STDIN
 """
 import sys
 import pkg_resources

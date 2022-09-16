@@ -3,12 +3,13 @@ func foo(x):
 	match x:
 		1:
 			pass
-		y.aaa:
-			pass
+		# TODO: remove support for
+		# y.aaa:
+		# 	pass
 		1 + 1:
 			pass
-		y.zzz.aaa:
-			pass
+		# y.zzz.aaa:
+		# 	pass
 		0xff9900:
 			pass
 		(1+1)*2+3:
@@ -54,7 +55,7 @@ func bar(x):
 
 func baz(x):
 	match typeof(x):
-		TYPE_REAL:
+		TYPE_FLOAT:
 			print("float")
 		TYPE_STRING:
 			print("text")
@@ -109,3 +110,8 @@ func ban(x):
 			print("It's 1 - 3")
 		"Sword", "Splash potion", "Fist":
 			print("Yep, you've taken damage")
+
+func bad(x):
+	match x:
+		{"x": 1}:#, y=2}:
+			pass
