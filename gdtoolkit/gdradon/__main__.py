@@ -13,8 +13,8 @@ Examples:
   gdradon cc file1.gd file2.gd path/
 """
 import sys
-import pkg_resources
 from typing import List
+import pkg_resources
 
 from docopt import docopt
 from radon.complexity import cc_rank, cc_visit
@@ -46,7 +46,7 @@ def _cc(file_path: str) -> None:
         with open(file_path, "r") as fh:
             python_code = convert_code(fh.read())
             results = cc_visit(python_code)
-            if results == []:
+            if not results:
                 return
             print(file_path)
             for result in results:

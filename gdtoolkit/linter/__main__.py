@@ -16,11 +16,11 @@ Options:
 """
 import sys
 import os
-import pkg_resources
 import logging
 import pathlib
 from typing import List, Optional
 from types import MappingProxyType
+import pkg_resources
 
 import lark
 import yaml

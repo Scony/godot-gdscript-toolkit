@@ -1,7 +1,8 @@
 import pytest
 
-from .common import simple_ok_check, simple_nok_check
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
+
+from .common import simple_ok_check, simple_nok_check
 
 
 # fmt: off

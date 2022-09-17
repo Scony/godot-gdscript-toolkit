@@ -13,8 +13,8 @@ Options:
   --version     Show version.
 """
 import sys
-import pkg_resources
 from typing import Dict
+import pkg_resources
 
 import lark
 from docopt import docopt

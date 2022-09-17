@@ -23,11 +23,12 @@ Examples:
   echo 'pass' | gdformat -   # reads from STDIN
 """
 import sys
-import pkg_resources
 import difflib
 from typing import List, Tuple
+import pkg_resources
 
 from docopt import docopt
+import lark
 
 from gdtoolkit.formatter import format_code, check_formatting_safety
 from gdtoolkit.formatter.exceptions import (
@@ -41,8 +42,6 @@ from gdtoolkit.common.exceptions import (
     lark_unexpected_token_to_str,
     lark_unexpected_input_to_str,
 )
-
-import lark
 
 
 def main():

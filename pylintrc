@@ -1,18 +1,14 @@
 [MESSAGES CONTROL]
 disable =
-    fixme,
-    global-statement,
-    too-few-public-methods,
-    missing-function-docstring,
-    unspecified-encoding,
-    consider-using-with,
-    missing-module-docstring,
-    missing-class-docstring,
-    consider-using-f-string,
-    invalid-name,
-    consider-using-enumerate,
-    wrong-import-order,
-    trailing-whitespace,
-    line-too-long,
-    consider-using-dict-items,
-    use-implicit-booleaness-not-comparison
+    fixme,                      # TODO: check
+    global-statement,           # TODO: check
+    too-few-public-methods,     # TODO: check
+    missing-function-docstring, # too pedantic
+    unspecified-encoding,       # TODO: check
+    consider-using-with,        # TODO: check
+    missing-module-docstring,   # too pedantic
+    missing-class-docstring,    # too pedantic
+    consider-using-f-string,    # TODO: check
+    invalid-name,               # TODO: check
+    consider-using-enumerate,   # TODO: check
+    duplicate-code              # TODO: check
