@@ -7,19 +7,10 @@ class X:
 				pass
 			"x":
 				pass
-			x:
-				pass
-			x.aaa.bbb:
-				pass
-			[1, 2,]:
+			Vector2.ZERO.x:
 				pass
 			{"a": 1, "b": 2}:
 				pass
-			# TODO: verify on 4.0
-			# {a = 1, b = 2}:
-			# 	pass
-			# {"a": 1, b = 2}:
-			# 	pass
 			[1, ..]:
 				pass
 			var a:
