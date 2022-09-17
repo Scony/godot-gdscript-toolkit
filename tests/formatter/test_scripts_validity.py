@@ -9,14 +9,9 @@ DATA_DIR = "./input-output-pairs"
 GODOT_SERVER = "godot4"
 EXCEPTIONS = set(
     [
-        "if-corner-case.in.gd",
-        "if-corner-case.out.gd",
         # complex expressions where Godot does more than just parsing
         "type-cast-corner-case-expressions.in.gd",
         "type-cast-corner-case-expressions.out.gd",
-        # godot bugs:
-        "complex-trailing-comma-scenarios.in.gd",
-        "complex-trailing-comma-scenarios.out.gd",
     ]
 )
 
