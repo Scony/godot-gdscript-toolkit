@@ -23,10 +23,10 @@ def test_input_output_pair(test_name):
     this_dir = os.path.dirname(os.path.abspath(__file__))
     input_file_path = os.path.join(this_dir, DATA_DIR, "{}.in.gd".format(test_name))
     output_file_path = os.path.join(this_dir, DATA_DIR, "{}.out.py".format(test_name))
-    with open(input_file_path, "r") as input_fh:
-        with open(output_file_path, "r") as output_fh:
-            input_code = input_fh.read()
-            expected_output_code = output_fh.read()
+    with open(input_file_path, "r", encoding="utf-8") as input_handle:
+        with open(output_file_path, "r", encoding="utf-8") as output_handle:
+            input_code = input_handle.read()
+            expected_output_code = output_handle.read()
             _convert_and_compare(input_code, expected_output_code)
 
 

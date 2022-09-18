@@ -20,7 +20,7 @@ def pytest_generate_tests(metafunc):
 def test_real_world_script(test_name):
     this_dir = os.path.dirname(os.path.abspath(__file__))
     input_file_path = os.path.join(this_dir, DATA_DIR, test_name)
-    with open(input_file_path, "r") as input_fh:
-        input_code = input_fh.read()
+    with open(input_file_path, "r", encoding="utf-8") as input_handle:
+        input_code = input_handle.read()
         formatted_code = format_code(input_code, MAX_LINE_LENGTH)
         check_formatting_safety(input_code, formatted_code, MAX_LINE_LENGTH)

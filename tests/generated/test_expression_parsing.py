@@ -9,8 +9,8 @@ from gdtoolkit.formatter import format_code, check_formatting_safety
 
 MAX_LINE_LENGTH = 100
 
-with open("gdtoolkit/parser/gdscript.lark", "r") as fh:
-    gdscript_grammar = fh.read()
+with open("gdtoolkit/parser/gdscript.lark", "r", encoding="utf-8") as handle:
+    gdscript_grammar = handle.read()
     simplified_gdscript_grammar = gdscript_grammar.replace(".2", "")
     simplified_gdscript_grammar = simplified_gdscript_grammar.replace(
         "?atom:", '?atom: " " xatom " "\n?xatom:'

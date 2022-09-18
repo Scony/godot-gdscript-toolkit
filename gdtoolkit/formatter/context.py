@@ -6,6 +6,7 @@ from .constants import INDENT_STRING, INDENT_SIZE
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
+# pylint: disable=too-few-public-methods
 class Context:
     def __init__(
         self,

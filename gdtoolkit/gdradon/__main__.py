@@ -43,8 +43,8 @@ def main():
 
 def _cc(file_path: str) -> None:
     try:
-        with open(file_path, "r") as fh:
-            python_code = convert_code(fh.read())
+        with open(file_path, "r", encoding="utf-8") as handle:
+            python_code = convert_code(handle.read())
             results = cc_visit(python_code)
             if not results:
                 return
@@ -67,13 +67,15 @@ def _cc(file_path: str) -> None:
                         RESET,
                     )
                 )
-    except OSError as e:
+    except OSError as exception:
         print(
-            "Cannot open file '{}': {}".format(file_path, e.strerror),
+            "Cannot open file '{}': {}".format(file_path, exception.strerror),
             file=sys.stderr,
         )
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as exception:  # pylint: disable=broad-except
         print(
-            "Cannot process file '{}' due to exception: {}".format(file_path, e),
+            "Cannot process file '{}' due to exception: {}".format(
+                file_path, exception
+            ),
             file=sys.stderr,
         )

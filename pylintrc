@@ -1,14 +1,8 @@
 [MESSAGES CONTROL]
 disable =
-    fixme,                      # TODO: check
-    global-statement,           # TODO: check
-    too-few-public-methods,     # TODO: check
+    fixme,
     missing-function-docstring, # too pedantic
-    unspecified-encoding,       # TODO: check
-    consider-using-with,        # TODO: check
     missing-module-docstring,   # too pedantic
     missing-class-docstring,    # too pedantic
-    consider-using-f-string,    # TODO: check
-    invalid-name,               # TODO: check
-    consider-using-enumerate,   # TODO: check
-    duplicate-code              # TODO: check
+    consider-using-f-string,    # TODO: fix only cases that make sense
+    duplicate-code              # TODO: check (fails on CI)

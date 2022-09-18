@@ -85,8 +85,8 @@ def _check_files_formatting(
     failed_files = set()
     for file_path in files:
         try:
-            with open(file_path, "r") as fh:
-                code = fh.read()
+            with open(file_path, "r", encoding="utf-8") as handle:
+                code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
                     code, line_length, file_path, safety_checks
                 )
@@ -108,9 +108,9 @@ def _check_files_formatting(
                     formattable_files.add(file_path)
                 elif not success:
                     failed_files.add(file_path)
-        except OSError as e:
+        except OSError as exceptions:
             print(
-                "Cannot open file '{}': {}".format(file_path, e.strerror),
+                "Cannot open file '{}': {}".format(file_path, exceptions.strerror),
                 file=sys.stderr,
             )
             failed_files.add(file_path)
@@ -140,22 +140,22 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
     failed_files = set()
     for file_path in files:
         try:
-            with open(file_path, "r+") as fh:
-                code = fh.read()
+            with open(file_path, "r+", encoding="utf-8") as handle:
+                code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
                     code, line_length, file_path, safety_checks
                 )
                 if success and actually_formatted:
                     print("reformatted {}".format(file_path))
                     formatted_files.add(file_path)
-                    fh.seek(0)
-                    fh.truncate(0)
-                    fh.write(formatted_code)
+                    handle.seek(0)
+                    handle.truncate(0)
+                    handle.write(formatted_code)
                 elif not success:
                     failed_files.add(file_path)
-        except OSError as e:
+        except OSError as exceptions:
             print(
-                "Cannot open file '{}': {}".format(file_path, e.strerror),
+                "Cannot open file '{}': {}".format(file_path, exceptions.strerror),
                 file=sys.stderr,
             )
             failed_files.add(file_path)
@@ -198,19 +198,19 @@ def _format_code(
                     given_code_parse_tree=code_parse_tree,
                     given_code_comment_parse_tree=comment_parse_tree,
                 )
-    except lark.exceptions.UnexpectedToken as e:
+    except lark.exceptions.UnexpectedToken as exception:
         success = False
         print(
             f"{file_path}:\n",
-            lark_unexpected_token_to_str(e, code),
+            lark_unexpected_token_to_str(exception, code),
             sep="\n",
             file=sys.stderr,
         )
-    except lark.exceptions.UnexpectedInput as e:
+    except lark.exceptions.UnexpectedInput as exception:
         success = False
         print(
             f"{file_path}:\n",
-            lark_unexpected_input_to_str(e),
+            lark_unexpected_input_to_str(exception),
             sep="\n",
             file=sys.stderr,
         )

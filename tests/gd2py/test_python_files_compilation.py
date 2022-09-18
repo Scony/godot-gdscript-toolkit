@@ -15,5 +15,5 @@ def pytest_generate_tests(metafunc):
 def test_compilation(python_file):
     this_dir = os.path.dirname(os.path.abspath(__file__))
     python_file_path = os.path.join(this_dir, DATA_DIR, python_file)
-    with open(python_file_path, "r") as fh:
-        compile(fh.read(), filename="<string>", mode="exec")
+    with open(python_file_path, "r", encoding="utf-8") as handle:
+        compile(handle.read(), filename="<string>", mode="exec")

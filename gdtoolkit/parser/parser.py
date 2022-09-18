@@ -21,7 +21,8 @@ class Indenter(indenter.Indenter):
 
 
 # TODO: when upgrading to Python 3.8, replace with functools.cached_property
-class cached_property:
+# pylint: disable=too-few-public-methods
+class CachedProperty:
     """A property that is only computed once per instance and then replaces
     itself with an ordinary attribute. Deleting the attribute resets the
     property.
@@ -53,6 +54,7 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
+        # pylint: disable=no-member
         return (
             self._parser_with_metadata.parse(code)
             if gather_metadata
@@ -61,6 +63,7 @@ class Parser:
 
     def parse_comments(self, code: str) -> Tree:
         """Parses GDScript code and returns comments - both standalone, and inline."""
+        # pylint: disable=no-member
         return self._comment_parser.parse(code)
 
     def disable_grammar_caching(self) -> None:
@@ -94,15 +97,15 @@ class Parser:
 
         return a_parser
 
-    @cached_property
+    @CachedProperty
     def _parser(self) -> Lark:
         return self._get_parser("parser")
 
-    @cached_property
+    @CachedProperty
     def _parser_with_metadata(self) -> Lark:
         return self._get_parser("parser_with_metadata", add_metadata=True)
 
-    @cached_property
+    @CachedProperty
     def _comment_parser(self) -> Lark:
         return self._get_parser(
             "parser_comments", add_metadata=True, grammar_filename="comments.lark"

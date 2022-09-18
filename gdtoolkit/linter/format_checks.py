@@ -41,9 +41,9 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
 def _max_line_length_check(threshold, tab_characters, code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
-    for line_number in range(len(lines)):
+    for line_number, line in enumerate(lines):
         assert tab_characters is not None
-        line = lines[line_number].replace("\t", " " * tab_characters)
+        line = line.replace("\t", " " * tab_characters)
         if len(line) > threshold:
             problems.append(
                 Problem(
@@ -78,8 +78,7 @@ def _max_file_lines_check(threshold, code: str) -> List[Problem]:
 def _trailing_ws_check(code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
-    for line_number in range(len(lines)):
-        line = lines[line_number]
+    for line_number, line in enumerate(lines):
         if re.search(r"\s$", line) is not None:
             problems.append(
                 Problem(
@@ -95,8 +94,7 @@ def _trailing_ws_check(code: str) -> List[Problem]:
 def _mixed_tabs_and_spaces_check(code: str) -> List[Problem]:
     problems = []
     lines = code.splitlines()
-    for line_number in range(len(lines)):
-        line = lines[line_number]
+    for line_number, line in enumerate(lines):
         if re.search("^(\t+ +| +\t+)", line) is not None:
             problems.append(
                 Problem(
