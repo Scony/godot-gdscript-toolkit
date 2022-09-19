@@ -30,9 +30,8 @@ def lint(gdscript_code: str, config: MappingProxyType) -> List[Problem]:
             _mixed_tabs_and_spaces_check,
         ),
     ]  # type: List[Tuple[str, Callable]]
-    problem_clusters = map(
-        lambda x: x[1](gdscript_code) if x[0] not in disable else [],
-        checks_to_run_w_code,
+    problem_clusters = (
+        x[1](gdscript_code) if x[0] not in disable else [] for x in checks_to_run_w_code
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     return problems

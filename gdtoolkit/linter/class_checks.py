@@ -22,8 +22,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             partial(_class_definitions_order_check, config["class-definitions-order"]),
         ),
     ]  # type: List[Tuple[str, Callable]]
-    problem_clusters = map(
-        lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
+    problem_clusters = (
+        x[1](parse_tree) if x[0] not in disable else [] for x in checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     return problems

@@ -18,8 +18,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             partial(_function_args_num_check, config["function-arguments-number"]),
         ),
     ]
-    problem_clusters = map(
-        lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
+    problem_clusters = (
+        x[1](parse_tree) if x[0] not in disable else [] for x in checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_w_ast = [
@@ -29,8 +29,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         ),
     ]
     ast = AbstractSyntaxTree(parse_tree)
-    problem_clusters = map(
-        lambda x: x[1](ast) if x[0] not in disable else [], checks_to_run_w_ast
+    problem_clusters = (
+        x[1](ast) if x[0] not in disable else [] for x in checks_to_run_w_ast
     )
     problems += [problem for cluster in problem_clusters for problem in cluster]
     return problems
