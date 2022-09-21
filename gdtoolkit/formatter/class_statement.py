@@ -14,6 +14,7 @@ from .expression import (
     format_expression,
     format_concrete_expression,
 )
+from .annotation import format_annotation_to_line
 
 
 def format_class_statement(statement: Tree, context: Context) -> Outcome:
@@ -203,13 +204,4 @@ def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
 
 def _format_standalone_annotation(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
-    formatted_lines: FormattedLines = [
-        (
-            statement.line,
-            "{}@{}".format(
-                context.indent_string,
-                statement.children[0].value,  # TODO: name it
-            ),
-        )
-    ]
-    return (formatted_lines, last_processed_line_no)
+    return ([format_annotation_to_line(statement, context)], last_processed_line_no)

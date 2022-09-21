@@ -4,11 +4,15 @@ from typing import List, Callable
 
 from lark import Tree
 
-from .types import Outcome, FormattedLine, FormattedLines
+from .types import Outcome, FormattedLines
 from .context import Context
 from .constants import (
     INDENT_SIZE,
     DEFAULT_SURROUNDING_EMPTY_LINES_TABLE as DEFAULT_SURROUNDINGS_TABLE,
+)
+from .annotation import (
+    is_non_standalone_annotation,
+    prepend_annotations_to_formatted_line,
 )
 
 
@@ -22,7 +26,7 @@ def format_block(
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
     for statement in statements:
-        if _is_non_standalone_annotation(statement):
+        if is_non_standalone_annotation(statement):
             context.annotations.append(statement)
             continue
         blank_lines = reconstruct_blank_lines_in_range(
@@ -44,7 +48,7 @@ def format_block(
             statement, context
         )
         if len(context.annotations) > 0:
-            lines = _prepend_annotations(lines[0], context) + lines[1:]
+            lines = prepend_annotations_to_formatted_line(lines[0], context) + lines[1:]
         formatted_lines += lines
         previous_statement_name = statement.data
     dedent_line_number = _find_dedent_line_number(
@@ -76,35 +80,6 @@ def reconstruct_blank_lines_in_range(
             reconstructed_lines.append("")
     reconstructed_lines = _squeeze_lines(reconstructed_lines)
     return list(zip([None for _ in range(begin + 1, end)], reconstructed_lines))
-
-
-def _is_non_standalone_annotation(statement: Tree) -> bool:
-    if statement.data != "annotation":
-        return False
-    name = statement.children[0].value
-    return name not in ["tool"]
-
-
-def _prepend_annotations(
-    line_to_prepend_to: FormattedLine, context: Context
-) -> FormattedLines:
-    formatted_lines = []  # type: FormattedLines
-    for annotation in context.annotations:
-        name = annotation.children[0].value
-        if name == "onready":
-            formatted_lines.append((None, f"{context.indent_string}@onready"))
-        elif name == "export_range":
-            formatted_lines.append(
-                (
-                    None,
-                    '{}@export_range(1, 100, 1, "or_greater")'.format(
-                        context.indent_string
-                    ),
-                )
-            )
-    formatted_lines.append(line_to_prepend_to)
-    context.annotations = []
-    return formatted_lines
 
 
 # TODO: indent detection & refactoring
