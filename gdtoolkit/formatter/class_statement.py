@@ -31,6 +31,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
+        "annotation": _format_standalone_annotation,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
@@ -198,3 +199,17 @@ def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
     )
     enum_body = actual_enum.children[-1]
     return format_concrete_expression(enum_body, expression_context, context)
+
+
+def _format_standalone_annotation(statement: Tree, context: Context) -> Outcome:
+    last_processed_line_no = statement.line
+    formatted_lines: FormattedLines = [
+        (
+            statement.line,
+            "{}@{}".format(
+                context.indent_string,
+                statement.children[0].value,  # TODO: name it
+            ),
+        )
+    ]
+    return (formatted_lines, last_processed_line_no)
