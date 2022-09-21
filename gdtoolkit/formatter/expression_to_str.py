@@ -111,6 +111,8 @@ def expression_to_str(expression: Node) -> str:
             _operator_chain_based_expression_to_str
         ),
         "trailing_comma": lambda _: "",
+        "annotation": _annotation_to_str,
+        "annotation_args": _annotation_args_to_str,
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -178,6 +180,23 @@ def _arguments_to_str(arguments: List[Node]) -> str:
             if not is_any_parentheses(argument) and not is_any_comma(argument)
         ]
     )
+
+
+def _annotation_to_str(annotation: Tree) -> str:
+    name = expression_to_str(annotation.children[0])
+    if len(annotation.children) > 1:
+        return f"@{name}{expression_to_str(annotation.children[1])}"
+    return f"@{name}"
+
+
+def _annotation_args_to_str(annotation: Tree) -> str:
+    elements = [
+        standalone_expression_to_str(child)
+        for child in annotation.children
+        if not is_any_comma(child)
+    ]
+    trailing_comma = "," if has_trailing_comma(annotation) else ""
+    return "({}{})".format(", ".join(elements), trailing_comma)
 
 
 def _array_to_str(array: Tree) -> str:

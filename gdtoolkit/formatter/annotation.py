@@ -2,6 +2,7 @@ from lark import Tree
 
 from .types import FormattedLine, FormattedLines
 from .context import Context
+from .expression_to_str import expression_to_str
 
 STANDALONE_ANNOTATIONS = ["tool"]
 
@@ -25,20 +26,11 @@ def prepend_annotations_to_formatted_line(
 
 
 def format_annotation_to_line(annotation: Tree, context: Context) -> FormattedLine:
-    name = annotation.children[0].value
-    if name == "tool":
-        return (
-            annotation.line,
-            "{}@{}".format(
-                context.indent_string,
-                name,
-            ),
-        )
-    if name == "onready":
-        return (None, f"{context.indent_string}@onready")
-    if name == "export_range":
-        return (
-            None,
-            '{}@export_range(1, 100, 1, "or_greater")'.format(context.indent_string),
-        )
-    return (None, "")
+    return (
+        annotation.line,
+        "{}{}".format(context.indent_string, format_annotation_to_string(annotation)),
+    )
+
+
+def format_annotation_to_string(annotation: Tree) -> str:
+    return expression_to_str(annotation)
