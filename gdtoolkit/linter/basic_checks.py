@@ -90,7 +90,7 @@ def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
         callee_name = name_token.value
         if (
             callee_name in ["load", "preload"]
-            and len(call.children) > 1
+            and len(call.children) > 2
             and isinstance(call.children[2], Tree)
             and call.children[2].data == "string"
         ):
