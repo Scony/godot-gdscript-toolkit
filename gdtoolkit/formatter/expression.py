@@ -99,7 +99,7 @@ def _format_foldable_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     handlers = {
-        "assnmnt_expr": _format_assignment_expression_to_multiline_line,
+        "assnmnt_expr": _format_assignment_expression_to_multiple_lines,
         "test_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_test_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "or_test": _format_operator_chain_based_expression_to_multiple_lines,
@@ -131,8 +131,8 @@ def _format_foldable_to_multiple_lines(
         "asless_type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "await_expr": _format_await_expression_to_multiple_lines,
-        "standalone_call": _format_call_expression_to_multiline_line,
-        "getattr_call": _format_call_expression_to_multiline_line,
+        "standalone_call": _format_call_expression_to_multiple_lines,
+        "getattr_call": _format_call_expression_to_multiple_lines,
         "getattr": _format_attribute_expression_to_multiple_lines,
         "subscr_expr": _format_subscription_to_multiple_lines,
         "par_expr": _format_parentheses_to_multiple_lines,
@@ -270,7 +270,7 @@ def _format_not_test_to_multiple_lines(
     )
 
 
-def _format_assignment_expression_to_multiline_line(
+def _format_assignment_expression_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
@@ -318,7 +318,7 @@ def _format_func_arg_to_multiple_lines(
     ]
 
 
-def _format_call_expression_to_multiline_line(
+def _format_call_expression_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     callee_node = expression.children[0]
