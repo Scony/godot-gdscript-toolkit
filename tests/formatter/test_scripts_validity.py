@@ -12,6 +12,8 @@ EXCEPTIONS = set(
         # complex expressions where Godot does more than just parsing
         "type-cast-corner-case-expressions.in.gd",
         "type-cast-corner-case-expressions.out.gd",
+        # godot bugs
+        "multiline-annotations.out.gd",
     ]
 )
 

@@ -155,6 +155,8 @@ def _format_foldable_to_multiple_lines(
         "contextless_operator_chain_based_expression": (
             _format_contextless_operator_chain_based_expression_to_multiple_lines
         ),
+        "annotation": _format_annotation_to_multiple_lines,
+        "annotation_args": _format_args_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -542,4 +544,20 @@ def _format_await_expression_to_multiple_lines(
     )
     return _format_concrete_expression(
         expression.children[-1], new_expression_context, context
+    )
+
+
+def _format_annotation_to_multiple_lines(
+    annotation: Tree,
+    _: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    annotation_name = annotation.children[0].value
+    if len(annotation.children) == 1:
+        return [(annotation.line, f"{context.indent_string}@{annotation_name}")]
+    new_expression_context = ExpressionContext(
+        f"@{annotation_name}", annotation.line, "", -1
+    )
+    return _format_concrete_expression(
+        annotation.children[-1], new_expression_context, context
     )

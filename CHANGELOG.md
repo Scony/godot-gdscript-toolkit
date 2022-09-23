@@ -6,6 +6,7 @@
  - Added new GDScript `2.0` constructs to the core testcases
  - Added support for `await` in parser & formatter
  - Added support for typed arrays in parser & formatter
+ - Added support for annotations in parser & formatter
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
