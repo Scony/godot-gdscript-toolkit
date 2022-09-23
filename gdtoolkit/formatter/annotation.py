@@ -43,7 +43,7 @@ def prepend_annotations_to_formatted_line(
 
 def format_standalone_annotation(annotation: Tree, context: Context) -> Outcome:
     return format_concrete_expression(
-        annotation, ExpressionContext("", -1, "", -1), context
+        annotation, ExpressionContext("", annotation.line, "", -1), context
     )
 
 
