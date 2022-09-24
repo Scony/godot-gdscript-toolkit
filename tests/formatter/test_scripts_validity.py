@@ -14,6 +14,8 @@ EXCEPTIONS = set(
         "type-cast-corner-case-expressions.out.gd",
         # godot bugs
         "multiline-annotations.out.gd",
+        "multiline-annotations-w-comments.in.gd",
+        "multiline-annotations-w-comments.out.gd",
     ]
 )
 

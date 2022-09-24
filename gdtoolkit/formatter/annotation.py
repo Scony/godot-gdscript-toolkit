@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from lark import Tree
 
 from .types import FormattedLine, FormattedLines, Outcome
@@ -26,7 +28,12 @@ def prepend_annotations_to_formatted_line(
     single_line_length = (
         context.indent + len(annotations_string) + len(whitelineless_line)
     )
-    if single_line_length <= context.max_line_length:
+    if (
+        not _annotations_have_standalone_comments(
+            context.annotations, context.standalone_comments, line_to_prepend_to[0]
+        )
+        and single_line_length <= context.max_line_length
+    ):
         single_line = "{}{} {}".format(
             context.indent_string, annotations_string, whitelineless_line
         )
@@ -49,3 +56,18 @@ def format_standalone_annotation(annotation: Tree, context: Context) -> Outcome:
 
 def format_annotation_to_string(annotation: Tree) -> str:
     return expression_to_str(annotation)
+
+
+def _annotations_have_standalone_comments(
+    annotations: List[Tree],
+    standalone_comments: List[Optional[str]],
+    last_line: Optional[int],
+):
+    return any(
+        comment is not None
+        for comment in standalone_comments[
+            annotations[0].line : last_line
+            if last_line is not None
+            else annotations[-1].end_line
+        ]
+    )

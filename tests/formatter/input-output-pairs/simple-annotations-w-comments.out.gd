@@ -3,25 +3,26 @@
 @tool  # inline a
 # c
 
-var a  # inline b
+var a
 
 # d
-
+@onready  # inline b
 # e
-@onready var b  # inline c  # inline d
+var b  # inline c
 # f
 
+@onready
 # g
-
+@export_range(1, 100, 1, "or_greater")  # inline d
 # h
-@onready @export_range(1, 100, 1, "or_greater") var c: int = 50
+var c: int = 50
 # i
 
 
 class Foo:
 	# j
-	@onready var d  # inline e  # inline f
+	@onready var d  # inline e
 	# k
-
+	@onready  # inline f
 	# l
-	@onready var e
+	var e

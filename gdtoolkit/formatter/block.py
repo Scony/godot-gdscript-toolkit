@@ -28,7 +28,9 @@ def format_block(
     for statement in statements:
         if is_non_standalone_annotation(statement):
             context.annotations.append(statement)
-            continue
+            is_first_annotation = len(context.annotations) == 1
+            if not is_first_annotation:
+                continue
         blank_lines = reconstruct_blank_lines_in_range(
             previously_processed_line_number, statement.line, context
         )
@@ -43,7 +45,12 @@ def format_block(
             blank_lines = _add_extra_blanks_due_to_next_statement(
                 blank_lines, statement.data, surrounding_empty_lines_table
             )
-        formatted_lines += blank_lines
+        is_first_annotation = len(context.annotations) == 1
+        if is_non_standalone_annotation(statement) and is_first_annotation:
+            formatted_lines += blank_lines
+            continue
+        if len(context.annotations) == 0:
+            formatted_lines += blank_lines
         lines, previously_processed_line_number = statement_formatter(
             statement, context
         )
