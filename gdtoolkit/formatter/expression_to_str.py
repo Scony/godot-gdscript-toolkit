@@ -81,7 +81,7 @@ def expression_to_str(expression: Node) -> str:
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
         "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
-        "path": lambda e: "/".join([name_token.value for name_token in e.children]),
+        "path": lambda e: "".join([name_token.value for name_token in e.children]),
         "node_path": lambda e: "^{}".format(expression_to_str(e.children[0])),
         "string_name": lambda e: "&{}".format(expression_to_str(e.children[0])),
         # fake expressions:

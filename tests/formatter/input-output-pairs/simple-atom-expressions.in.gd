@@ -17,3 +17,5 @@ func foo():
 	var n=+x
 	var d = ^"../Some/Stuff"
 	var e = &"xxx"
+	var xa=$%UniqueNodeName
+	var xb=$%UniqueNodeName/Xyz
