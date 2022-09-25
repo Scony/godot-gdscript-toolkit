@@ -1,27 +1,37 @@
 # GDScript Toolkit
-[![](https://github.com/BlankSpruce/gersemi/workflows/Tests/badge.svg?branch=master)](https://github.com/Scony/godot-gdscript-toolkit/actions)
+[![](https://github.com/Scony/godot-gdscript-toolkit/workflows/Tests/badge.svg?branch=master)](https://github.com/Scony/godot-gdscript-toolkit/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+```diff
+- The `master` branch contains Godot 4.0 support now - please note it's in alpha phase
+```
 
 This project provides a set of tools for daily work with `GDScript`. At the moment it provides:
 
 - A parser that produces a parse tree for debugging and educational purposes.
 - A linter that performs a static analysis according to some predefined configuration.
 - A formatter that formats the code according to some predefined rules.
+- A code metrics calculator which calculates cyclomatic complexity of functions and classes.
 
 ## Installation
 
 To install this project you need `python3` and `pip`. 
 
-Use this command in your terminal to install from this git repository:
+Use this command to install `gdtoolkit` for `Godot 3` from PyPI repository:
 
 ```
-pip3 install gdtoolkit
+pip3 install 'gdtoolkit==3.*'
 ```
 
-## Linting with gdlint
+Alternatively, you can install latest `gdtoolkit` for `Godot 4` (potentially unstable) directly from git:
+```
+pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
+```
 
-To run a linter you need to perform installation first. Once done, you can run e.g.:
+## Linting with gdlint [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/3.-Linter)
+
+To run a linter you need to execute `gdlint` command like:
 
 ```
 $ gdlint misc/MarkovianPCG.gd
@@ -34,39 +44,11 @@ misc/MarkovianPCG.gd:96: Error: Function argument name "aOrigin" is not valid (f
 misc/MarkovianPCG.gd:96: Error: Function argument name "aPos" is not valid (function-argument-name)
 ```
 
-To tweak the default check settings, you can dump the default config to a file:
-
-```
-$ gdlint -d
-$ cat gdlintrc
-class-load-variable-name: (([A-Z][a-z0-9]*)+|_?[a-z][a-z0-9]*(_[a-z0-9]+)*)
-class-name: ([A-Z][a-z0-9]*)+
-class-variable-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-constant-name: '[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
-disable: []
-enum-element-name: '[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
-enum-name: ([A-Z][a-z0-9]*)+
-function-argument-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-function-arguments-number: 10
-function-preload-variable-name: ([A-Z][a-z0-9]*)+
-function-name: (_on_([A-Z][a-z0-9]*)+(_[a-z0-9]+)*|_?[a-z][a-z0-9]*(_[a-z0-9]+)*)
-function-variable-name: '[a-z][a-z0-9]*(_[a-z0-9]+)*'
-load-constant-name: (([A-Z][a-z0-9]*)+|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)
-loop-variable-name: _?[a-z][a-z0-9]*(_[a-z0-9]+)*
-signal-name: '[a-z][a-z0-9]*(_[a-z0-9]+)*'
-sub-class-name: _?([A-Z][a-z0-9]*)+
-```
-
-Once the dump is performed, you can modify the `gdlintrc` file and optionally rename it to `.gdlintrc`.
-From now on, linter will use this config file to override the default config.
-
-## Formatting with gdformat
+## Formatting with gdformat [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/4.-Formatter)
 
 **Formatting may lead to data loss, so it's highly recommended to use it along with Version Control System (VCS) e.g. `git`**
 
-`gdformat` is the uncompromising GDScript code formatter. The only configurable thing is max line length allowed (`--line-length`). The rest will be taken care of by `gdformat` in a one, consistent way.
-
-To run a formatter you need to perform installation first. Once done, given a `test.gd` file:
+To run a formatter you need to execute `gdformat` on the file you want to format. So, given a `test.gd` file:
 
 ```
 class X:
@@ -80,7 +62,7 @@ func bar():
 	print('bar')
 ```
 
-when you run `gdformat test.gd`, the `test.gd` file will be reformatted as follows:
+when you execute `gdformat test.gd` command, the `test.gd` file will be reformatted as follows:
 
 ```
 class X:
@@ -100,11 +82,9 @@ func bar():
 	print('bar')
 ```
 
-If the program formats your files successfully, it will return the exit code `0`. Non-zero code will be returned otherwise.
+## Parsing with gdparse [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/2.-Parser)
 
-## Parsing with gdparse
-
-To parse a file, use the `gdparse` program:
+To run a parser you need to execute the `gdparse` command like:
 
 ```
 gdparse tests/valid-gd-scripts/recursive_tool.gd -p
@@ -127,32 +107,27 @@ start
   tool_stmt
 ```
 
-If the program parses your file sucessfully, it will return the exit code `0`.
+## Calculating cyclomatic complexity with gdradon
 
-## Running tests
-
-To run tests you need [tox](https://tox.readthedocs.io/en/latest/), a tool to automate testing in Python.
-
-Install it with:
+To run cyclomatic complexity calculator you need to execute the `gdradon` command like:
 
 ```
-pip3 install tox
+gdradon cc tests/formatter/input-output-pairs/simple-function-statements.in.gd tests/gd2py/input-output-pairs/
 ```
 
-To invoke entire test suite, in the `godot-gdscript-toolkit` project directory, run:
+The command outputs calculated metrics just like [Radon cc command](https://radon.readthedocs.io/en/latest/commandline.html#the-cc-command) does for Python code:
+```
+tests/formatter/input-output-pairs/simple-function-statements.in.gd
+    C 1:0 X - A (2)
+    F 2:1 foo - A (1)
+tests/gd2py/input-output-pairs/class-level-statements.in.gd
+    F 22:0 foo - A (1)
+    F 24:0 bar - A (1)
+    C 18:0 C - A (1)
+tests/gd2py/input-output-pairs/func-level-statements.in.gd
+    F 1:0 foo - B (8)
+```
 
-```
-tox
-```
+## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
 
-You can run only selected test cases:
-
-```
-tox -e py3 -- -k lint
-```
-
-For manual testing, you can consider installing package in editable mode:
-
-```
-pip3 install -e .
-```
+Everyone is free to fix bugs or introduce new features. For that, however, please refer to existing issue or create one before starting implementation.

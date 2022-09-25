@@ -14,5 +14,9 @@ func foo():
 	var m = -0xfF9900
 	var b = 0b001101
 	var c = -0b001101
+	var v = +1
+	var n = x
 	var d = ^"../Some/Stuff"
 	var e = &"xxx"
+	var xa = $%UniqueNodeName
+	var xb = $%UniqueNodeName/Xyz

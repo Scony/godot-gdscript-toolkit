@@ -5,6 +5,7 @@ from lark import Tree
 from .utils import find_name_token_among_children
 
 
+# pylint: disable=too-few-public-methods
 class Function:
     """Abstract representation of function"""
 
@@ -14,6 +15,7 @@ class Function:
         self.name = name_token.value
 
 
+# pylint: disable=too-few-public-methods
 class Class:
     """Abstract representation of class.
     Since it contains sub-classes, it forms a tree"""
@@ -47,6 +49,7 @@ class Class:
         self._load_data_from_node_children(class_def)
 
 
+# pylint: disable=too-few-public-methods
 class AbstractSyntaxTree:
     """Post-processed version of parse tree - more convenient representation
     for further processing"""

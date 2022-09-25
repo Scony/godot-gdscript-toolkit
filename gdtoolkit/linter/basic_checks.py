@@ -32,8 +32,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             _comparison_with_itself_check,
         ),
     ]
-    problem_clusters = map(
-        lambda x: x[1](parse_tree) if x[0] not in disable else [], checks_to_run_w_tree
+    problem_clusters = (
+        x[1](parse_tree) if x[0] not in disable else [] for x in checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     return problems
@@ -110,6 +110,7 @@ def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
     return problems
 
 
+# pylint: disable=too-many-locals
 def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for func_def in parse_tree.find_data("func_def"):
@@ -135,8 +136,8 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
                     if isinstance(node, Token) and node.type == "NAME":
                         name = node.value
                         name_occurances[name] = name_occurances.get(name, 0) + 1
-            for argument in argument_definitions:
-                if argument_definitions[argument] == name_occurances[
+            for argument, argument_definitions_number in argument_definitions.items():
+                if argument_definitions_number == name_occurances[
                     argument
                 ] and not argument.startswith("_"):
                     problems.append(

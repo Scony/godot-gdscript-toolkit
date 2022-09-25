@@ -13,8 +13,8 @@ Options:
   --version     Show version.
 """
 import sys
-import pkg_resources
 from typing import Dict
+import pkg_resources
 
 import lark
 from docopt import docopt
@@ -50,12 +50,12 @@ def main():
 
 def _parse_file(file_path: str, arguments: Dict) -> bool:
     try:
-        with open(file_path, "r") as fh:
-            file_content = fh.read()
+        with open(file_path, "r", encoding="utf-8") as handle:
+            file_content = handle.read()
             return _parse_file_content(file_content, arguments, file_path)
-    except OSError as e:
+    except OSError as exception:
         print(
-            "Cannot open file '{}': {}".format(file_path, e.strerror),
+            "Cannot open file '{}': {}".format(file_path, exception.strerror),
             file=sys.stderr,
         )
     return False
@@ -65,18 +65,18 @@ def _parse_file_content(content: str, arguments: Dict, file_path: str = None) ->
     actual_file_path = "STDIN" if file_path is None else file_path
     try:
         tree = parser.parse(content)  # TODO: handle exceptions
-    except lark.exceptions.UnexpectedToken as e:
+    except lark.exceptions.UnexpectedToken as exception:
         print(
             f"{actual_file_path}:\n",
-            lark_unexpected_token_to_str(e, content),
+            lark_unexpected_token_to_str(exception, content),
             sep="\n",
             file=sys.stderr,
         )
         return False
-    except lark.exceptions.UnexpectedInput as e:
+    except lark.exceptions.UnexpectedInput as exception:
         print(
             f"{actual_file_path}:\n",
-            lark_unexpected_input_to_str(e),
+            lark_unexpected_input_to_str(exception),
             sep="\n",
             file=sys.stderr,
         )

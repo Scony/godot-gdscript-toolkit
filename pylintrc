@@ -1,0 +1,8 @@
+[MESSAGES CONTROL]
+disable =
+    fixme,
+    missing-function-docstring, # too pedantic
+    missing-module-docstring,   # too pedantic
+    missing-class-docstring,    # too pedantic
+    consider-using-f-string,    # TODO: fix only cases that make sense
+    duplicate-code              # TODO: check (fails on CI)

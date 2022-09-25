@@ -8,3 +8,4 @@ class X:
 		var g = 1 if true else 0
 		var h = (1 + 1) + 1
 		var i = !true
+		var j = -a if true else a

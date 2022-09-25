@@ -1,7 +1,8 @@
 import pytest
 
-from .common import simple_ok_check, simple_nok_check
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
+
+from .common import simple_ok_check, simple_nok_check
 
 
 def test_max_file_lines_ok():
@@ -30,6 +31,7 @@ def test_max_line_length_ok(code):
     simple_ok_check(code)
 
 
+# pylint: disable=line-too-long
 @pytest.mark.parametrize('code', [
 """
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -77,6 +79,7 @@ def test_trailing_ws_ok(code):
     simple_ok_check(code)
 
 
+# pylint: disable=trailing-whitespace
 @pytest.mark.parametrize('code', [
 """func foo():
     pass 

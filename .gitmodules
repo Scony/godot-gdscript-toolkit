@@ -1,0 +1,3 @@
+[submodule "editor-plugins/godot"]
+	path = editor-plugins/godot
+	url = https://gitlab.com/DonatienBdR/gdformat-plugin

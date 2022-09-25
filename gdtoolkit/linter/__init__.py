@@ -6,7 +6,14 @@ from typing import List, Dict, Set
 from .problem import Problem
 from ..parser import parser
 from .types import Range
-from . import basic_checks, class_checks, design_checks, format_checks, name_checks
+from . import (
+    basic_checks,
+    class_checks,
+    design_checks,
+    format_checks,
+    name_checks,
+    misc_checks,
+)
 
 PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
 SNAKE_CASE = r"[a-z][a-z0-9]*(_[a-z0-9]+)*"
@@ -81,7 +88,8 @@ DEFAULT_CONFIG = MappingProxyType(
         "mixed-tabs-and-spaces": None,
         # misc
         "excluded_directories": {".git"},
-        # no-else-return
+        "no-elif-return": None,
+        "no-else-return": None,
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
         # consider-using-in
@@ -110,6 +118,7 @@ def lint_code(
     problems += name_checks.lint(parse_tree, config)
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
+    problems += misc_checks.lint(parse_tree, config)
 
     problems_to_lines_where_they_are_inactive = _fetch_problem_inactivity_lines(
         gdscript_code

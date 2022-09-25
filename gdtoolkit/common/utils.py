@@ -1,5 +1,5 @@
 import os
-from typing import Set, List
+from typing import FrozenSet, List
 
 from lark import Tree, Token
 
@@ -7,7 +7,7 @@ Path = str
 
 
 def find_gd_files_from_paths(
-    paths: List[Path], excluded_directories: Set[Path]
+    paths: List[Path], excluded_directories: FrozenSet[Path] = frozenset()
 ) -> List[Path]:
     """Finds .gd files in directories recursively and combines results to the list"""
     files = []

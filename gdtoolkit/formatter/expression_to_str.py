@@ -81,7 +81,7 @@ def expression_to_str(expression: Node) -> str:
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
         "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
-        "path": lambda e: "/".join([name_token.value for name_token in e.children]),
+        "path": lambda e: "".join([name_token.value for name_token in e.children]),
         "node_path": lambda e: "^{}".format(expression_to_str(e.children[0])),
         "string_name": lambda e: "&{}".format(expression_to_str(e.children[0])),
         # fake expressions:
@@ -110,6 +110,9 @@ def expression_to_str(expression: Node) -> str:
         "contextless_operator_chain_based_expression": (
             _operator_chain_based_expression_to_str
         ),
+        "trailing_comma": lambda _: "",
+        "annotation": _annotation_to_str,
+        "annotation_args": _annotation_args_to_str,
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -130,6 +133,9 @@ def expression_to_str(expression: Node) -> str:
         "neg_pattern": lambda e: "-{}".format(expression_to_str(e.children[1])),
         "bitw_not_pattern": lambda e: "~{}".format(expression_to_str(e.children[1])),
         "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
+        "call_pattern": lambda e: "{}({})".format(
+            expression_to_str(e.children[0]), expression_to_str(e.children[1])
+        ),
         "par_pattern": lambda e: "({})".format(expression_to_str(e.children[0])),
         "var_capture_pattern": lambda e: "var {}".format(
             expression_to_str(e.children[0])
@@ -174,6 +180,23 @@ def _arguments_to_str(arguments: List[Node]) -> str:
             if not is_any_parentheses(argument) and not is_any_comma(argument)
         ]
     )
+
+
+def _annotation_to_str(annotation: Tree) -> str:
+    name = expression_to_str(annotation.children[0])
+    if len(annotation.children) > 1:
+        return f"@{name}{expression_to_str(annotation.children[1])}"
+    return f"@{name}"
+
+
+def _annotation_args_to_str(annotation: Tree) -> str:
+    elements = [
+        standalone_expression_to_str(child)
+        for child in annotation.children
+        if not is_any_comma(child)
+    ]
+    trailing_comma = "," if has_trailing_comma(annotation) else ""
+    return "({}{})".format(", ".join(elements), trailing_comma)
 
 
 def _array_to_str(array: Tree) -> str:

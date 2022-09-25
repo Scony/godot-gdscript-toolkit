@@ -6,10 +6,27 @@
  - Added new GDScript `2.0` constructs to the core testcases
  - Added support for `await` in parser & formatter
  - Added support for typed arrays in parser & formatter
+ - Added support for annotations in parser & formatter
+ - Added support for unique node names in parser & formatter
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
  - Updated `lark` dependency to the latest release - `0.12.0`
+
+## [3.4.0] 2022-04-21
+
+### Added
+ - Added `no-elif-return` linter check
+ - Added `no-else-return` linter check
+ - Added `gd2py` (GDScript-to-python) converter tool
+ - Added `gdradon` code metrics tool
+
+### Fixed
+ - Workarounded a lark error impacting pretty print in frontends
+ - Fixed lack of trailing comma handler in some corner cases
+ - Fixed lack of support for plus prefixed expressions
+ - Fixed lack of support for `Vector2/3()` in `match` patterns
+ - Fixed formatter's corner case in `func()`
 
 ## [3.3.1] 2021-09-15
 

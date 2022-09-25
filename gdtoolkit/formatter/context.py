@@ -1,11 +1,14 @@
 from typing import List, Optional
 from dataclasses import dataclass
 
+from lark import Tree
+
 from .constants import INDENT_STRING, INDENT_SIZE
 
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
+# pylint: disable=too-few-public-methods
 class Context:
     def __init__(
         self,
@@ -23,6 +26,7 @@ class Context:
         self.standalone_comments = standalone_comments
         self.inline_comments = inline_comments
         self.indent_string = INDENT_STRING * (self.indent // INDENT_SIZE)
+        self.annotations = []  # type: List[Tree]
 
     def create_child_context(self, previously_processed_line_number: int):
         return Context(

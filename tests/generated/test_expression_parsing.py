@@ -9,11 +9,12 @@ from gdtoolkit.formatter import format_code, check_formatting_safety
 
 MAX_LINE_LENGTH = 100
 
-with open("gdtoolkit/parser/gdscript.lark", "r") as fh:
-    gdscript_grammar = fh.read()
+with open("gdtoolkit/parser/gdscript.lark", "r", encoding="utf-8") as handle:
+    gdscript_grammar = handle.read()
     simplified_gdscript_grammar = gdscript_grammar.replace(".2", "")
     simplified_gdscript_grammar = simplified_gdscript_grammar.replace(
-        "atom:", 'atom: " " xatom " "\n?xatom:'
+        '["+"] atom',
+        '["+"] " " atom " "',
     )
     simplified_gdscript_grammar = simplified_gdscript_grammar.replace("TYPE:", "XTYPE:")
     simplified_gdscript_grammar = simplified_gdscript_grammar.replace(
@@ -39,7 +40,7 @@ def format_and_check_safety(input_code):
 @given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))  # type: ignore
 def test_expression_parsing(expression):
     print(expression)
-    gdscript_code = "func foo():{}".format(expression)
+    gdscript_code = "func foo():{}\n".format(expression)
     parser.parse(gdscript_code)  # just checking if not throwing
 
 
@@ -52,5 +53,5 @@ def test_expression_parsing(expression):
 @given(hypothesis.extra.lark.from_lark(gdscript_lark, start="expr"))  # type: ignore
 def test_expression_formatting(expression):
     print(expression)
-    gdscript_code = "func foo():{}".format(expression)
+    gdscript_code = "func foo():{}\n".format(expression)
     format_and_check_safety(gdscript_code)

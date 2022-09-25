@@ -123,7 +123,9 @@ pattern: list_pattern
              | bitw_not_pattern
 !?bitw_not_pattern: "~" bitw_not_pattern
                   | attr_pattern
-!?attr_pattern: atom_pattern ("." atom_pattern)*
+!?attr_pattern: call_pattern ("." call_pattern)*
+?call_pattern: NAME "(" list_pattern ")"
+             | atom_pattern
 ?atom_pattern: "(" test_pattern ")" -> par_pattern
              | "var" NAME -> var_capture_pattern
              | ".." -> etc_pattern
@@ -209,7 +211,8 @@ _call_arglist: "(" [type_cast ("," type_cast)* [trailing_comma]] ")"
 getattr: call_expr _attr+
 !_attr: ("." NAME)
 ?subscr_expr: call_expr "[" type_cast "]"
-            | atom
+            | _plus_atom
+_plus_atom: ["+"] atom
 ?atom: "(" type_cast ")" -> par_expr
      | array
      | dict
@@ -228,7 +231,7 @@ lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
 HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string)
-path: NAME ("/" NAME)*
+!path: ["%"] NAME ("/" NAME)*
 array: "[" [type_cast ("," type_cast)* [trailing_comma]] "]"
 trailing_comma: ","
 dict: "{" [c_dict_element ("," c_dict_element)* [trailing_comma]] "}"
