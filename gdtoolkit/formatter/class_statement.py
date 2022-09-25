@@ -15,6 +15,11 @@ from .expression import (
     format_concrete_expression,
 )
 from .annotation import format_standalone_annotation
+from .property import (
+    has_inline_property_body,
+    append_property_body_to_formatted_line,
+    format_property_body,
+)
 
 
 def format_class_statement(statement: Tree, context: Context) -> Outcome:
@@ -25,7 +30,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "extends_stmt": _format_extends_statement,
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
-        "class_var_stmt": format_var_statement,
+        "class_var_stmt": _format_var_statement,
         "const_stmt": _format_const_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
@@ -33,6 +38,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
         "annotation": format_standalone_annotation,
+        "property_body_def": format_property_body,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
@@ -146,6 +152,17 @@ def _format_classname_extends_statement(statement: Tree, context: Context) -> Ou
         )
     ]
     return (formatted_lines, last_processed_line_no)
+
+
+def _format_var_statement(statement: Tree, context: Context) -> Outcome:
+    formatted_lines, last_processed_line = format_var_statement(statement, context)
+    concrete_var_statement = statement.children[0]
+    if has_inline_property_body(concrete_var_statement):
+        inline_property_body = concrete_var_statement.children[-1]
+        formatted_lines = formatted_lines[:-1] + append_property_body_to_formatted_line(
+            formatted_lines[-1], inline_property_body, context
+        )
+    return formatted_lines, last_processed_line
 
 
 def _format_class_statement(statement: Tree, context: Context) -> Outcome:

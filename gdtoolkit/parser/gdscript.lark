@@ -53,8 +53,8 @@ property_body_def: _INDENT _property_delegates _NL _DEDENT
                  | _INDENT property_custom_etter+ _DEDENT
 _property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
                    | property_delegate_get ["," [_NL] property_delegate_set]
-property_delegate_set: "set" "=" NAME
-property_delegate_get: "get" "=" NAME
+!property_delegate_set: "set" "=" NAME
+!property_delegate_get: "get" "=" NAME
 ?property_custom_etter: "set" "(" NAME ")" ":" _func_suite -> property_custom_setter
                       | "get" ":" _func_suite -> property_custom_getter
 

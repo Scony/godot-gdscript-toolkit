@@ -76,7 +76,8 @@ class LoosenTreeTransformer(Transformer):
             [
                 arg
                 for arg in args
-                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+                if not isinstance(arg, Tree)
+                or arg.data not in ["annotation", "property_body_def"]
             ],
         )
 
@@ -86,9 +87,13 @@ class LoosenTreeTransformer(Transformer):
             [
                 arg
                 for arg in args
-                if not isinstance(arg, Tree) or arg.data not in ["annotation"]
+                if not isinstance(arg, Tree)
+                or arg.data not in ["annotation", "property_body_def"]
             ],
         )
+
+    def inline_property_body(self, _):
+        return Tree("inline_property_body", [])
 
 
 def check_tree_invariant(
