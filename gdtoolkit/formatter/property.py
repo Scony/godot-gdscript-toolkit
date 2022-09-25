@@ -24,12 +24,11 @@ def append_property_body_to_formatted_line(
 
 def format_property_body(property_body: Tree, context: Context) -> Outcome:
     assert property_body.children[0].data.startswith("property_delegate")
-    return (
-        _format_property_delegates(
-            property_body.children, context.create_child_context(property_body.line)
-        ),
-        property_body.end_line,
+    formatted_lines = _format_property_delegates(
+        property_body.children, context.create_child_context(property_body.line)
     )
+    # TODO: fix return type
+    return (formatted_lines, formatted_lines[-1][0])  # type: ignore
 
 
 def _format_property_delegates(
