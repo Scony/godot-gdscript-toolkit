@@ -84,17 +84,19 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
 
 def _duplicated_load_check(parse_tree: Tree) -> List[Problem]:
     problems = []
-    loaded_strings = set()  # type: Set[str]
-    for call in parse_tree.find_data("standalone_call"):
+    loaded_strings: Set[str] = set()
+    for call in sorted(
+        parse_tree.find_data("standalone_call"), key=lambda rule: rule.line
+    ):
         name_token = call.children[0]
         callee_name = name_token.value
         if (
             callee_name in ["load", "preload"]
-            and len(call.children) > 2
-            and isinstance(call.children[2], Tree)
-            and call.children[2].data == "string"
+            and len(call.children) > 1
+            and isinstance(call.children[1], Tree)
+            and call.children[1].data == "string"
         ):
-            string_rule = call.children[2]
+            string_rule = call.children[1]
             loaded_string = string_rule.children[0].value
             if loaded_string in loaded_strings:
                 problems.append(
