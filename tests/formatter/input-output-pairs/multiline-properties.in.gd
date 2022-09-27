@@ -11,6 +11,12 @@ var p4:
 	get = __get,
 	set = __set
 
+var p5:
+	get: pass
+var p6:
+	get:
+		pass
+
 func __get():
 	return 1
 

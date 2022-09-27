@@ -25,10 +25,10 @@ def append_property_body_to_formatted_line(
 
 
 def format_property_body(property_body: Tree, context: Context) -> Outcome:
-    assert property_body.children[0].data.startswith("property_delegate")
-    return _format_property_delegates(
-        property_body.children, context.create_child_context(property_body.line)
-    )
+    child_context = context.create_child_context(property_body.line)
+    if property_body.children[0].data.startswith("property_delegate"):
+        return _format_property_delegates(property_body.children, child_context)
+    return _format_property_etters(property_body.children, child_context)
 
 
 def _format_property_delegates(
@@ -50,6 +50,19 @@ def _format_property_delegates(
             formatted_lines[1],
         ]
     return (formatted_lines, property_delegates[-1].line)
+
+
+def _format_property_etters(property_etters: List[Tree], context: Context):
+    child_context = context.create_child_context(property_etters[0].line)
+    return (
+        [
+            (property_etters[0].line, f"{context.indent_string}get:"),
+            (property_etters[0].line, f"{child_context.indent_string}pass"),
+        ],
+        property_etters[
+            -1
+        ].end_line,  # TODO: likely last processed line from last etter
+    )
 
 
 def _format_property_delegate(
