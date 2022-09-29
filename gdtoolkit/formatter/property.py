@@ -1,10 +1,11 @@
-from lark import Tree
+from lark import Tree, Token
 from lark.tree import Meta
 
 from .statement_utils import find_tree_among_children
 from .types import FormattedLine, FormattedLines, Outcome
 from .context import Context
 from .block import format_block
+from .function_statement import format_func_statement
 
 
 def has_inline_property_body(statement: Tree) -> bool:
@@ -51,20 +52,40 @@ def _format_property_statement(statement: Tree, context: Context) -> Outcome:
     handlers = {
         "property_delegate_set": _format_property_delegate,
         "property_delegate_get": _format_property_delegate,
-        "property_custom_getter": _format_property_etter,
+        "property_custom_getter": _format_property_getter,
+        "property_custom_setter": _format_property_setter,
     }
     return handlers[statement.data](statement, context)
 
 
-def _format_property_etter(property_etter: Tree, context: Context) -> Outcome:
-    child_context = context.create_child_context(property_etter.line)
-    return (
-        [
-            (property_etter.line, f"{context.indent_string}get:"),
-            (property_etter.line, f"{child_context.indent_string}pass"),
-        ],
-        property_etter.line,
+def _format_property_setter(property_setter: Tree, context: Context) -> Outcome:
+    assert isinstance(property_setter.children[0], Token)
+    argument_name = property_setter.children[0].value
+    formatted_lines: FormattedLines = [
+        (property_setter.line, f"{context.indent_string}set({argument_name}):")
+    ]
+    statements = property_setter.children[1:]
+    block_lines, last_processed_line = format_block(
+        statements,
+        format_func_statement,
+        context.create_child_context(property_setter.line),
     )
+    formatted_lines += block_lines
+    return (formatted_lines, last_processed_line)
+
+
+def _format_property_getter(property_getter: Tree, context: Context) -> Outcome:
+    formatted_lines: FormattedLines = [
+        (property_getter.line, f"{context.indent_string}get:")
+    ]
+    statements = property_getter.children
+    block_lines, last_processed_line = format_block(
+        statements,
+        format_func_statement,
+        context.create_child_context(property_getter.line),
+    )
+    formatted_lines += block_lines
+    return (formatted_lines, last_processed_line)
 
 
 def _format_property_delegate(property_delegate: Tree, context: Context) -> Outcome:

@@ -8,6 +8,7 @@
  - Added support for typed arrays in parser & formatter
  - Added support for annotations in parser & formatter
  - Added support for unique node names in parser & formatter
+ - Added support for property etters in parser & formatter
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
