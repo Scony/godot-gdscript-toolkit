@@ -219,15 +219,20 @@ _plus_atom: ["+"] atom
      | NAME
      | HEX
      | BIN
-     | literal
      | inline_lambda
+     | literal
+inline_lambda: lambda_header _simple_func_stmt
+lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
+_simple_lambda_stmt: single_lambda_stmt (";" single_lambda_stmt)* [";"]
+?single_lambda_stmt: pass_stmt
+                   | return_stmt
+                   | func_var_stmt
+                   | expr_stmt
 ?literal: NUMBER
         | string
         | get_node
         | "^" string -> node_path
         | "&" string -> string_name
-inline_lambda: lambda_header _simple_func_stmt
-lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
 HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string)
