@@ -20,6 +20,17 @@ var p8:
 	set(_x):
 		pass
 
+var p9:
+	set(_x): pass
+	get: return 1
+var p10:
+	get:
+		var xyz = 123
+		return xyz
+	set(x):
+		var xyz = 234
+		p8 = x + 1 + xyz
+
 func __get():
 	return 1
 
