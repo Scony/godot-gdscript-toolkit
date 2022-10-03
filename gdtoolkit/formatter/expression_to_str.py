@@ -113,6 +113,8 @@ def expression_to_str(expression: Node) -> str:
         "trailing_comma": lambda _: "",
         "annotation": _annotation_to_str,
         "annotation_args": _annotation_args_to_str,
+        "inline_lambda": _inline_lambda_to_str,
+        "lambda_header": _lambda_header_to_str,
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -197,6 +199,14 @@ def _annotation_args_to_str(annotation: Tree) -> str:
     ]
     trailing_comma = "," if has_trailing_comma(annotation) else ""
     return "({}{})".format(", ".join(elements), trailing_comma)
+
+
+def _inline_lambda_to_str(a_lambda: Tree) -> str:
+    return "{}{}".format(expression_to_str(a_lambda.children[0]), "pass")
+
+
+def _lambda_header_to_str(_lambda_header: Tree) -> str:
+    return "func(): "
 
 
 def _array_to_str(array: Tree) -> str:
