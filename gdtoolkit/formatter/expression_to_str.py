@@ -202,11 +202,21 @@ def _annotation_args_to_str(annotation: Tree) -> str:
 
 
 def _inline_lambda_to_str(a_lambda: Tree) -> str:
-    return "{}{}".format(expression_to_str(a_lambda.children[0]), "pass")
+    return "{} {}".format(expression_to_str(a_lambda.children[0]), "pass")
 
 
-def _lambda_header_to_str(_lambda_header: Tree) -> str:
-    return "func(): "
+def _lambda_header_to_str(lambda_header: Tree) -> str:
+    has_name = isinstance(lambda_header.children[0], Token)
+    optional_name = f" {lambda_header.children[0].value}" if has_name else ""
+    arguments = expression_to_str(lambda_header.children[1 if has_name else 0])
+    has_type_hint = len(lambda_header.children) == 3 or (
+        len(lambda_header.children) == 2 and not has_name
+    )
+    type_hint_index = 2 if has_name else 1
+    optional_type_hint = (
+        f" -> {lambda_header.children[type_hint_index]}" if has_type_hint else ""
+    )
+    return f"func{optional_name}{arguments}{optional_type_hint}:"
 
 
 def _array_to_str(array: Tree) -> str:
