@@ -207,4 +207,4 @@ def _regular_string_to_str(string: Token) -> str:
     if target == "'" and actual_string.startswith('"'):
         actual_string_data = actual_string_data.replace('\\"', '"')
         actual_string_data = actual_string_data.replace("'", "\\'")
-    return "{}{}{}".format(target, actual_string_data, target)  # pylint: disable=W1308
+    return "{}{}{}".format("'", actual_string_data, "'")  # pylint: disable=W1308
