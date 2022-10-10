@@ -115,6 +115,27 @@ def expression_to_str(expression: Node) -> str:
         "annotation_args": _annotation_args_to_str,
         "inline_lambda": _inline_lambda_to_str,
         "lambda_header": _lambda_header_to_str,
+        "pass_stmt": lambda _: "pass",
+        "return_stmt": lambda e: "return {}".format(
+            standalone_expression_to_str(e.children[0])
+        ),
+        "expr_stmt": lambda e: f"{standalone_expression_to_str(e.children[0])}",
+        "func_var_stmt": lambda e: expression_to_str(e.children[0]),
+        "func_var_empty": lambda e: f"var {e.children[0].value}",
+        "func_var_assigned": lambda e: "var {} = {}".format(
+            e.children[0].value, standalone_expression_to_str(e.children[1])
+        ),
+        "func_var_inf": lambda e: "var {} := {}".format(
+            e.children[0].value, standalone_expression_to_str(e.children[1])
+        ),
+        "func_var_typed": lambda e: "var {}: {}".format(
+            e.children[0].value, standalone_expression_to_str(e.children[1])
+        ),
+        "func_var_typed_assgnd": lambda e: "var {}: {} = {}".format(
+            e.children[0].value,
+            e.children[1].value,
+            standalone_expression_to_str(e.children[2]),
+        ),
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,
@@ -202,7 +223,10 @@ def _annotation_args_to_str(annotation: Tree) -> str:
 
 
 def _inline_lambda_to_str(a_lambda: Tree) -> str:
-    return "{} {}".format(expression_to_str(a_lambda.children[0]), "pass")
+    return "{} {}".format(
+        expression_to_str(a_lambda.children[0]),
+        " ; ".join(expression_to_str(statement) for statement in a_lambda.children[1:]),
+    )
 
 
 def _lambda_header_to_str(lambda_header: Tree) -> str:
