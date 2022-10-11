@@ -221,7 +221,7 @@ _plus_atom: ["+"] atom
      | BIN
      | inline_lambda
      | literal
-inline_lambda: lambda_header _simple_func_stmt
+inline_lambda: lambda_header _simple_lambda_stmt
 lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
 _simple_lambda_stmt: single_lambda_stmt (";" single_lambda_stmt)* [";"]
 ?single_lambda_stmt: pass_stmt
