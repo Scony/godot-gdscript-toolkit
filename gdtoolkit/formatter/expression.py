@@ -1,7 +1,7 @@
 from functools import partial
 from typing import Dict, Callable, List
 
-from lark import Tree
+from lark import Tree, Token
 from lark.tree import Meta
 
 from .context import Context, ExpressionContext
@@ -157,6 +157,8 @@ def _format_foldable_to_multiple_lines(
         ),
         "annotation": _format_annotation_to_multiple_lines,
         "annotation_args": _format_args_to_multiple_lines,
+        "inline_lambda": _format_inline_lambda_to_multiple_lines,
+        "lambda_header": _format_lambda_header_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -560,4 +562,45 @@ def _format_annotation_to_multiple_lines(
     )
     return _format_concrete_expression(
         annotation.children[-1], new_expression_context, context
+    )
+
+
+def _format_inline_lambda_to_multiple_lines(
+    inline_lambda: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    header_lines = _format_concrete_expression(
+        inline_lambda.children[0], expression_context, context
+    )
+    # TODO: statements
+    return header_lines[:-1] + [(header_lines[-1][0], header_lines[-1][1] + " pass")]
+
+
+def _format_lambda_header_to_multiple_lines(
+    lambda_header: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    append_to_prefix = (
+        f"func {lambda_header.children[0].value}"
+        if isinstance(lambda_header.children[0], Token)
+        else "func"
+    )
+    args_offset = 1 if isinstance(lambda_header.children[0], Token) else 0
+    theres_something_after_args = len(lambda_header.children) > args_offset + 1
+    optional_type_hint = (
+        f" -> {lambda_header.children[args_offset+1]}"
+        if theres_something_after_args
+        else ""
+    )
+    prepend_to_suffix = f"{optional_type_hint}:"
+    new_expression_context = ExpressionContext(
+        f"{expression_context.prefix_string}{append_to_prefix}",
+        expression_context.prefix_line,
+        f"{prepend_to_suffix}{expression_context.suffix_string}",
+        expression_context.suffix_line,
+    )
+    return _format_concrete_expression(
+        lambda_header.children[args_offset], new_expression_context, context
     )
