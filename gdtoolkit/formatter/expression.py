@@ -159,6 +159,8 @@ def _format_foldable_to_multiple_lines(
         "annotation_args": _format_args_to_multiple_lines,
         "inline_lambda": _format_inline_lambda_to_multiple_lines,
         "lambda_header": _format_lambda_header_to_multiple_lines,
+        "inline_lambda_statements": _format_inline_lambda_statements_to_multiple_lines,
+        "return_stmt": _format_return_stmt_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -570,11 +572,29 @@ def _format_inline_lambda_to_multiple_lines(
     expression_context: ExpressionContext,
     context: Context,
 ) -> FormattedLines:
-    header_lines = _format_concrete_expression(
-        inline_lambda.children[0], expression_context, context
+    expression_context_for_header = ExpressionContext(
+        expression_context.prefix_string, expression_context.prefix_line, "", -1
     )
-    # TODO: statements
-    return header_lines[:-1] + [(header_lines[-1][0], header_lines[-1][1] + " pass")]
+    header_lines = _format_concrete_expression(
+        inline_lambda.children[0], expression_context_for_header, context
+    )
+    _, last_header_line = header_lines[-1]
+    expression_context_for_statements = ExpressionContext(
+        f"{last_header_line.strip()} ",
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+        expression_context.suffix_line,
+    )
+    fake_meta = Meta()
+    fake_meta.line = inline_lambda.children[1].line
+    fake_meta.end_line = inline_lambda.children[-1].end_line
+    fake_expression = Tree(
+        "inline_lambda_statements", inline_lambda.children[1:], fake_meta
+    )
+    statement_lines = _format_concrete_expression(
+        fake_expression, expression_context_for_statements, context
+    )
+    return header_lines[:-1] + statement_lines
 
 
 def _format_lambda_header_to_multiple_lines(
@@ -604,3 +624,53 @@ def _format_lambda_header_to_multiple_lines(
     return _format_concrete_expression(
         lambda_header.children[args_offset], new_expression_context, context
     )
+
+
+def _format_inline_lambda_statements_to_multiple_lines(
+    inline_lambda_statements: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    lambda_statements = inline_lambda_statements.children
+    if len(lambda_statements) == 1:
+        return _format_concrete_expression(
+            lambda_statements[0], expression_context, context
+        )
+    expression_context_for_first_statement = ExpressionContext(
+        expression_context.prefix_string, expression_context.prefix_line, "", -1
+    )
+    first_statement_formatted_lines = _format_concrete_expression(
+        lambda_statements[0], expression_context_for_first_statement, context
+    )
+    _, last_line = first_statement_formatted_lines[-1]
+    remaining_statements_prefix = last_line.strip()
+    remaining_statements_expression_context = ExpressionContext(
+        f"{remaining_statements_prefix} ; ",
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+        expression_context.suffix_line,
+    )
+    fake_meta = Meta()
+    fake_meta.line = lambda_statements[1].line
+    fake_meta.end_line = lambda_statements[-1].end_line
+    fake_expression = Tree("inline_lambda_statements", lambda_statements[1:], fake_meta)
+    return first_statement_formatted_lines[:-1] + _format_concrete_expression(
+        fake_expression, remaining_statements_expression_context, context
+    )
+
+
+def _format_return_stmt_to_multiple_lines(
+    return_stmt: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    new_expression_context = ExpressionContext(
+        f"{expression_context.prefix_string}return ",
+        expression_context.prefix_line,
+        expression_context.suffix_string,
+        expression_context.suffix_line,
+    )
+    formatted_lines, _ = format_expression(
+        return_stmt.children[0], new_expression_context, context
+    )
+    return formatted_lines

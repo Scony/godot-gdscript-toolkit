@@ -115,6 +115,9 @@ def expression_to_str(expression: Node) -> str:
         "annotation_args": _annotation_args_to_str,
         "inline_lambda": _inline_lambda_to_str,
         "lambda_header": _lambda_header_to_str,
+        "inline_lambda_statements": lambda e: " ; ".join(
+            expression_to_str(statement) for statement in e.children
+        ),
         "pass_stmt": lambda _: "pass",
         "return_stmt": lambda e: "return {}".format(
             standalone_expression_to_str(e.children[0])
@@ -222,10 +225,10 @@ def _annotation_args_to_str(annotation: Tree) -> str:
     return "({}{})".format(", ".join(elements), trailing_comma)
 
 
-def _inline_lambda_to_str(a_lambda: Tree) -> str:
+def _inline_lambda_to_str(inline_lambda: Tree) -> str:
+    fake_expression = Tree("inline_lambda_statements", inline_lambda.children[1:])
     return "{} {}".format(
-        expression_to_str(a_lambda.children[0]),
-        " ; ".join(expression_to_str(statement) for statement in a_lambda.children[1:]),
+        expression_to_str(inline_lambda.children[0]), expression_to_str(fake_expression)
     )
 
 
