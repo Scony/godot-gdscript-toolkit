@@ -161,6 +161,9 @@ def _format_foldable_to_multiple_lines(
         "lambda_header": _format_lambda_header_to_multiple_lines,
         "inline_lambda_statements": _format_inline_lambda_statements_to_multiple_lines,
         "return_stmt": _format_return_stmt_to_multiple_lines,
+        "expr_stmt": lambda e, ec, c: _format_standalone_expression(
+            e.children[0].children[0], ec, c
+        ),
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
