@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Dict, Callable, List
 
 from lark import Tree, Token
@@ -125,8 +124,12 @@ def _format_foldable_to_multiple_lines(
         "asless_arith_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_mdr_expr": _format_operator_chain_based_expression_to_multiple_lines,
-        "asless_actual_neg_expr": partial(_append_to_expression_context_and_pass, ""),
-        "asless_actual_bitw_not": partial(_append_to_expression_context_and_pass, ""),
+        "asless_actual_neg_expr": lambda e, ec, c: _append_to_expression_context_and_pass(
+            f"{expression_to_str(e.children[0])}", e.children[1], ec, c
+        ),
+        "asless_actual_bitw_not": lambda e, ec, c: _append_to_expression_context_and_pass(
+            f"{expression_to_str(e.children[0])}", e.children[1], ec, c
+        ),
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
@@ -161,7 +164,9 @@ def _format_foldable_to_multiple_lines(
         "lambda_header": _format_lambda_header_to_multiple_lines,
         "inline_lambda_statements": _format_inline_lambda_statements_to_multiple_lines,
         "pass_stmt": _format_concrete_expression_to_single_line,
-        "return_stmt": _format_return_stmt_to_multiple_lines,
+        "return_stmt": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
+            "return ", e.children[0], ec, c
+        ),
         "expr_stmt": lambda e, ec, c: _format_standalone_expression(
             e.children[0].children[0], ec, c
         ),
@@ -169,7 +174,19 @@ def _format_foldable_to_multiple_lines(
             e.children[0], ec, c
         ),
         "func_var_empty": _format_concrete_expression_to_single_line,
+        "func_var_assigned": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
+            f"var {expression_to_str(e.children[0])} = ", e.children[1], ec, c
+        ),
         "func_var_typed": _format_concrete_expression_to_single_line,
+        "func_var_typed_assgnd": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
+            f"var {expression_to_str(e.children[0])}: {expression_to_str(e.children[1])} = ",
+            e.children[2],
+            ec,
+            c,
+        ),
+        "func_var_inf": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
+            f"var {expression_to_str(e.children[0])} := ", e.children[1], ec, c
+        ),
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -274,12 +291,12 @@ def _format_string_to_multiple_lines(
 def _format_not_test_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
-    if expression.children[0].value == "!":
-        return _append_to_expression_context_and_pass(
-            "", expression, expression_context, context
-        )
+    spacing = "" if expression.children[0].value == "!" else " "
     return _append_to_expression_context_and_pass(
-        " ", expression, expression_context, context
+        f"{expression_to_str(expression.children[0])}{spacing}",
+        expression.children[1],
+        expression_context,
+        context,
     )
 
 
@@ -525,22 +542,40 @@ def _format_contextless_comma_separated_list_to_multiple_lines(
     return formatted_lines
 
 
-def _append_to_expression_context_and_pass(
-    spacing: str,
-    expression: Tree,
+def _append_to_expression_context(
+    str_to_append: str,
     expression_context: ExpressionContext,
-    context: Context,
-) -> FormattedLines:
-    str_to_append = expression_to_str(expression.children[0])
-    new_expression_context = ExpressionContext(
-        "{}{}{}".format(expression_context.prefix_string, str_to_append, spacing),
+) -> ExpressionContext:
+    return ExpressionContext(
+        "{}{}".format(expression_context.prefix_string, str_to_append),
         expression_context.prefix_line,
         expression_context.suffix_string,
         expression_context.suffix_line,
     )
-    return _format_concrete_expression(
-        expression.children[1], new_expression_context, context
+
+
+def _append_to_expression_context_and_pass(
+    str_to_append: str,
+    expression: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    new_expression_context = _append_to_expression_context(
+        str_to_append, expression_context
     )
+    return _format_concrete_expression(expression, new_expression_context, context)
+
+
+def _append_to_expression_context_and_pass_standalone(
+    str_to_append: str,
+    expression: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    new_expression_context = _append_to_expression_context(
+        str_to_append, expression_context
+    )
+    return format_expression(expression, new_expression_context, context)[0]
 
 
 def _format_await_expression_to_multiple_lines(
@@ -666,20 +701,3 @@ def _format_inline_lambda_statements_to_multiple_lines(
     return first_statement_formatted_lines[:-1] + _format_concrete_expression(
         fake_expression, remaining_statements_expression_context, context
     )
-
-
-def _format_return_stmt_to_multiple_lines(
-    return_stmt: Tree,
-    expression_context: ExpressionContext,
-    context: Context,
-) -> FormattedLines:
-    new_expression_context = ExpressionContext(
-        f"{expression_context.prefix_string}return ",
-        expression_context.prefix_line,
-        expression_context.suffix_string,
-        expression_context.suffix_line,
-    )
-    formatted_lines, _ = format_expression(
-        return_stmt.children[0], new_expression_context, context
-    )
-    return formatted_lines
