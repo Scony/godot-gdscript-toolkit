@@ -14,6 +14,7 @@ from .expression_utils import (
     is_trailing_comma,
 )
 from .expression_to_str import expression_to_str
+from .constants import INDENT_SIZE
 
 
 def format_expression(
@@ -47,6 +48,14 @@ def _format_concrete_expression(
 ) -> FormattedLines:
     if is_foldable(expression):
         return _format_foldable(expression, expression_context, context)  # type: ignore
+    return _format_concrete_expression_to_single_line(
+        expression, expression_context, context
+    )
+
+
+def _format_concrete_expression_to_single_line(
+    expression: Node, expression_context: ExpressionContext, context: Context
+) -> FormattedLines:
     return [
         (
             expression_context.prefix_line,
@@ -77,21 +86,12 @@ def _format_foldable(
         return _format_foldable_to_multiple_lines(
             expression, expression_context, context
         )
-    single_line_expression = expression_to_str(expression)
-    single_line_length = (
-        context.indent
-        + len(expression_context.prefix_string)
-        + len(single_line_expression)
-        + len(expression_context.suffix_string)
-    )
+    single_line_number, single_line = _format_concrete_expression_to_single_line(
+        expression, expression_context, context
+    )[0]
+    single_line_length = len(single_line.replace("\t", " " * INDENT_SIZE))
     if single_line_length <= context.max_line_length:
-        single_line = "{}{}{}{}".format(
-            context.indent_string,
-            expression_context.prefix_string,
-            expression_to_str(expression),
-            expression_context.suffix_string,
-        )
-        return [(expression_context.prefix_line, single_line)]
+        return [(single_line_number, single_line)]
     return _format_foldable_to_multiple_lines(expression, expression_context, context)
 
 
@@ -160,10 +160,16 @@ def _format_foldable_to_multiple_lines(
         "inline_lambda": _format_inline_lambda_to_multiple_lines,
         "lambda_header": _format_lambda_header_to_multiple_lines,
         "inline_lambda_statements": _format_inline_lambda_statements_to_multiple_lines,
+        "pass_stmt": _format_concrete_expression_to_single_line,
         "return_stmt": _format_return_stmt_to_multiple_lines,
         "expr_stmt": lambda e, ec, c: _format_standalone_expression(
             e.children[0].children[0], ec, c
         ),
+        "func_var_stmt": lambda e, ec, c: _format_standalone_expression(
+            e.children[0], ec, c
+        ),
+        "func_var_empty": _format_concrete_expression_to_single_line,
+        "func_var_typed": _format_concrete_expression_to_single_line,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
