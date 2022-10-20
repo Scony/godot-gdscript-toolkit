@@ -622,10 +622,14 @@ def _format_inline_lambda_to_multiple_lines(
     header_lines = _format_concrete_expression(
         inline_lambda.children[0], expression_context_for_header, context
     )
-    _, last_header_line = header_lines[-1]
+    last_header_line_number, last_header_line = header_lines[-1]
+    last_header_line_number = (
+        last_header_line_number if last_header_line_number is not None else -1
+    )
+    assert last_header_line_number != -1
     expression_context_for_statements = ExpressionContext(
         f"{last_header_line.strip()} ",
-        expression_context.prefix_line,
+        last_header_line_number,
         expression_context.suffix_string,
         expression_context.suffix_line,
     )
@@ -686,11 +690,13 @@ def _format_inline_lambda_statements_to_multiple_lines(
     first_statement_formatted_lines = _format_concrete_expression(
         lambda_statements[0], expression_context_for_first_statement, context
     )
-    _, last_line = first_statement_formatted_lines[-1]
+    last_line_number, last_line = first_statement_formatted_lines[-1]
+    last_line_number = last_line_number if last_line_number is not None else -1
+    assert last_line_number != -1
     remaining_statements_prefix = last_line.strip()
     remaining_statements_expression_context = ExpressionContext(
         f"{remaining_statements_prefix} ; ",
-        expression_context.prefix_line,
+        last_line_number,
         expression_context.suffix_string,
         expression_context.suffix_line,
     )
