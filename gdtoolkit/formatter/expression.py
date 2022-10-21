@@ -46,6 +46,7 @@ def _format_concrete_expression(
     expression: Node, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     if is_foldable(expression):
+        assert isinstance(expression, Tree)
         return _format_foldable(expression, expression_context, context)  # type: ignore
     return _format_concrete_expression_to_single_line(
         expression, expression_context, context
@@ -458,6 +459,7 @@ def _format_subscription_to_multiple_lines(
         subscriptee, subscriptee_expression_context, context
     )
     last_line = subscriptee_lines[-1][0]
+    assert last_line is not None
     subscript_expression_context = ExpressionContext(
         "{}[".format(subscriptee_lines[-1][1].strip()),
         last_line,  # type: ignore
@@ -674,13 +676,10 @@ def _format_inline_lambda_to_multiple_lines(
         inline_lambda.children[0], expression_context_for_header, context
     )
     last_header_line_number, last_header_line = header_lines[-1]
-    last_header_line_number = (
-        last_header_line_number if last_header_line_number is not None else -1
-    )
-    assert last_header_line_number != -1
+    assert last_header_line_number is not None
     expression_context_for_statements = ExpressionContext(
         f"{last_header_line.strip()} ",
-        last_header_line_number,
+        last_header_line_number,  # type:ignore
         expression_context.suffix_string,
         expression_context.suffix_line,
     )
@@ -742,12 +741,11 @@ def _format_inline_lambda_statements_to_multiple_lines(
         lambda_statements[0], expression_context_for_first_statement, context
     )
     last_line_number, last_line = first_statement_formatted_lines[-1]
-    last_line_number = last_line_number if last_line_number is not None else -1
-    assert last_line_number != -1
+    assert last_line_number is not None
     remaining_statements_prefix = last_line.strip()
     remaining_statements_expression_context = ExpressionContext(
         f"{remaining_statements_prefix} ; ",
-        last_line_number,
+        last_line_number,  # type: ignore
         expression_context.suffix_string,
         expression_context.suffix_line,
     )
