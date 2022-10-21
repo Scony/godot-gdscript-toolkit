@@ -1,6 +1,9 @@
 class X:
 	func foo(result, end):
-		var path: String = result.path.substr(0, end).replace("res://", "").replace("tests/", "").replace("/", " ").capitalize()
+		var path: String = (
+			result.path.substr(0, end).replace("res://", "").replace("tests/", "").replace("/", " ")
+			. capitalize()
+		)
 
 
 class Y:
