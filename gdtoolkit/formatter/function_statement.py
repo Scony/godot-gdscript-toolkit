@@ -70,7 +70,7 @@ def _format_if_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_for_statement(statement: Tree, context: Context) -> Outcome:
-    prefix = "for {} in ".format(statement.children[0].value)
+    prefix = f"for {statement.children[0].value} in "
     suffix = ":"
     expr_position = 1
     return _format_branch(prefix, suffix, expr_position, statement, context)

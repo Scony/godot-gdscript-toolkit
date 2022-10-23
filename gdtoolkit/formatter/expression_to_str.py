@@ -55,12 +55,8 @@ def expression_to_str(expression: Node) -> str:
         "asless_arith_expr": _operator_chain_based_expression_to_str,
         "mdr_expr": _operator_chain_based_expression_to_str,
         "asless_mdr_expr": _operator_chain_based_expression_to_str,
-        "asless_actual_neg_expr": lambda e: "-{}".format(
-            expression_to_str(e.children[1])
-        ),
-        "asless_actual_bitw_not": lambda e: "~{}".format(
-            expression_to_str(e.children[1])
-        ),
+        "asless_actual_neg_expr": lambda e: f"-{expression_to_str(e.children[1])}",
+        "asless_actual_bitw_not": lambda e: f"~{expression_to_str(e.children[1])}",
         "type_test": _operator_chain_based_expression_to_str,
         "asless_type_test": _operator_chain_based_expression_to_str,
         "actual_type_cast": _operator_chain_based_expression_to_str,
@@ -72,18 +68,16 @@ def expression_to_str(expression: Node) -> str:
         "getattr_call": _getattr_call_to_str,
         "getattr": lambda e: "".join(map(expression_to_str, e.children)),
         "subscr_expr": _subscription_to_str,
-        "par_expr": lambda e: "({})".format(
-            standalone_expression_to_str(e.children[0])
-        ),
+        "par_expr": lambda e: f"({standalone_expression_to_str(e.children[0])})",
         "array": _array_to_str,
         "dict": _dict_to_str,
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
-        "get_node": lambda e: "${}".format(expression_to_str(e.children[0])),
+        "get_node": lambda e: f"${expression_to_str(e.children[0])}",
         "path": lambda e: "".join([name_token.value for name_token in e.children]),
-        "node_path": lambda e: "^{}".format(expression_to_str(e.children[0])),
-        "string_name": lambda e: "&{}".format(expression_to_str(e.children[0])),
+        "node_path": lambda e: f"^{expression_to_str(e.children[0])}",
+        "string_name": lambda e: f"&{expression_to_str(e.children[0])}",
         # fake expressions:
         "func_args": _args_to_str,
         "func_arg_regular": lambda e: "{}{}".format(
@@ -98,7 +92,7 @@ def expression_to_str(expression: Node) -> str:
         "func_arg_typed": lambda e: "{}: {}{}".format(
             e.children[0].value,
             e.children[1].value,
-            " = {}".format(standalone_expression_to_str(e.children[2]))
+            f" = {standalone_expression_to_str(e.children[2])}"
             if len(e.children) > 2
             else "",
         ),
@@ -119,9 +113,7 @@ def expression_to_str(expression: Node) -> str:
             expression_to_str(statement) for statement in e.children
         ),
         "pass_stmt": lambda _: "pass",
-        "return_stmt": lambda e: "return {}".format(
-            standalone_expression_to_str(e.children[0])
-        ),
+        "return_stmt": lambda e: f"return {standalone_expression_to_str(e.children[0])}",
         "expr_stmt": lambda e: f"{standalone_expression_to_str(e.children[0])}",
         "func_var_stmt": lambda e: expression_to_str(e.children[0]),
         "func_var_empty": lambda e: f"var {e.children[0].value}",
@@ -156,16 +148,14 @@ def expression_to_str(expression: Node) -> str:
         "shift_pattern": _operator_chain_based_expression_to_str,
         "arith_pattern": _operator_chain_based_expression_to_str,
         "mdr_pattern": _operator_chain_based_expression_to_str,
-        "neg_pattern": lambda e: "-{}".format(expression_to_str(e.children[1])),
-        "bitw_not_pattern": lambda e: "~{}".format(expression_to_str(e.children[1])),
+        "neg_pattern": lambda e: f"-{expression_to_str(e.children[1])}",
+        "bitw_not_pattern": lambda e: f"~{expression_to_str(e.children[1])}",
         "attr_pattern": lambda e: ".".join(map(expression_to_str, e.children[::2])),
         "call_pattern": lambda e: "{}({})".format(
             expression_to_str(e.children[0]), expression_to_str(e.children[1])
         ),
-        "par_pattern": lambda e: "({})".format(expression_to_str(e.children[0])),
-        "var_capture_pattern": lambda e: "var {}".format(
-            expression_to_str(e.children[0])
-        ),
+        "par_pattern": lambda e: f"({expression_to_str(e.children[0])})",
+        "var_capture_pattern": lambda e: f"var {expression_to_str(e.children[0])}",
         "etc_pattern": lambda _: "..",
         "wildcard_pattern": lambda _: "_",
         "array_pattern": _array_to_str,
@@ -179,7 +169,7 @@ def expression_to_str(expression: Node) -> str:
 def _operator_chain_based_expression_to_str(expression: Tree) -> str:
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
     chain = [
-        " {} {}".format(expression_to_str(operator), expression_to_str(expr))
+        f" {expression_to_str(operator)} {expression_to_str(expr)}"
         for operator, expr in operator_expr_chain
     ]
     first_expr = expression.children[0]
@@ -189,13 +179,13 @@ def _operator_chain_based_expression_to_str(expression: Tree) -> str:
 def _standalone_call_to_str(call: Tree) -> str:
     callee = expression_to_str(call.children[0])
     arguments = _arguments_to_str(call.children[1:])
-    return "{}({})".format(callee, arguments)
+    return f"{callee}({arguments})"
 
 
 def _getattr_call_to_str(call: Tree) -> str:
     a_getattr = expression_to_str(call.children[0])
     arguments = _arguments_to_str(call.children[1:])
-    return "{}({})".format(a_getattr, arguments)
+    return f"{a_getattr}({arguments})"
 
 
 def _arguments_to_str(arguments: List[Node]) -> str:

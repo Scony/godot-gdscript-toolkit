@@ -196,9 +196,9 @@ def _format_array_to_multiple_lines(
     array: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
-        "{}[".format(expression_context.prefix_string),
+        f"{expression_context.prefix_string}[",
         expression_context.prefix_line,
-        "]{}".format(expression_context.suffix_string),
+        f"]{expression_context.suffix_string}",
         array.end_line,
     )
     return _format_comma_separated_list(array.children, new_expression_context, context)
@@ -208,9 +208,9 @@ def _format_dict_to_multiple_lines(
     a_dict: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
-        "{}{{".format(expression_context.prefix_string),
+        f"{expression_context.prefix_string}{{",
         expression_context.prefix_line,
-        "}}{}".format(expression_context.suffix_string),
+        f"}}{expression_context.suffix_string}",
         a_dict.end_line,
     )
     return _format_comma_separated_list(
@@ -222,9 +222,9 @@ def _format_args_to_multiple_lines(
     args: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
-        "{}(".format(expression_context.prefix_string),
+        f"{expression_context.prefix_string}(",
         expression_context.prefix_line,
-        "){}".format(expression_context.suffix_string),
+        f"){expression_context.suffix_string}",
         args.end_line,
     )
     return _format_comma_separated_list(args.children, new_expression_context, context)
@@ -256,9 +256,9 @@ def _format_parentheses_to_multiple_lines(
     par_expr: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     new_expression_context = ExpressionContext(
-        "{}(".format(expression_context.prefix_string),
+        f"{expression_context.prefix_string}(",
         expression_context.prefix_line,
-        "){}".format(expression_context.suffix_string),
+        f"){expression_context.suffix_string}",
         par_expr.end_line,
     )
     return _format_standalone_expression(
@@ -284,7 +284,7 @@ def _format_string_to_multiple_lines(
     for middle_line in lines[1:-1]:
         formatted_lines.append((string.line, middle_line))
     formatted_lines.append(
-        (string.line, "{}{}".format(lines[-1], expression_context.suffix_string))
+        (string.line, f"{lines[-1]}{expression_context.suffix_string}")
     )
     return formatted_lines
 
@@ -330,7 +330,7 @@ def _format_func_arg_to_multiple_lines(
         return [
             (
                 expression.children[1].line,
-                "{}{}".format(context.indent_string, expression_to_str(expression)),
+                f"{context.indent_string}{expression_to_str(expression)}",
             )
         ]
     template = {
@@ -461,9 +461,9 @@ def _format_subscription_to_multiple_lines(
     last_line = subscriptee_lines[-1][0]
     assert last_line is not None
     subscript_expression_context = ExpressionContext(
-        "{}[".format(subscriptee_lines[-1][1].strip()),
+        f"{subscriptee_lines[-1][1].strip()}[",
         last_line,  # type: ignore
-        "]{}".format(expression_context.suffix_string),
+        f"]{expression_context.suffix_string}",
         expression_context.suffix_line,
     )
     subscript = expression.children[1]
@@ -533,9 +533,7 @@ def _format_contextless_operator_chain_based_expression_to_multiple_lines(
     for operator, child in operator_expr_chain:
         lines = _format_concrete_expression(
             child,
-            ExpressionContext(
-                "{} ".format(operator.value), child.line, "", child.end_line
-            ),
+            ExpressionContext(f"{operator.value} ", child.line, "", child.end_line),
             context,
         )
         formatted_lines += lines
@@ -560,7 +558,7 @@ def _format_comma_separated_list_to_multiple_lines(
     formatted_lines = [
         (
             expression_context.prefix_line,
-            "{}{}".format(context.indent_string, expression_context.prefix_string),
+            f"{context.indent_string}{expression_context.prefix_string}",
         )
     ]  # type: FormattedLines
     if len(a_list) > 0:
@@ -570,7 +568,7 @@ def _format_comma_separated_list_to_multiple_lines(
     formatted_lines.append(
         (
             expression_context.suffix_line,
-            "{}{}".format(context.indent_string, expression_context.suffix_string),
+            f"{context.indent_string}{expression_context.suffix_string}",
         )
     )
     return formatted_lines
@@ -600,7 +598,7 @@ def _append_to_expression_context(
     expression_context: ExpressionContext,
 ) -> ExpressionContext:
     return ExpressionContext(
-        "{}{}".format(expression_context.prefix_string, str_to_append),
+        f"{expression_context.prefix_string}{str_to_append}",
         expression_context.prefix_line,
         expression_context.suffix_string,
         expression_context.suffix_line,
@@ -638,7 +636,7 @@ def _format_await_expression_to_multiple_lines(
 ) -> FormattedLines:
     str_to_append = " ".join(token.value for token in expression.children[:-1])
     new_expression_context = ExpressionContext(
-        "{}{} ".format(expression_context.prefix_string, str_to_append),
+        f"{expression_context.prefix_string}{str_to_append} ",
         expression_context.prefix_line,
         expression_context.suffix_string,
         expression_context.suffix_line,

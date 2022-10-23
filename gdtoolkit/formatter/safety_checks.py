@@ -20,7 +20,7 @@ class LoosenTreeTransformer(Transformer):
 
     def asless_actual_neg_expr(self, args):
         return (
-            Token("NUMBER", "-{}".format(args[1].value))
+            Token("NUMBER", f"-{args[1].value}")
             if isinstance(args[1], Token) and args[1].type == "NUMBER"
             else Tree("asless_actual_neg_expr", args)
         )

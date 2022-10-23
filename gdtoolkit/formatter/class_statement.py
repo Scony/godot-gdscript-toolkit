@@ -49,12 +49,7 @@ def _format_child_and_prepend_to_outcome(
     lines, last_processed_line = format_class_statement(statement.children[0], context)
     first_line_no, first_line = lines[0]
     return (
-        [
-            (
-                first_line_no,
-                "{}{}{}".format(context.indent_string, prefix, first_line.strip()),
-            )
-        ]
+        [(first_line_no, f"{context.indent_string}{prefix}{first_line.strip()}")]
         + lines[1:],
         last_processed_line,
     )
@@ -62,12 +57,12 @@ def _format_child_and_prepend_to_outcome(
 
 def _format_const_statement(statement: Tree, context: Context) -> Outcome:
     if len(statement.children) == 4:
-        prefix = "const {} = ".format(statement.children[1].value)
+        prefix = f"const {statement.children[1].value} = "
     elif len(statement.children) == 5:
-        prefix = "const {} := ".format(statement.children[1].value)
+        prefix = f"const {statement.children[1].value} := "
     elif len(statement.children) == 6:
-        prefix = "const {}: {} = ".format(
-            statement.children[1].value, statement.children[3].value
+        prefix = (
+            f"const {statement.children[1].value}: {statement.children[3].value} = "
         )
     expression_context = ExpressionContext(
         prefix, statement.line, "", statement.end_line
@@ -78,10 +73,10 @@ def _format_const_statement(statement: Tree, context: Context) -> Outcome:
 def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
     if len(statement.children) == 1 or len(statement.children[1].children) == 0:
         return format_simple_statement(
-            "signal {}".format(statement.children[0].value), statement, context
+            f"signal {statement.children[0].value}", statement, context
         )
     expression_context = ExpressionContext(
-        "signal {}".format(statement.children[0].value),
+        f"signal {statement.children[0].value}",
         statement.line,
         "",
         statement.end_line,
@@ -95,9 +90,7 @@ def _format_classname_statement(statement: Tree, context: Context) -> Outcome:
     formatted_lines: FormattedLines = [
         (
             statement.line,
-            "{}class_name {}".format(
-                context.indent_string, statement.children[0].value
-            ),
+            f"{context.indent_string}class_name {statement.children[0].value}",
         )
     ]
     return (formatted_lines, last_processed_line_no)
@@ -169,7 +162,7 @@ def _format_class_statement(statement: Tree, context: Context) -> Outcome:
     last_processed_line_no = statement.line
     name = statement.children[0].value
     formatted_lines: FormattedLines = [
-        (statement.line, "{}class {}:".format(context.indent_string, name))
+        (statement.line, f"{context.indent_string}class {name}:")
     ]
     class_lines, last_processed_line_no = format_block(
         statement.children[1:],
@@ -208,7 +201,7 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
 def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
     actual_enum = statement.children[0]
     prefix = (
-        "enum {} ".format(actual_enum.children[0].value)
+        f"enum {actual_enum.children[0].value} "
         if len(actual_enum.children) == 2
         else "enum "
     )

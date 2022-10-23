@@ -91,7 +91,7 @@ def _check_files_formatting(
                     code, line_length, file_path, safety_checks
                 )
                 if success and actually_formatted:
-                    print("would reformat {}".format(file_path), file=sys.stderr)
+                    print(f"would reformat {file_path}", file=sys.stderr)
                     if print_diff:
                         print(
                             "\n".join(
@@ -110,7 +110,7 @@ def _check_files_formatting(
                     failed_files.add(file_path)
         except OSError as exceptions:
             print(
-                "Cannot open file '{}': {}".format(file_path, exceptions.strerror),
+                f"Cannot open file '{file_path}': {exceptions.strerror}",
                 file=sys.stderr,
             )
             failed_files.add(file_path)
@@ -146,7 +146,7 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
                     code, line_length, file_path, safety_checks
                 )
                 if success and actually_formatted:
-                    print("reformatted {}".format(file_path))
+                    print(f"reformatted {file_path}")
                     formatted_files.add(file_path)
                     handle.seek(0)
                     handle.truncate(0)
@@ -155,7 +155,7 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
                     failed_files.add(file_path)
         except OSError as exceptions:
             print(
-                "Cannot open file '{}': {}".format(file_path, exceptions.strerror),
+                f"Cannot open file '{file_path}': {exceptions.strerror}",
                 file=sys.stderr,
             )
             failed_files.add(file_path)

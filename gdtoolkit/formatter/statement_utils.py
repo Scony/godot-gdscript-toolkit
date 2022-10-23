@@ -6,7 +6,7 @@ def format_simple_statement(
     statement_name: str, statement: Node, context: Context
 ) -> Outcome:
     return (
-        [(statement.line, "{}{}".format(context.indent_string, statement_name))],
+        [(statement.line, f"{context.indent_string}{statement_name}")],
         statement.line,
     )
 
