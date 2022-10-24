@@ -1,4 +1,4 @@
-from typing import Dict, Callable, List
+from typing import Dict, Callable, List, Optional
 
 from lark import Tree, Token
 from lark.tree import Meta
@@ -136,8 +136,8 @@ def _format_foldable_to_multiple_lines(
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "await_expr": _format_await_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiple_lines,
-        "getattr_call": _format_getattr_call_to_multiple_lines,
-        "getattr": _format_operator_chain_based_expression_to_multiple_lines,
+        "getattr_call": _collapse_to_getattr_chain_and_format_to_multiple_lines,
+        "getattr": _collapse_to_getattr_chain_and_format_to_multiple_lines,
         "subscr_expr": _format_subscription_to_multiple_lines,
         "par_expr": _format_parentheses_to_multiple_lines,
         "array": _format_array_to_multiple_lines,
@@ -188,6 +188,8 @@ def _format_foldable_to_multiple_lines(
         "func_var_inf": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
             f"var {expression_to_str(e.children[0])} := ", e.children[1], ec, c
         ),
+        "getattr_chain": _format_operator_chain_based_expression_to_multiple_lines,
+        "actual_getattr_call": _format_actual_getattr_call_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -378,7 +380,16 @@ def _format_call_expression_to_multiple_lines(
     )
 
 
-def _format_getattr_call_to_multiple_lines(
+def _collapse_to_getattr_chain_and_format_to_multiple_lines(
+    expression: Tree, expression_context: ExpressionContext, context: Context
+) -> FormattedLines:
+    return _format_foldable_to_multiple_lines(
+        _collapse_getattr_tree_to_getattr_chain(expression), expression_context, context
+    )
+
+
+# TODO: simplify
+def _format_actual_getattr_call_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     callee_node = expression.children[0]
@@ -511,7 +522,7 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     )
     formatted_lines.append(
         (
-            expression.children[-1].line,
+            expression.children[-1].end_line,
             "{}{}{}".format(
                 context.indent_string, rpar, expression_context.suffix_string
             ),
@@ -754,3 +765,50 @@ def _format_inline_lambda_statements_to_multiple_lines(
     return first_statement_formatted_lines[:-1] + _format_concrete_expression(
         fake_expression, remaining_statements_expression_context, context
     )
+
+
+def _collapse_getattr_tree_to_getattr_chain(expression: Tree) -> Tree:
+    reversed_getattr_chain_children = []  # type: List[Node]
+    pending_getattr_call_to_match = None
+    next_expression_to_process = expression  # type: Optional[Node]
+    while next_expression_to_process is not None:
+        if isinstance(next_expression_to_process, Token):
+            reversed_getattr_chain_children.append(next_expression_to_process)
+            next_expression_to_process = None
+        elif next_expression_to_process.data == "getattr_call":
+            pending_getattr_call_to_match = next_expression_to_process
+            next_expression_to_process = next_expression_to_process.children[0]
+        elif next_expression_to_process.data == "getattr":
+            if pending_getattr_call_to_match is None:
+                reversed_getattr_chain_children += reversed(
+                    next_expression_to_process.children[1:]
+                )
+            else:
+                matching_attr = next_expression_to_process.children[-1]
+                fake_meta = Meta()
+                fake_meta.line = matching_attr.line
+                fake_meta.end_line = pending_getattr_call_to_match.end_line
+                fake_expression = Tree(
+                    "actual_getattr_call",
+                    [matching_attr] + pending_getattr_call_to_match.children[1:],
+                    fake_meta,
+                )
+                pending_getattr_call_to_match = None
+                reversed_getattr_chain_children.append(fake_expression)
+                reversed_getattr_chain_children += reversed(
+                    next_expression_to_process.children[1:-1]
+                )
+            next_expression_to_process = next_expression_to_process.children[0]
+        else:
+            reversed_getattr_chain_children.append(next_expression_to_process)
+            next_expression_to_process = None
+    getattr_chain_children = list(reversed(reversed_getattr_chain_children))
+    fake_meta = Meta()
+    fake_meta.line = getattr_chain_children[0].line
+    fake_meta.end_line = getattr_chain_children[-1].end_line
+    fake_expression = Tree(
+        "getattr_chain",
+        getattr_chain_children,
+        fake_meta,
+    )
+    return fake_expression
