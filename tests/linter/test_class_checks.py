@@ -56,16 +56,15 @@ def test_class_definitions_order_ok(code):
     simple_ok_check(code)
 
 
-@pytest.mark.skip(reason='to be fixed in a bundle')
 @pytest.mark.parametrize('code', [
-"""extends Node
-pass
+"""var x
+signal s
 """,
-"""pass;extends Node
-pass
+"""extends Node;var x
+signal s
 """,
 """
-class X: extends Node;pass
+class X: var x;extends Node
 """,
 ])
 def test_class_definitions_order_nok(code):
