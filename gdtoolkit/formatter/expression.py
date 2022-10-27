@@ -189,7 +189,7 @@ def _format_foldable_to_multiple_lines(
             f"var {expression_to_str(e.children[0])} := ", e.children[1], ec, c
         ),
         "getattr_chain": _format_operator_chain_based_expression_to_multiple_lines,
-        "actual_getattr_call": _format_actual_getattr_call_to_multiple_lines,
+        "actual_getattr_call": _format_call_expression_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -386,74 +386,6 @@ def _collapse_to_getattr_chain_and_format_to_multiple_lines(
     return _format_foldable_to_multiple_lines(
         _collapse_getattr_tree_to_getattr_chain(expression), expression_context, context
     )
-
-
-# TODO: simplify
-def _format_actual_getattr_call_to_multiple_lines(
-    expression: Tree, expression_context: ExpressionContext, context: Context
-) -> FormattedLines:
-    callee_node = expression.children[0]
-    callee_expression_context = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, "", -1
-    )
-    callee_lines = _format_concrete_expression(
-        callee_node, callee_expression_context, context
-    )
-    arglist_context = context
-    last_calee_line_number, last_calee_line = callee_lines[-1]
-    assert last_calee_line_number is not None
-    arglist_expression_context = ExpressionContext(
-        last_calee_line.strip(),
-        last_calee_line_number,  # type: ignore
-        expression_context.suffix_string,
-        expression_context.suffix_line,
-    )
-    closing_parenthesis_present = last_calee_line.endswith(")")
-    if closing_parenthesis_present:
-        arglist_context = context.create_child_context(-1)
-        callee_lines = callee_lines[:-1]
-        last_calee_line_number, last_calee_line = callee_lines[-1]
-        assert last_calee_line_number is not None
-        arglist_expression_context = ExpressionContext(
-            last_calee_line.strip(),
-            last_calee_line_number,  # type: ignore
-            "",
-            -1,
-        )
-    arglist_lines = []  # type: FormattedLines
-    arglist_is_empty = len(expression.children) == 1
-    if arglist_is_empty:
-        arglist_lines = [
-            (
-                arglist_expression_context.prefix_line,
-                "{}{}(){}".format(
-                    arglist_context.indent_string,
-                    arglist_expression_context.prefix_string,
-                    expression_context.suffix_string,
-                ),
-            )
-        ]
-    else:
-        arglist_expression_context = ExpressionContext(
-            f"{arglist_expression_context.prefix_string}(",
-            arglist_expression_context.prefix_line,
-            f"){arglist_expression_context.suffix_string}",
-            arglist_expression_context.suffix_line
-            if arglist_expression_context.suffix_line != -1
-            else expression.end_line,
-        )
-        arglist_lines = _format_comma_separated_list(
-            expression.children[1:], arglist_expression_context, arglist_context
-        )
-    formatted_lines = callee_lines[:-1] + arglist_lines
-    if closing_parenthesis_present:
-        formatted_lines.append(
-            (
-                expression.end_line,
-                "{}){}".format(context.indent_string, expression_context.suffix_string),
-            )
-        )
-    return formatted_lines
 
 
 def _format_subscription_to_multiple_lines(
