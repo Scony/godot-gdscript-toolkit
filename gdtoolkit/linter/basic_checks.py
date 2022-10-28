@@ -127,7 +127,7 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
             func_args = func_header.children[1]
             for func_arg in func_args.children:
                 arg_name_token = find_name_token_among_children(func_arg)
-                arg_name = arg_name_token.value
+                arg_name = arg_name_token.value  # type: ignore
                 argument_definitions[arg_name] = (
                     argument_definitions.get(arg_name, 0) + 1
                 )
@@ -148,8 +148,8 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
                             description="unused function argument '{}'".format(
                                 argument
                             ),
-                            line=argument_tokens[argument].line,
-                            column=argument_tokens[argument].column,
+                            line=argument_tokens[argument].line,  # type: ignore
+                            column=argument_tokens[argument].column,  # type: ignore
                         )
                     )
     return problems

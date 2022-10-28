@@ -122,4 +122,4 @@ def _class_definitions_order_check_for_class(
 def _class_var_stmt_visibility(class_var_stmt) -> str:
     some_var_stmt = class_var_stmt.children[0]
     name_token = find_name_token_among_children(some_var_stmt)
-    return "pub" if is_function_public(name_token.value) else "prv"
+    return "pub" if is_function_public(name_token.value) else "prv"  # type: ignore

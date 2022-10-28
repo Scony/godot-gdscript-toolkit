@@ -1,7 +1,7 @@
 from lark import Tree, Token
 from lark.tree import Meta
 
-from .statement_utils import find_tree_among_children
+from ..common.utils import find_tree_among_children
 from .types import FormattedLine, FormattedLines, Outcome
 from .context import Context
 from .block import format_block
@@ -9,7 +9,7 @@ from .function_statement import format_func_statement
 
 
 def has_inline_property_body(statement: Tree) -> bool:
-    return find_tree_among_children("inline_property_body", statement)
+    return find_tree_among_children("inline_property_body", statement) is not None
 
 
 def append_property_body_to_formatted_line(
