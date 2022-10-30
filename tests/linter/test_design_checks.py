@@ -141,3 +141,75 @@ func foo21():
 ])
 def test_max_public_methods_nok(code):
     simple_nok_check(code, 'max-public-methods', line=1)
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    if 1 > 2:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+""",
+"""
+func foo():
+    if 1 > 2:
+        if 1:
+            if 1:
+                if 1:
+                    return 1
+                return 1
+            return 1
+        elif 1:
+            return 1
+        return 1
+""",
+])
+def test_max_returns_ok(code):
+    simple_ok_check(code, disable=["no-elif-return"])
+
+
+@pytest.mark.parametrize('code', [
+"""
+func foo():
+    if 1 > 2:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    elif 1:
+        return 1
+    return 1
+""",
+"""
+func foo():
+    if 1 > 2:
+        if 1:
+            if 1:
+                if 1:
+                    return 1
+                return 1
+            return 1
+        elif 1:
+            return 1
+        return 1
+        return 1
+
+    return 1
+""",
+])
+def test_max_returns_nok(code):
+    simple_nok_check(code, 'max-returns', line=15, disable=['no-elif-return'])

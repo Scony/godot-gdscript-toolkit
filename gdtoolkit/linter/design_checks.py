@@ -18,6 +18,10 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             partial(_max_public_methods_check, config["max-public-methods"]),
         ),
         (
+            "max-returns",
+            partial(_max_returns_check, config["max-returns"]),
+        ),
+        (
             "function-arguments-number",
             partial(_function_args_num_check, config["function-arguments-number"]),
         ),
@@ -33,13 +37,12 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
 def _function_args_num_check(threshold: int, ast: AbstractSyntaxTree) -> List[Problem]:
     problems = []
     for function in ast.all_functions:
-        func_name = function.name
         if len(function.parameters) > threshold:
             problems.append(
                 Problem(
                     name="function-arguments-number",
                     description='Function "{}" has more than {} arguments'.format(
-                        func_name, threshold
+                        function.name, threshold
                     ),
                     line=function.lark_node.line,
                     column=function.lark_node.column,
@@ -68,6 +71,28 @@ def _max_public_methods_check(threshold: int, ast: AbstractSyntaxTree) -> List[P
                     ),
                     line=a_class.lark_node.line,
                     column=a_class.lark_node.column,
+                )
+            )
+    return problems
+
+
+def _max_returns_check(threshold: int, ast: AbstractSyntaxTree) -> List[Problem]:
+    problems = []
+    for function in ast.all_functions:
+        returns = [
+            statement
+            for statement in function.all_statements
+            if statement.kind == "return_stmt"
+        ]
+        if len(returns) > threshold:
+            problems.append(
+                Problem(
+                    name="max-returns",
+                    description='Function "{}" has more than {} arguments'.format(
+                        function.name, threshold
+                    ),
+                    line=returns[-1].lark_node.line,
+                    column=returns[-1].lark_node.column,
                 )
             )
     return problems

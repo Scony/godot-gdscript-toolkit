@@ -73,7 +73,7 @@ DEFAULT_CONFIG = MappingProxyType(
         # useless-super-delegation
         # design checks
         # max-locals
-        # max-returns
+        "max-returns": 6,
         # max-branches
         # max-statements
         # max-attributes

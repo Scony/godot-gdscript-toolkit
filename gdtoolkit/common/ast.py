@@ -6,6 +6,43 @@ from .utils import find_name_token_among_children, find_tree_among_children
 
 
 # pylint: disable=too-few-public-methods
+class Statement:
+    """Abstract representation of statement"""
+
+    def __init__(self, node: Tree):
+        self.lark_node = node
+        self.kind = node.data
+        self.sub_statements = []  # type: List[Statement]
+        self.all_sub_statements = []  # type: List[Statement]
+
+        self._load_sub_statements()
+
+    def _load_sub_statements(self):
+        if self.kind == "class_def":
+            pass
+        elif self.kind == "property_body_def":
+            pass
+        elif self.kind in ["func_def", "static_func_def"]:
+            self.sub_statements = [Statement(n) for n in self.lark_node.children[1:]]
+        elif self.kind == "if_stmt":
+            for branch in self.lark_node.children:
+                if branch.data in ["if_branch", "elif_branch"]:
+                    self.sub_statements += [Statement(n) for n in branch.children[1:]]
+                else:
+                    self.sub_statements += [Statement(n) for n in branch.children]
+        elif self.kind == "while_stmt":
+            pass
+        elif self.kind == "for_stmt":
+            pass
+        elif self.kind == "match_stmt":
+            pass
+        for sub_statement in self.sub_statements:
+            self.all_sub_statements += [
+                sub_statement
+            ] + sub_statement.all_sub_statements
+
+
+# pylint: disable=too-few-public-methods
 class Parameter:
     """Abstract representation of function parameter"""
 
@@ -13,6 +50,7 @@ class Parameter:
         self.name = node.children[0].value
 
 
+# TODO: inherit from statement
 # pylint: disable=too-few-public-methods
 class Function:
     """Abstract representation of function"""
@@ -34,6 +72,8 @@ class Function:
             for c in func_args.children  # type: ignore
             if c.data != "trailing_comma"
         ]
+        slf = Statement(self.lark_node)
+        self.all_statements = [slf] + slf.all_sub_statements
 
 
 # pylint: disable=too-few-public-methods
