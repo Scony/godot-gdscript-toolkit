@@ -19,10 +19,10 @@ class Statement:
 
     def _load_sub_statements(self):
         if self.kind == "class_def":
-            pass
-        elif self.kind == "property_body_def":
-            pass
-        elif self.kind in ["func_def", "static_func_def"]:
+            raise NotImplementedError
+        if self.kind == "property_body_def":
+            raise NotImplementedError
+        if self.kind in ["func_def", "static_func_def"]:
             self.sub_statements = [Statement(n) for n in self.lark_node.children[1:]]
         elif self.kind == "if_stmt":
             for branch in self.lark_node.children:
@@ -31,15 +31,21 @@ class Statement:
                 else:
                     self.sub_statements += [Statement(n) for n in branch.children]
         elif self.kind == "while_stmt":
-            pass
+            self.sub_statements = [Statement(n) for n in self.lark_node.children[1:]]
         elif self.kind == "for_stmt":
-            pass
+            self.sub_statements = [Statement(n) for n in self.lark_node.children[2:]]
         elif self.kind == "match_stmt":
-            pass
+            for branch in self.lark_node.children:
+                self.sub_statements += [Statement(n) for n in branch.children[1:]]
         for sub_statement in self.sub_statements:
             self.all_sub_statements += [
                 sub_statement
             ] + sub_statement.all_sub_statements
+
+    def __repr__(self):
+        return "Statement({}:{}:{})".format(
+            self.lark_node.data, self.lark_node.line, self.lark_node.column
+        )
 
 
 # pylint: disable=too-few-public-methods
@@ -50,15 +56,15 @@ class Parameter:
         self.name = node.children[0].value
 
 
-# TODO: inherit from statement
 # pylint: disable=too-few-public-methods
-class Function:
+class Function(Statement):
     """Abstract representation of function"""
 
     def __init__(self, func_def: Tree):
-        self.lark_node = func_def
+        super().__init__(func_def)
         self.name = ""
         self.parameters = []  # type: List[Parameter]
+        self.all_statements = [self] + self.all_sub_statements  # type: ignore
 
         self._load_data_from_func_def(func_def)
 
@@ -72,8 +78,6 @@ class Function:
             for c in func_args.children  # type: ignore
             if c.data != "trailing_comma"
         ]
-        slf = Statement(self.lark_node)
-        self.all_statements = [slf] + slf.all_sub_statements
 
 
 # pylint: disable=too-few-public-methods
