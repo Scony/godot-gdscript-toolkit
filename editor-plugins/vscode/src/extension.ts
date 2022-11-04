@@ -82,11 +82,13 @@ export async function run_formatter(
     let options = PythonShell.defaultOptions;
     options.scriptPath = SCRIPT_PATH;
 
-    const pythonPath: string | undefined = vscode.workspace
-        .getConfiguration("python")
-        .get("pythonPath");
-    if (!!pythonPath) {
-        options.pythonPath = pythonPath;
+    const pythonConfig = vscode.workspace.getConfiguration("python");
+    for (const pathSettingKey of ["defaultInterpreterPath", "pythonPath"]) {
+        const pythonPath: string | undefined = pythonConfig.get(pathSettingKey);
+        if (!!pythonPath) {
+            options.pythonPath = pythonPath;
+            break;
+        }
     }
 
     let input = script;
