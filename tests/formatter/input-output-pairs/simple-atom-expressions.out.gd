@@ -20,3 +20,5 @@ func foo():
 	var e = &"xxx"
 	var xa = $%UniqueNodeName
 	var xb = $%UniqueNodeName/Xyz
+	var xc = %UniqueNodeName
+	var xd = %UniqueNodeName/Xyz

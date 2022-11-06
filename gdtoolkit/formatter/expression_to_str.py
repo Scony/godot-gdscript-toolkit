@@ -77,6 +77,9 @@ def expression_to_str(expression: Node) -> str:
         "get_node": lambda e: f"${expression_to_str(e.children[0])}",
         "path": lambda e: "".join([name_token.value for name_token in e.children]),
         "node_path": lambda e: f"^{expression_to_str(e.children[0])}",
+        "unique_node_path": lambda e: "".join(
+            [expression_to_str(n) for n in e.children]
+        ),
         "string_name": lambda e: f"&{expression_to_str(e.children[0])}",
         # fake expressions:
         "func_args": _args_to_str,
