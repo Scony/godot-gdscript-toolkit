@@ -1,5 +1,5 @@
 # misc
-tool
+@tool
 extends Node
 class_name ClassName
 signal signal_name
@@ -11,18 +11,14 @@ var b = 1
 var c: int
 var d: int = 1
 var e := 1
-puppet var f = 1
-export(float) var aa
-onready var aaa
+var f = 1						# TODO: puppet
+@export(float) var aa
+@onready var aaa
 
 # constants
 const A = 1
 const B: int = 1
 const C := 1
-
-# docstrings
-"""asd"""
-
 
 # compounds
 class D:

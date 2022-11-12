@@ -1,7 +1,5 @@
 import subprocess
 
-import pytest
-
 from ..common import write_file
 
 
@@ -15,9 +13,8 @@ def test_cc_on_empty_file_succeeds(tmp_path):
     assert len(outcome.stderr.decode().splitlines()) == 0
 
 
-@pytest.mark.skip(reason="not supported yet")
 def test_cc_on_file_with_single_function_succeeds(tmp_path):
-    dummy_file = write_file(tmp_path, "script.gd", "func foo(): pass")
+    dummy_file = write_file(tmp_path, "script.gd", "func foo(): pass\n")
     outcome = subprocess.run(
         ["gdradon", "cc", dummy_file], check=False, capture_output=True
     )

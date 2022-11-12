@@ -34,24 +34,25 @@ def _convert_block(statements: List[Tree], context: Context) -> List[str]:
 def _convert_statement(statement: Tree, context: Context) -> List[str]:
     handlers = {
         # class statements:
-        "tool_stmt": _ignore,
+        "annotation": _ignore,
         "pass_stmt": lambda s, c: [f"{c.indent_string}pass"],
         "class_var_stmt": _convert_first_child_as_statement,
-        "var_empty": lambda s, c: [f"{c.indent_string}{s.children[0].value} = None"],
-        "var_assigned": _convert_var_statement_with_expression,
-        "var_typed": lambda s, c: [f"{c.indent_string}{s.children[0].value} = None"],
-        "var_typed_assgnd": _convert_var_statement_with_expression,
-        "var_inf": _convert_var_statement_with_expression,
-        "extends_stmt": _ignore,
+        "class_var_empty": lambda s, c: [
+            f"{c.indent_string}{s.children[0].value} = None"
+        ],
+        "class_var_assigned": _convert_var_statement_with_expression,
+        "class_var_typed": lambda s, c: [
+            f"{c.indent_string}{s.children[0].value} = None"
+        ],
+        "class_var_typed_assgnd": _convert_var_statement_with_expression,
+        "class_var_inf": _convert_var_statement_with_expression,
+        "extends_stmt": _pass,
         "class_def": _convert_class_def,
         "func_def": _convert_func_def,
-        "enum_def": _ignore,  # TODO: implement
-        "classname_stmt": _ignore,
-        "classname_extends_stmt": _ignore,
-        "signal_stmt": _ignore,
-        "docstr_stmt": lambda s, c: [
-            f"{c.indent_string}{s.children[0].children[0].value}"
-        ],
+        "enum_stmt": _pass,  # TODO: implement
+        "classname_stmt": _pass,
+        "classname_extends_stmt": _pass,
+        "signal_stmt": _pass,
         "const_stmt": lambda s, c: [
             "{}{} = {}".format(
                 c.indent_string,
@@ -59,19 +60,18 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
                 _convert_expression_to_str(s.children[-1]),
             )
         ],
-        "export_stmt": _convert_export_statement,
-        "onready_stmt": lambda s, c: _convert_statement(s.children[-1], c),
-        "puppet_var_stmt": _convert_first_child_as_statement,
         "static_func_def": _convert_first_child_as_statement,
-        "remote_func_def": _convert_first_child_as_statement,
-        "remotesync_func_def": _convert_first_child_as_statement,
-        "master_func_def": _convert_first_child_as_statement,
-        "mastersync_func_def": _convert_first_child_as_statement,
-        "puppet_func_def": _convert_first_child_as_statement,
-        "puppetsync_func_def": _convert_first_child_as_statement,
-        "sync_func_def": _convert_first_child_as_statement,
         # func statements:
         "func_var_stmt": _convert_first_child_as_statement,
+        "func_var_empty": lambda s, c: [
+            f"{c.indent_string}{s.children[0].value} = None"
+        ],
+        "func_var_assigned": _convert_var_statement_with_expression,
+        "func_var_typed": lambda s, c: [
+            f"{c.indent_string}{s.children[0].value} = None"
+        ],
+        "func_var_typed_assgnd": _convert_var_statement_with_expression,
+        "func_var_inf": _convert_var_statement_with_expression,
         "expr_stmt": _convert_first_child_as_statement,
         "expr": lambda s, c: [
             f"{c.indent_string}{_convert_expression_to_str(s.children[0])}"
@@ -106,7 +106,11 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
     return handlers[statement.data](statement, context)
 
 
-def _ignore(_statement: Node, context: Context) -> List[str]:
+def _ignore(_statement: Node, _context: Context) -> List[str]:
+    return []
+
+
+def _pass(_statement: Node, context: Context) -> List[str]:
     return [f"{context.indent_string}pass"]
 
 

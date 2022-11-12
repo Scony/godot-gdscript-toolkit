@@ -2,7 +2,6 @@ pass
 pass
 pass
 pass
-pass
 a = None
 b = 1
 c = None
@@ -14,7 +13,6 @@ aaa = None
 A = 1
 B = 1
 C = 1
-"""asd"""
 class D:
 	pass
 pass
