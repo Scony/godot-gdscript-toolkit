@@ -7,7 +7,13 @@ from .context import Context, ExpressionContext
 from .expression import format_concrete_expression
 from .expression_to_str import expression_to_str
 
-STANDALONE_ANNOTATIONS = ["tool", "icon"]
+STANDALONE_ANNOTATIONS = [
+    "export_category",
+    "export_group",
+    "export_subgroup",
+    "icon",
+    "tool",
+]
 
 
 def is_non_standalone_annotation(statement: Tree) -> bool:
