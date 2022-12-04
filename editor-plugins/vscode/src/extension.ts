@@ -98,7 +98,7 @@ export async function run_formatter(
     try {
         return await runPythonCommand(options);
     } catch (error) {
-        onPythonError(error, uri);
+        onPythonError(error as Error, uri);
     }
 }
 

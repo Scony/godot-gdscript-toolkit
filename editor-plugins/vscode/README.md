@@ -35,6 +35,30 @@ A [vscode extension](https://marketplace.visualstudio.com/items?itemName=Razoric
 
 ## Release Notes
 
+### 1.2.3
+
+Allow the use of defaultInterpreterPath to control python path
+
+### 1.2.2
+
+Fix formatter issue
+
+### 1.2.1
+
+Fix scripts saving even when autosave was false
+
+### 1.2
+
+Fix save on format
+
+### 1.1.2
+
+Add the ability to update the pip package natively
+
+### 1.1.1
+
+Take the python path from VSCode configuration
+
 ### 1.1.0
 
 Add the `Organize Script` and `Convert multiline comment blocks to #` commands.
