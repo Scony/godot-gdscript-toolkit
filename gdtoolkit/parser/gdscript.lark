@@ -27,7 +27,7 @@ enum_named: "enum" NAME enum_body
 enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
 enum_element: NAME ["=" test_expr]
 signal_stmt: "signal" NAME [signal_args]
-signal_args: "(" [NAME ("," NAME)* [trailing_comma]] ")"
+signal_args: "(" [NAME [":" TYPE_HINT] ("," NAME [":" TYPE_HINT])* [trailing_comma]] ")"
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME
 !classname_extends_stmt: "class_name" NAME "extends" (NAME | string) ("." NAME)*
