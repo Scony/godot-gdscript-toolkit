@@ -1,3 +1,3 @@
 var x = preload(
-	'xxx'
+	'./empty.gd'
 )
