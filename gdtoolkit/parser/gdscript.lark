@@ -78,6 +78,7 @@ _simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
                  | break_stmt
                  | continue_stmt
                  | expr_stmt
+                 | const_stmt
 ?compound_func_stmt: if_stmt
                    | while_stmt
                    | for_stmt
