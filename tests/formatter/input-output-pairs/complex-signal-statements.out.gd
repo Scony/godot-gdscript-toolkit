@@ -16,3 +16,24 @@ class X:
 		x,
 		y,
 	)
+	signal d(
+		x: int,
+	)
+	signal e(x, y: float)
+	signal f(
+		x: int,
+		aaaaaaaa,
+		bbbbbbbbb,
+		ccccccccc,
+		dddddddd,
+		eeeeeeee,
+		ffffffff,
+		ggggggggg,
+		hhhhhhhh,
+		iiiiiiii,
+		jjjjjjjjjjj,
+		y: float
+	)
+	signal g(
+		xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: int
+	)

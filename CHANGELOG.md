@@ -10,6 +10,8 @@
  - Added support for unique node names in parser & formatter
  - Added support for property etters in parser & formatter
  - Added support for inline-lambdas in parser & formatter
+ - Added support for func-level constants
+ - Added support for typed signal arguments
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
