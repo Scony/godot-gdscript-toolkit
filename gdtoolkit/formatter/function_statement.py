@@ -9,13 +9,14 @@ from .expression import format_expression
 from .block import format_block, reconstruct_blank_lines_in_range
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
+from .const_statement import format_const_statement
 
 
 def format_func_statement(statement: Tree, context: Context) -> Outcome:
     handlers = {
         "pass_stmt": partial(format_simple_statement, "pass"),
         "func_var_stmt": format_var_statement,
-        "const_stmt": _format_const_statement,
+        "const_stmt": format_const_statement,
         "expr_stmt": _format_expr_statement,
         "return_stmt": _format_return_statement,
         "break_stmt": partial(format_simple_statement, "break"),
@@ -28,21 +29,6 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
         "match_branch": _format_match_branch,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
-
-
-def _format_const_statement(statement: Tree, context: Context) -> Outcome:
-    if len(statement.children) == 4:
-        prefix = f"const {statement.children[1].value} = "
-    elif len(statement.children) == 5:
-        prefix = f"const {statement.children[1].value} := "
-    elif len(statement.children) == 6:
-        prefix = (
-            f"const {statement.children[1].value}: {statement.children[3].value} = "
-        )
-    expression_context = ExpressionContext(
-        prefix, statement.line, "", statement.end_line
-    )
-    return format_expression(statement.children[-1], expression_context, context)
 
 
 def _format_expr_statement(statement: Tree, context: Context) -> Outcome:

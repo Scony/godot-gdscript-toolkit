@@ -10,16 +10,14 @@ from .function_statement import format_func_statement
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .expression_to_str import expression_to_str
-from .expression import (
-    format_expression,
-    format_concrete_expression,
-)
+from .expression import format_concrete_expression
 from .annotation import format_standalone_annotation
 from .property import (
     has_inline_property_body,
     append_property_body_to_formatted_line,
     format_property_body,
 )
+from .const_statement import format_const_statement
 
 
 def format_class_statement(statement: Tree, context: Context) -> Outcome:
@@ -31,7 +29,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
         "class_var_stmt": _format_var_statement,
-        "const_stmt": _format_const_statement,
+        "const_stmt": format_const_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
         "static_func_def": partial(
@@ -53,21 +51,6 @@ def _format_child_and_prepend_to_outcome(
         + lines[1:],
         last_processed_line,
     )
-
-
-def _format_const_statement(statement: Tree, context: Context) -> Outcome:
-    if len(statement.children) == 4:
-        prefix = f"const {statement.children[1].value} = "
-    elif len(statement.children) == 5:
-        prefix = f"const {statement.children[1].value} := "
-    elif len(statement.children) == 6:
-        prefix = (
-            f"const {statement.children[1].value}: {statement.children[3].value} = "
-        )
-    expression_context = ExpressionContext(
-        prefix, statement.line, "", statement.end_line
-    )
-    return format_expression(statement.children[-1], expression_context, context)
 
 
 def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
