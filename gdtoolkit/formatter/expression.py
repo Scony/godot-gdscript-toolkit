@@ -136,7 +136,7 @@ def _format_foldable_to_multiple_lines(
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,
         "await_expr": _format_await_expression_to_multiple_lines,
         "standalone_call": _format_call_expression_to_multiple_lines,
-        "getattr_call": _collapse_to_getattr_chain_and_format_to_multiple_lines,
+        "getattr_call": _format_call_expression_to_multiple_lines,
         "getattr": _collapse_to_getattr_chain_and_format_to_multiple_lines,
         "subscr_expr": _format_subscription_to_multiple_lines,
         "par_expr": _format_parentheses_to_multiple_lines,
