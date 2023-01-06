@@ -29,7 +29,15 @@ func foo():
 """
 func foo():
     '''docstr'''
+""",
 """
+func foo():
+    await get_tree().create_timer(2.0).timeout
+""",
+"""
+func foo():
+    ('''docstr''')
+""",
 ])
 def test_expression_not_assigned_ok(code):
     simple_ok_check(code)
@@ -41,6 +49,9 @@ def test_expression_not_assigned_ok(code):
 """,
 """func foo():
     true
+""",
+"""func foo():
+    (true)
 """,
 ])
 def test_expression_not_assigned_nok(code):

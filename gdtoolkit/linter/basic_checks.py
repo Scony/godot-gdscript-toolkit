@@ -4,6 +4,7 @@ from typing import Dict, List, Set
 from lark import Tree, Token
 
 from ..common.utils import find_name_token_among_children
+from ..formatter.expression_utils import remove_outer_parentheses
 
 from .problem import Problem
 
@@ -62,9 +63,10 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
     problems = []
     for expr_stmt in parse_tree.find_data("expr_stmt"):
         expr = expr_stmt.children[0]
-        child = expr.children[0]
-        if not isinstance(child, Tree) or child.data not in [
+        actual_expression = remove_outer_parentheses(expr.children[0])
+        if not isinstance(actual_expression, Tree) or actual_expression.data not in [
             "assnmnt_expr",
+            "await_expr",
             "standalone_call",
             "getattr_call",
             "string",
@@ -75,8 +77,8 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
                     description=(
                         "expression is not asigned, and hence it can be removed"
                     ),
-                    line=child.line,
-                    column=child.column,
+                    line=actual_expression.line,
+                    column=actual_expression.column,
                 )
             )
     return problems
