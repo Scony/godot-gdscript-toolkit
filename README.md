@@ -21,7 +21,7 @@ To install this project you need `python3` and `pip`.
 Use this command to install `gdtoolkit` for `Godot 3` from PyPI repository:
 
 ```
-pip3 install 'gdtoolkit==3.*'
+pip3 install "gdtoolkit==3.*"
 ```
 
 Alternatively, you can install latest `gdtoolkit` for `Godot 4` (potentially unstable) directly from git:
