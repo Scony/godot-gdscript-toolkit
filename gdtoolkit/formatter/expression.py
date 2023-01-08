@@ -383,23 +383,8 @@ def _format_call_expression_to_multiple_lines(
 def _collapse_to_getattr_chain_and_format_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
-    getattr_chain = _collapse_getattr_tree_to_getattr_chain(expression)
-    # TODO: remove once #193 implemented
-    getattr_chain_workaround = (
-        expression.data == "getattr_call"
-        and not is_expression_forcing_multiple_lines(
-            expression.children[0], context.standalone_comments
-        )
-        and isinstance(getattr_chain.children[0], Token)
-        and len(getattr_chain.children) == 3
-        and getattr_chain.children[2].data == "actual_getattr_call"
-    )
-    if getattr_chain_workaround:
-        return _format_call_expression_to_multiple_lines(
-            expression, expression_context, context
-        )
     return _format_foldable_to_multiple_lines(
-        getattr_chain, expression_context, context
+        _collapse_getattr_tree_to_getattr_chain(expression), expression_context, context
     )
 
 
