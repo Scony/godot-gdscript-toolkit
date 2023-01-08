@@ -24,6 +24,7 @@ def is_foldable(expression: Node) -> bool:
             "string_name",
             "unique_node_path",
             "signal_arg_typed",
+            "non_foldable_dot_chain",
         ]
         and not expression.data.endswith("_pattern")
     )

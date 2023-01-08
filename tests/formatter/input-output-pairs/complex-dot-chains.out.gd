@@ -162,7 +162,7 @@ func foo(aaaaa):
 		. aaaaa
 		. bbbbb[1]
 	)
-	var f = (
+	var r = (
 		{1: 1}[1]
 		. ddd()
 		. ffff
@@ -179,3 +179,9 @@ func foo(aaaaa):
 		. aaaaa
 		. bbbbb[1]
 	)
+	var t = aaaaa.bbbbb.cccc[1].ddd().ffff.ggg.hhh().iii.jjj.kkkkkkk.llllllll.mmmmmmm.nnnnnnnn(
+		1, 2, 3, 4, 5, 6, 7, 8, 9
+	)
+	var u = aaaaa.bbbbb.cccc[1].ddd().ffff.ggg.hhh().iii.jjj.kkkkkkk.llllllll.mmmmmmm.nnnnnnnn[(
+		1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9
+	)]

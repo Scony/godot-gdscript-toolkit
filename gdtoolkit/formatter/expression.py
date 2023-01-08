@@ -188,7 +188,7 @@ def _format_foldable_to_multiple_lines(
         "func_var_inf": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
             f"var {expression_to_str(e.children[0])} := ", e.children[1], ec, c
         ),
-        "dot_chain": _format_operator_chain_based_expression_to_multiple_lines,
+        "dot_chain": _format_dot_chain_to_multiple_lines,
         "actual_getattr_call": _format_call_expression_to_multiple_lines,
         "actual_subscr_expr": _format_subscription_to_multiple_lines,
     }  # type: Dict[str, Callable]
@@ -420,7 +420,7 @@ def _format_subscription_to_multiple_lines(
         expression_context.suffix_line,
     )
     subscript = expression.children[1]
-    subscript_lines = _format_standalone_expression(
+    subscript_lines = _format_concrete_expression(
         subscript, subscript_expression_context, context
     )
     return subscriptee_lines[:-1] + subscript_lines
@@ -797,3 +797,59 @@ def _collapse_subscr_expr_tree_to_dot_chain(expression: Tree) -> Tree:
         fake_meta,
     )
     return fake_expression
+
+
+def _format_dot_chain_to_multiple_lines(
+    dot_chain: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    if is_expression_forcing_multiple_lines(dot_chain, context.standalone_comments):
+        return _format_operator_chain_based_expression_to_multiple_lines(
+            dot_chain, expression_context, context
+        )
+    lines_formatted_bottom_up = _format_dot_chain_to_multiple_lines_bottom_up(
+        dot_chain, expression_context, context
+    )
+    if all(
+        len(line.replace("\t", " " * INDENT_SIZE)) <= context.max_line_length
+        for line_number, line in lines_formatted_bottom_up
+    ):
+        return lines_formatted_bottom_up
+    return _format_operator_chain_based_expression_to_multiple_lines(
+        dot_chain, expression_context, context
+    )
+
+
+def _format_dot_chain_to_multiple_lines_bottom_up(
+    dot_chain: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    last_chain_element = dot_chain.children[-1]
+    if isinstance(last_chain_element, Token) or last_chain_element.data not in [
+        "actual_getattr_call",
+        "actual_subscr_expr",
+    ]:
+        return _format_operator_chain_based_expression_to_multiple_lines(
+            dot_chain, expression_context, context
+        )
+
+    fake_meta = Meta()
+    fake_meta.line = dot_chain.line
+    fake_meta.end_line = last_chain_element.children[0].end_line
+    new_dot_chain = Tree(
+        "non_foldable_dot_chain",
+        dot_chain.children[:-1] + [last_chain_element.children[0]],
+        fake_meta,
+    )
+
+    fake_meta = Meta()
+    fake_meta.line = new_dot_chain.line
+    fake_meta.end_line = last_chain_element.end_line
+    new_actual_expr = Tree(
+        last_chain_element.data,
+        [new_dot_chain] + last_chain_element.children[1:],
+        fake_meta,
+    )
+    return _format_concrete_expression(new_actual_expr, expression_context, context)

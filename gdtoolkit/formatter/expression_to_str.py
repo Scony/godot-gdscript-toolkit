@@ -138,7 +138,7 @@ def expression_to_str(expression: Node) -> str:
             e.children[1].value,
             standalone_expression_to_str(e.children[2]),
         ),
-        "dot_chain": _operator_chain_based_expression_to_str,
+        "non_foldable_dot_chain": lambda e: "".join(map(expression_to_str, e.children)),
         "actual_getattr_call": _getattr_call_to_str,
         "actual_subscr_expr": _subscription_to_str,
         # patterns (fake expressions):
