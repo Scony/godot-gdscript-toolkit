@@ -11,14 +11,12 @@ class X:
 			. rrrrrrrrrrrrr
 		)
 		var z = (
-			(
-				xxxxxxxxxxx[[
-					1,
-				]]
-				. y
-				. z
-				. x
-			)[[
+			xxxxxxxxxxx[[
+				1,
+			]]
+			. y
+			. z
+			. x[[
 				1,
 			]]
 			. c
