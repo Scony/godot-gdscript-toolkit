@@ -163,7 +163,7 @@ func foo(aaaaa):
 		. bbbbb[1]
 	)
 	var r = (
-		{1: 1}[1]
+		{1: aaaaa}[1]
 		. ddd()
 		. ffff
 		. ggg
