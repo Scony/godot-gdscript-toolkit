@@ -59,14 +59,64 @@ def _is_method_private(method_name: str) -> bool:
     return method_name.startswith("_")  # TODO: consider making configurable
 
 
-def _class_definitions_order_check(_order, _parse_tree: Tree) -> List[Problem]:
-    return []
+def _class_definitions_order_check(order, parse_tree: Tree) -> List[Problem]:
+    problems = _class_definitions_order_check_for_class(
+        "global scope", parse_tree.children, order
+    )
+    for class_def in parse_tree.find_data("class_def"):
+        class_name = class_def.children[0].value
+        problems += _class_definitions_order_check_for_class(
+            "class {}".format(class_name), class_def.children, order
+        )
+    return problems
 
 
 def _class_definitions_order_check_for_class(
-    _class_name: str, _class_children, _order
+    class_name: str, class_children, order
 ) -> List[Problem]:
-    return []
+    stmt_to_section_mapping = {
+        "tool_stmt": "tools",
+        "signal_stmt": "signals",
+        "extends_stmt": "extends",
+        "classname_stmt": "classnames",
+        "const_stmt": "consts",
+        "export_stmt": "exports",
+        "enum_def": "enums",
+    }
+    visibility_dependent_stmt_to_section_mapping = {
+        "class_var_stmt": {"pub": "pubvars", "prv": "prvvars"},
+        "onready_stmt": {"pub": "onreadypubvars", "prv": "onreadyprvvars"},
+    }
+    problems = []
+    current_section = order[0]
+    for class_child in class_children:
+        if not isinstance(class_child, Tree):
+            continue
+        if class_child.data in ["annotation"]:
+            continue
+        stmt = class_child.data
+        if stmt == "class_var_stmt":
+            visibility = _class_var_stmt_visibility(class_child)
+            section = visibility_dependent_stmt_to_section_mapping[stmt][visibility]
+        elif stmt == "onready_stmt":
+            class_var_stmt = class_child.children[0]
+            visibility = _class_var_stmt_visibility(class_var_stmt)
+            section = visibility_dependent_stmt_to_section_mapping[stmt][visibility]
+        else:
+            section = stmt_to_section_mapping.get(stmt, "others")
+        section_rank = order.index(section)
+        if section_rank >= order.index(current_section):
+            current_section = section
+        else:
+            problems.append(
+                Problem(
+                    name="class-definitions-order",
+                    description="Definition out of order in {}".format(class_name),
+                    line=class_child.line,
+                    column=class_child.column,
+                )
+            )
+    return problems
 
 
 def _class_var_stmt_visibility(class_var_stmt) -> str:
