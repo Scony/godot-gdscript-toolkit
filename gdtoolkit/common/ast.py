@@ -1,17 +1,30 @@
+# flake8: noqa
 from typing import List
 
 from lark import Tree
 
+from ..formatter.annotation import STANDALONE_ANNOTATIONS
+
 from .utils import find_name_token_among_children, find_tree_among_children
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
+class Annotation:
+    def __init__(self, node: Tree):
+        self.lark_node = node
+        self.name = node.children[0].value
+
+
+# pylint: disable-next=too-few-public-methods
 class Statement:
     """Abstract representation of statement"""
 
-    def __init__(self, node: Tree):
+    # TODO: remove default = [] and fix Statements w/o annotations passed
+    # pylint: disable-next=dangerous-default-value
+    def __init__(self, node: Tree, annotations: List[Annotation] = []):
         self.lark_node = node
         self.kind = node.data
+        self.annotations = annotations
         self.sub_statements = []  # type: List[Statement]
         self.all_sub_statements = []  # type: List[Statement]
 
@@ -19,7 +32,7 @@ class Statement:
 
     def _load_sub_statements(self):
         if self.kind == "class_def":
-            raise NotImplementedError
+            pass  # TODO: implement
         if self.kind == "property_body_def":
             raise NotImplementedError
         if self.kind in ["func_def", "static_func_def"]:
@@ -48,7 +61,7 @@ class Statement:
         )
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class Parameter:
     """Abstract representation of function parameter"""
 
@@ -56,7 +69,7 @@ class Parameter:
         self.name = node.children[0].value
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class Function(Statement):
     """Abstract representation of function"""
 
@@ -80,7 +93,7 @@ class Function(Statement):
         ]
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class Class:
     """Abstract representation of class.
     Since it contains sub-classes, it forms a tree"""
@@ -92,6 +105,7 @@ class Class:
         self.all_sub_classes = []  # type: List[Class]
         self.functions = []  # type: List[Function]
         self.all_functions = []  # type: List[Function]
+        self.statements = []  # type: List[Statement]
 
         if parse_tree.data == "start":
             start = parse_tree
@@ -102,9 +116,19 @@ class Class:
             raise Exception("Cannot load class from that node")
 
     def _load_data_from_node_children(self, node: Tree) -> None:
-        for stmt in node.children:
-            if not isinstance(stmt, Tree):
+        offset = 1 if node.data == "class_def" else 0
+        annotations = []
+        for stmt in node.children[offset:]:
+            if stmt.data == "annotation" and not _is_annotation_standalone(
+                Annotation(stmt)
+            ):
+                annotations.append(Annotation(stmt))
                 continue
+            if stmt.data == "property_body_def":
+                continue
+            assert isinstance(stmt, Tree), stmt
+            self.statements.append(Statement(stmt, annotations))
+            annotations = []
             if stmt.data == "class_def":
                 sub_class = Class(stmt)
                 self.sub_classes.append(sub_class)
@@ -121,7 +145,7 @@ class Class:
         self._load_data_from_node_children(class_def)
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class AbstractSyntaxTree:
     """Post-processed version of parse tree - more convenient representation
     for further processing"""
@@ -130,3 +154,7 @@ class AbstractSyntaxTree:
         self.root_class = Class(parse_tree)
         self.all_classes = [self.root_class] + self.root_class.all_sub_classes
         self.all_functions = self.root_class.all_functions
+
+
+def _is_annotation_standalone(annotation: Annotation) -> bool:
+    return annotation.name in STANDALONE_ANNOTATIONS
