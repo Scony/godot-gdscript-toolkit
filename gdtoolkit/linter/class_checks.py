@@ -20,7 +20,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         ),
     ]  # type: List[Tuple[str, Callable]]
     problem_clusters = (
-        x[1](parse_tree) if x[0] not in disable else [] for x in checks_to_run_w_tree
+        function(parse_tree) if name not in disable else []
+        for name, function in checks_to_run_w_tree
     )
     problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_w_ast = [
@@ -31,7 +32,8 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     ]
     ast = AbstractSyntaxTree(parse_tree)
     problem_clusters = (
-        x[1](ast) if x[0] not in disable else [] for x in checks_to_run_w_ast
+        function(ast) if name not in disable else []
+        for name, function in checks_to_run_w_ast
     )
     problems += [problem for cluster in problem_clusters for problem in cluster]
     return problems
@@ -50,7 +52,7 @@ def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
             and called.value == "self"
         ):
             continue
-        if not _is_method_private(callee_name):
+        if is_function_public(callee_name):
             continue
         problems.append(
             Problem(
@@ -61,11 +63,6 @@ def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
             )
         )
     return problems
-
-
-# TODO: drop
-def _is_method_private(method_name: str) -> bool:
-    return method_name.startswith("_")  # TODO: consider making configurable
 
 
 def _class_definitions_order_check(
