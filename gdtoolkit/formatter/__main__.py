@@ -110,7 +110,7 @@ def _check_files_formatting(
                     failed_files.add(file_path)
         except OSError as exceptions:
             print(
-                f"Cannot open file '{file_path}': {exceptions.strerror}",
+                f"Cannot open file {file_path!r}: {exceptions.strerror}",
                 file=sys.stderr,
             )
             failed_files.add(file_path)
@@ -155,7 +155,7 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
                     failed_files.add(file_path)
         except OSError as exceptions:
             print(
-                f"Cannot open file '{file_path}': {exceptions.strerror}",
+                f"Cannot open file {file_path!r}: {exceptions.strerror}",
                 file=sys.stderr,
             )
             failed_files.add(file_path)
