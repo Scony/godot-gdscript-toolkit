@@ -87,6 +87,9 @@ const X = 1
 """var x
 @tool
 """,
+"""static func foo(): pass
+var x
+""",
 ])
 def test_class_definitions_order_nok(code):
     simple_nok_check(code, 'class-definitions-order')
