@@ -105,6 +105,8 @@ def _is_statement_irrelevant(statement: Statement) -> bool:
         return True
     if statement.kind == "annotation":
         return Annotation(statement.lark_node).name != "tool"
+    if statement.kind == "class_def":
+        return True
     return False
 
 
@@ -135,8 +137,6 @@ def _map_statement_to_section(statement: Statement) -> str:
         and Annotation(statement.lark_node).name == "tool"
     ):
         return "tools"
-    if statement.kind == "class_def":
-        return "others"
     if statement.kind == "func_def":
         return "others"
     if statement.kind == "static_func_def":
