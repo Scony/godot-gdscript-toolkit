@@ -9,6 +9,7 @@ class X:
 			. wwwwwwwwww
 			. eeeeeeeeeeee
 			. rrrrrrrrrrrrr
+			. tttttt
 		)
 		var z = (
 			xxxxxxxxxxx[[

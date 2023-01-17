@@ -178,8 +178,17 @@ def expression_to_str(expression: Node) -> str:
 
 def _operator_chain_based_expression_to_str(expression: Tree) -> str:
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
+
+    def _padding(operator):
+        return "" if operator.value == "." else " "
+
     chain = [
-        f" {expression_to_str(operator)} {expression_to_str(expr)}"
+        "{}{}{}{}".format(
+            _padding(operator),
+            expression_to_str(operator),
+            _padding(operator),
+            expression_to_str(expr),
+        )
         for operator, expr in operator_expr_chain
     ]
     first_expr = expression.children[0]
