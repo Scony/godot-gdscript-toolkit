@@ -1,8 +1,9 @@
 class_name Aclassname
 
-@icon(
-	"res://aaaaaaaaaaaaa/bbbbbbbbbbbbbbb/cccccccccccc/ddddddddddd/eeeeeeeeeeeeeee/ffffffffff.tres"
+@export_enum(
+	"AaaaaaaaaaaBbbbbbbbbCcccccccDddddddEeeeeeFfffffffffGgggggggggHhhhhhhhhhhhhhhhhhhhhhhhhh"
 )
+var c
 
 @export_enum(
 	"Aaaaaaaaaaa", "Bbbbbbbbb", "Cccccccc", "Ddddddd", "Eeeeee", "Ffffffffff", "Gggggggggg"
