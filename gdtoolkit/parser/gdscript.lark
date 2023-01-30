@@ -25,7 +25,7 @@ enum_stmt: enum_regular
 enum_regular: "enum" enum_body
 enum_named: "enum" NAME enum_body
 enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
-enum_element: NAME ["=" test_expr]
+enum_element: NAME ["=" type_cast]
 signal_stmt: "signal" NAME [signal_args]
 signal_args: "(" [signal_arg ("," signal_arg)* [trailing_comma]] ")"
 ?signal_arg: NAME

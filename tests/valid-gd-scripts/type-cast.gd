@@ -6,12 +6,13 @@ func foo(x):
 
 
 func bar():
-	foo("1" as int)
-	var x = ["1" as int, 2, 3]
-	x["1" as int]
+	foo(1 as int)
+	var x = [1 as int, 2, 3]
+	x[1 as int]
 	var y = {
-		"1" as int: "1" as int,
+		1 as int: 1 as int,
 	}
 	var z = {
-		x = "1" as int,
+		x = 1 as int,
 	}
+	print(1.5 as int)

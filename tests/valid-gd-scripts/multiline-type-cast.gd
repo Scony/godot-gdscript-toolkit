@@ -1,5 +1,5 @@
 var x = (
 	1
-	as String
-	as String
+	as int
+	as int
 )
