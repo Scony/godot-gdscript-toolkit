@@ -31,7 +31,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        "lark-parser==0.12.0",
+        "lark-parser[regex]==0.12.0",
         "docopt>=0.6.2",
         "pyyaml>=5.1",
         "radon>=5.1",

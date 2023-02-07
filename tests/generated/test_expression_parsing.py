@@ -1,3 +1,5 @@
+import re
+
 import pytest
 import hypothesis.extra.lark
 from hypothesis import settings, given, HealthCheck
@@ -16,6 +18,14 @@ with open("gdtoolkit/parser/gdscript.lark", "r", encoding="utf-8") as handle:
         '["+"] atom',
         '["+"] " " atom " "',
     )
+    # hypothesis does not support the \p syntax
+    simplified_gdscript_grammar = re.sub(
+        r"NAME:.*$",
+        r"%import common.CNAME -> NAME",
+        simplified_gdscript_grammar,
+        flags=re.MULTILINE,
+    )
+    print(simplified_gdscript_grammar)
     for keyword in ["as", "not", "await", "and", "else", "if", "or", "in"]:
         simplified_gdscript_grammar = simplified_gdscript_grammar.replace(
             f'"{keyword}"', f'" {keyword} "'
@@ -27,7 +37,7 @@ with open("gdtoolkit/parser/gdscript.lark", "r", encoding="utf-8") as handle:
     simplified_gdscript_grammar = simplified_gdscript_grammar.replace(
         "%ignore COMMENT", ""
     )
-    gdscript_lark = Lark(simplified_gdscript_grammar)
+    gdscript_lark = Lark(simplified_gdscript_grammar, regex=True)
 
 
 def format_and_check_safety(input_code):

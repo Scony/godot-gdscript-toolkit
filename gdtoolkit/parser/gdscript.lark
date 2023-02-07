@@ -267,6 +267,9 @@ _NL: ( /\r?\n[\t ]*/ | COMMENT )+
 COMMENT: /#[^\n]*/
 LINE_CONT: /\\[\t \f]*\r?\n/
 
+// UAX#31 with GDScript modifications.
+NAME: /[\p{XID_Start}_\u037a-\u037d\u309b-\u309f\ufe70-\ufe74\ufe76-\ufefc\u0000][\p{XID_Continue}_\u037a-\u037d\ufe76-\ufefc\u0000]*/
+
 %declare _INDENT _DEDENT
 
 %ignore WS_INLINE
@@ -274,4 +277,3 @@ LINE_CONT: /\\[\t \f]*\r?\n/
 %ignore LINE_CONT
 
 %import common.WS_INLINE
-%import common.CNAME -> NAME

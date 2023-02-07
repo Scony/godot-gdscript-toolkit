@@ -93,6 +93,7 @@ class Parser:
             propagate_positions=add_metadata,
             maybe_placeholders=False,
             cache=cache_filepath,
+            regex=True,
         )
 
         return a_parser
