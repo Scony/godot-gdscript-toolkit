@@ -3,10 +3,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-```diff
-- The `master` branch contains Godot 4.0 support now - please note it's in alpha phase
-```
-
 This project provides a set of tools for daily work with `GDScript`. At the moment it provides:
 
 - A parser that produces a parse tree for debugging and educational purposes.
@@ -16,15 +12,24 @@ This project provides a set of tools for daily work with `GDScript`. At the mome
 
 ## Installation
 
-To install this project you need `python3` and `pip`. 
+To install this project you need `python3` and `pip`.
+Regardless of the target version, installation is done by `pip3` command and for stable releases, it downloads the package from PyPI.
 
-Use this command to install `gdtoolkit` for `Godot 3` from PyPI repository:
+### Godot 4
+
+```
+pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
+```
+
+### Godot 3
 
 ```
 pip3 install "gdtoolkit==3.*"
 ```
 
-Alternatively, you can install latest `gdtoolkit` for `Godot 4` (potentially unstable) directly from git:
+### `master` (latest)
+
+Latest version (potentially unstable) can be installed directly from git:
 ```
 pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
 ```
