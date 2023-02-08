@@ -50,7 +50,7 @@ def main():
 
 def _parse_file(file_path: str, arguments: Dict) -> bool:
     try:
-        with open(file_path, "r") as fh:
+        with open(file_path, "r", encoding="utf-8") as fh:
             file_content = fh.read()
             return _parse_file_content(file_content, arguments, file_path)
     except OSError as e:

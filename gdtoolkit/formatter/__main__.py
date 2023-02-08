@@ -86,7 +86,7 @@ def _check_files_formatting(
     failed_files = set()
     for file_path in files:
         try:
-            with open(file_path, "r") as fh:
+            with open(file_path, "r", encoding="utf-8") as fh:
                 code = fh.read()
                 success, actually_formatted, formatted_code = _format_code(
                     code, line_length, file_path, safety_checks
@@ -141,7 +141,7 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
     failed_files = set()
     for file_path in files:
         try:
-            with open(file_path, "r+") as fh:
+            with open(file_path, "r+", encoding="utf-8") as fh:
                 code = fh.read()
                 success, actually_formatted, formatted_code = _format_code(
                     code, line_length, file_path, safety_checks

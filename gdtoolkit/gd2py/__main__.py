@@ -30,5 +30,5 @@ def main():
         __doc__,
         version="gd2py {}".format(pkg_resources.get_distribution("gdtoolkit").version),
     )
-    with open(arguments["<path>"], "r") as fh:
+    with open(arguments["<path>"], "r", encoding="utf-8") as fh:
         print(convert_code(fh.read()))
