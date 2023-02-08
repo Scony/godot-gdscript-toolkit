@@ -58,7 +58,7 @@ def test_parsing_failure(gdscript_nok_path):
             parser.parse(code)
         except:  # pylint: disable=bare-except
             return
-        raise Exception("shall fail")
+        assert True, "shall fail"
 
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")

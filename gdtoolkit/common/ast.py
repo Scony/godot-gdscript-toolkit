@@ -6,6 +6,7 @@ from lark import Tree
 from ..formatter.annotation import STANDALONE_ANNOTATIONS
 
 from .utils import find_name_token_among_children, find_tree_among_children
+from .exceptions import GDToolkitError
 
 
 # pylint: disable-next=too-few-public-methods
@@ -113,7 +114,7 @@ class Class:
         elif parse_tree.data == "class_def":
             self._load_data_from_class_def(parse_tree)
         else:
-            raise Exception("Cannot load class from that node")
+            raise GDToolkitError("Cannot load class from that node")
 
     def _load_data_from_node_children(self, node: Tree) -> None:
         offset = 1 if node.data == "class_def" else 0
