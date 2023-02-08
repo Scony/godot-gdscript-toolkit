@@ -43,7 +43,7 @@ def main():
 
 def _cc(file_path: str) -> None:
     try:
-        with open(file_path, "r") as fh:
+        with open(file_path, "r", encoding="utf-8") as fh:
             python_code = convert_code(fh.read())
             results = cc_visit(python_code)
             if results == []:

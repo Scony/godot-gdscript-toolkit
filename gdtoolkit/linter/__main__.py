@@ -80,7 +80,7 @@ def main():
 def _dump_default_config() -> None:
     # TODO: error handling
     assert not os.path.isfile(CONFIG_FILE_NAME)
-    with open(CONFIG_FILE_NAME, "w") as fh:
+    with open(CONFIG_FILE_NAME, "w", encoding="utf-8") as fh:
         fh.write(yaml.dump(DEFAULT_CONFIG.copy()))
     sys.exit(0)
 
@@ -105,7 +105,7 @@ def _load_config_file_or_default(config_file_path: Optional[str]) -> MappingProx
     # TODO: error handling
     if config_file_path is not None:
         logging.info("Config file found: '%s'", config_file_path)
-        with open(config_file_path, "r") as fh:
+        with open(config_file_path, "r", encoding="utf-8") as fh:
             return yaml.load(fh.read(), Loader=yaml.Loader)
 
     logging.info("""No 'gdlintrc' nor '.gdlintrc' found. Using default config...""")
@@ -129,7 +129,7 @@ def _update_config_with_missing_entries_inplace(config: dict) -> None:
 
 def _lint_file(file_path: str, config: MappingProxyType) -> int:
     try:
-        with open(file_path, "r") as fh:
+        with open(file_path, "r", encoding="utf-8") as fh:
             content = fh.read()
             problems = lint_code(content, config)
             if len(problems) > 0:  # TODO: friendly frontend like in halint
