@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from ..common.exceptions import GDToolkitError
+
 
 @dataclass
-class TreeInvariantViolation(Exception):
+class TreeInvariantViolation(GDToolkitError):
     diff: str
 
     def __str__(self):
@@ -10,7 +12,7 @@ class TreeInvariantViolation(Exception):
 
 
 @dataclass
-class FormattingStabilityViolation(Exception):
+class FormattingStabilityViolation(GDToolkitError):
     diff: str
 
     def __str__(self):
@@ -18,7 +20,7 @@ class FormattingStabilityViolation(Exception):
 
 
 @dataclass
-class CommentPersistenceViolation(Exception):
+class CommentPersistenceViolation(GDToolkitError):
     missing_comment: str
 
     def __str__(self):

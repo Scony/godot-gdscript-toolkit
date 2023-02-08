@@ -1,6 +1,10 @@
 import lark
 
 
+class GDToolkitError(Exception):
+    pass
+
+
 def lark_unexpected_input_to_str(exception: lark.exceptions.UnexpectedInput):
     return str(exception).strip()
 
