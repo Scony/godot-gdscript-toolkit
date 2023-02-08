@@ -1,6 +1,7 @@
-# a
-# b
 @tool # inline a
+# a
+extends Node
+# b
 # c
 
 var a
@@ -19,6 +20,7 @@ var c: int = 50
 # i
 
 class Foo:
+	extends Node
 	# j
 	@onready var d # inline e
 	# k

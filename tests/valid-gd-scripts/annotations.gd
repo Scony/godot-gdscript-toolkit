@@ -1,4 +1,5 @@
 @tool
+extends Node
 
 var x
 
@@ -32,4 +33,5 @@ pass;pass
 @onready @export_range(1, 100, 1, "or_greater",) var ranged_var_7: int = 50
 
 class Foo:
+	extends Node
 	@onready var asd

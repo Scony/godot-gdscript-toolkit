@@ -1,4 +1,5 @@
 @tool
+extends Node
 
 var x
 
@@ -14,5 +15,6 @@ var ranged_var_2_veryyyyyyy_loooong_naaaaaaaaaaaaaaaaaaaaaaaame: int = 50
 
 
 class Foo:
+	extends Node
 	@onready var asd
 	@onready var asd2

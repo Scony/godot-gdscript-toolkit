@@ -3,8 +3,9 @@ import subprocess
 import shutil
 
 import pytest
-
 from gdtoolkit.parser import parser
+
+from ..common import write_project_settings, write_file
 
 
 OK_DATA_DIR = "../valid-gd-scripts"
@@ -43,9 +44,19 @@ def test_parsing_success(gdscript_ok_path):
 
 @pytest.mark.skipif(shutil.which(GODOT_SERVER) is None, reason="requires godot server")
 @pytest.mark.godot_check_only
-def test_godot_check_only_success(gdscript_ok_path):
+def test_godot_check_only_success(gdscript_ok_path, tmp_path):
+    write_project_settings(tmp_path)
+    write_file(tmp_path, "dummy.gd", "class X:\n\tpass")
     with subprocess.Popen(
-        [GODOT_SERVER, "--headless", "--check-only", "-s", gdscript_ok_path],
+        [
+            GODOT_SERVER,
+            "--headless",
+            "--check-only",
+            "-s",
+            gdscript_ok_path,
+            "--path",
+            tmp_path,
+        ],
     ) as process:
         process.wait()
         assert process.returncode == 0

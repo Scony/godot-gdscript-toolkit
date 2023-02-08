@@ -1,17 +1,17 @@
-extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd"
+extends "res://dummy.gd"
 
 
 class C:
-	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd".X
+	extends "res://dummy.gd".X
 
 
 class D:
-	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd".X
+	extends "res://dummy.gd".X
 	pass
 
 
 class E:
-	extends "res://tests/formatter/input-output-pairs/nested-classes.in.gd"
+	extends "res://dummy.gd"
 	pass
 
 
