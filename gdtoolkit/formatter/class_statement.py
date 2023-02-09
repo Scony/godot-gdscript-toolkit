@@ -144,7 +144,9 @@ def _format_var_statement(statement: Tree, context: Context) -> Outcome:
 
 def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
     expression_context = ExpressionContext("", statement.line, "", statement.end_line)
-    return format_expression(statement.children[0], expression_context, context)
+    return format_concrete_expression(
+        statement.children[0], expression_context, context
+    )
 
 
 def _format_class_statement(statement: Tree, context: Context) -> Outcome:
