@@ -30,6 +30,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "classname_extends_stmt": _format_classname_extends_statement,
         "class_var_stmt": _format_var_statement,
         "const_stmt": format_const_statement,
+        "docstr_stmt": _format_docstring_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
         "static_func_def": partial(
@@ -139,6 +140,11 @@ def _format_var_statement(statement: Tree, context: Context) -> Outcome:
             formatted_lines[-1], inline_property_body, context
         )
     return formatted_lines, last_processed_line
+
+
+def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
+    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
+    return format_expression(statement.children[0], expression_context, context)
 
 
 def _format_class_statement(statement: Tree, context: Context) -> Outcome:

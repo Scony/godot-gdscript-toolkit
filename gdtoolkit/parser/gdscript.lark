@@ -12,6 +12,7 @@ _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_
                   | classname_stmt
                   | class_var_stmt
                   | const_stmt
+                  | docstr_stmt
 ?compound_class_stmt: class_def
                     | property_body_def
                     | func_def
@@ -47,6 +48,7 @@ class_var_inf: "var" NAME ":" "=" expr [inline_property_body]
 inline_property_body: ":" [property_delegate_set ["," property_delegate_get]]
                     | ":" [property_delegate_get ["," property_delegate_set]]
 !const_stmt: "const" NAME [":" [TYPE_HINT]] "=" expr
+docstr_stmt: string
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)
 _class_body: _NL _INDENT (_class_stmt+ | _class_stmt* (_simple_class_stmt | annotation+)) _DEDENT
