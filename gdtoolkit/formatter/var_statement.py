@@ -2,6 +2,7 @@ from typing import Dict, Callable
 
 from lark import Tree
 
+from ..common.utils import get_line, get_end_line
 from .context import Context, ExpressionContext
 from .types import Outcome
 from .expression import format_expression
@@ -53,7 +54,10 @@ def _format_var_assigned_statement(
     name = statement.children[0].value
     expr = statement.children[1]
     expression_context = ExpressionContext(
-        "{}var {} = ".format(prefix, name), statement.line, "", statement.end_line
+        "{}var {} = ".format(prefix, name),
+        get_line(statement),
+        "",
+        get_end_line(statement),
     )
     return format_expression(expr, expression_context, context)
 
@@ -64,7 +68,10 @@ def _format_var_inferred_statement(
     name = statement.children[0].value
     expr = statement.children[1]
     expression_context = ExpressionContext(
-        "{}var {} := ".format(prefix, name), statement.line, "", statement.end_line
+        "{}var {} := ".format(prefix, name),
+        get_line(statement),
+        "",
+        get_end_line(statement),
     )
     return format_expression(expr, expression_context, context)
 
@@ -77,8 +84,8 @@ def _format_var_typed_assigned_statement(
     expr = statement.children[2]
     expression_context = ExpressionContext(
         "{}var {}: {} = ".format(prefix, var_name, type_name),
-        statement.line,
+        get_line(statement),
         "",
-        statement.end_line,
+        get_end_line(statement),
     )
     return format_expression(expr, expression_context, context)

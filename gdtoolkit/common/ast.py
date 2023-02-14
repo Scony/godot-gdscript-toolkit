@@ -58,7 +58,7 @@ class Statement:
 
     def __repr__(self):
         return "Statement({}:{}:{})".format(
-            self.lark_node.data, self.lark_node.line, self.lark_node.column
+            self.lark_node.data, self.lark_node.meta.line, self.lark_node.meta.column
         )
 
 

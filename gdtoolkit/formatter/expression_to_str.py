@@ -2,7 +2,7 @@ from typing import List
 
 from lark import Tree, Token
 
-from .types import Node
+from ..common.types import Node
 from .expression_utils import (
     is_any_comma,
     is_any_parentheses,

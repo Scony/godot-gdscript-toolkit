@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 
 from lark import Tree
 
+from ..common.utils import get_line
 from ..parser import parser
 
 
@@ -40,7 +41,7 @@ def _gather_comments_by_prefix_regex(
 ) -> List[Optional[str]]:
     """prefix means all line characters before comment"""
     line_to_comment_mapping = {
-        comment.line: comment for comment in comment_parse_tree.children
+        get_line(comment): comment for comment in comment_parse_tree.children
     }  # type: Dict[int, Tree]
     lines = gdscript_code.splitlines()
     comments = [None]  # type: List[Optional[str]]

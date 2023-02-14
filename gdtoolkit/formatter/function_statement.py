@@ -3,6 +3,7 @@ from typing import Dict, Callable, Optional
 
 from lark import Tree
 
+from ..common.utils import get_line
 from .context import Context, ExpressionContext
 from .types import Outcome, FormattedLines
 from .expression import format_expression
@@ -33,7 +34,9 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
 
 def _format_expr_statement(statement: Tree, context: Context) -> Outcome:
     expr = statement.children[0]
-    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
+    expression_context = ExpressionContext(
+        "", get_line(statement), "", get_line(statement)
+    )
     return format_expression(expr, expression_context, context)
 
 
@@ -42,7 +45,7 @@ def _format_return_statement(statement: Tree, context: Context) -> Outcome:
         return format_simple_statement("return", statement, context)
     expr = statement.children[0]
     expression_context = ExpressionContext(
-        "return ", statement.line, "", statement.end_line
+        "return ", get_line(statement), "", get_line(statement)
     )
     return format_expression(expr, expression_context, context)
 
@@ -53,7 +56,7 @@ def _format_if_statement(statement: Tree, context: Context) -> Outcome:
     for branch in statement.children:
         if previously_processed_line_number is not None:
             blank_lines = reconstruct_blank_lines_in_range(
-                previously_processed_line_number, branch.line, context
+                previously_processed_line_number, get_line(branch), context
             )
             formatted_lines += blank_lines
         branch_prefix = {
@@ -102,7 +105,7 @@ def _format_branch(
     if expr_position is not None:
         expr = statement.children[expr_position]
         expression_context = ExpressionContext(
-            prefix, statement.line, suffix, statement.end_line
+            prefix, get_line(statement), suffix, get_line(statement)
         )
         header_lines, last_processed_line_no = format_expression(
             expr, expression_context, context
@@ -110,9 +113,12 @@ def _format_branch(
         offset = expr_position + 1
     else:
         header_lines = [
-            (statement.line, "{}{}{}".format(context.indent_string, prefix, suffix))
+            (
+                get_line(statement),
+                "{}{}{}".format(context.indent_string, prefix, suffix),
+            )
         ]
-        last_processed_line_no = statement.line
+        last_processed_line_no = get_line(statement)
         offset = 0
     body_lines, last_processed_line_no = format_block(
         statement.children[offset:],

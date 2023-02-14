@@ -2,7 +2,8 @@ from typing import List, Optional
 
 from lark import Tree, Token
 
-from .types import Node
+from ..common.utils import get_line, get_end_line
+from ..common.types import Node
 
 
 def remove_outer_parentheses(expression: Node) -> Node:
@@ -84,5 +85,7 @@ def _has_standalone_comments(
 ):
     return any(
         comment is not None
-        for comment in standalone_comments[expression.line : expression.end_line]
+        for comment in standalone_comments[
+            get_line(expression) : get_end_line(expression)
+        ]
     )

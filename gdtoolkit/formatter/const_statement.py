@@ -1,5 +1,6 @@
 from lark import Tree
 
+from ..common.utils import get_line, get_end_line
 from .types import Outcome
 from .context import Context, ExpressionContext
 from .expression import format_expression
@@ -15,6 +16,6 @@ def format_const_statement(statement: Tree, context: Context) -> Outcome:
             f"const {statement.children[1].value}: {statement.children[3].value} = "
         )
     expression_context = ExpressionContext(
-        prefix, statement.line, "", statement.end_line
+        prefix, get_line(statement), "", get_end_line(statement)
     )
     return format_expression(statement.children[-1], expression_context, context)

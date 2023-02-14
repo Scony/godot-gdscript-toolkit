@@ -4,6 +4,7 @@ from typing import List
 
 from lark import Tree
 
+from ..common.utils import get_line, get_column
 from ..common.ast import AbstractSyntaxTree
 
 from .problem import Problem
@@ -44,8 +45,8 @@ def _function_args_num_check(threshold: int, ast: AbstractSyntaxTree) -> List[Pr
                     description='Function "{}" has more than {} arguments'.format(
                         function.name, threshold
                     ),
-                    line=function.lark_node.line,
-                    column=function.lark_node.column,
+                    line=get_line(function.lark_node),
+                    column=get_column(function.lark_node),
                 )
             )
     return problems
@@ -69,8 +70,8 @@ def _max_public_methods_check(threshold: int, ast: AbstractSyntaxTree) -> List[P
                             class_name, threshold
                         )
                     ),
-                    line=a_class.lark_node.line,
-                    column=a_class.lark_node.column,
+                    line=get_line(a_class.lark_node),
+                    column=get_column(a_class.lark_node),
                 )
             )
     return problems
@@ -91,8 +92,8 @@ def _max_returns_check(threshold: int, ast: AbstractSyntaxTree) -> List[Problem]
                     description='Function "{}" has more than {} arguments'.format(
                         function.name, threshold
                     ),
-                    line=returns[-1].lark_node.line,
-                    column=returns[-1].lark_node.column,
+                    line=get_line(returns[-1].lark_node),
+                    column=get_column(returns[-1].lark_node),
                 )
             )
     return problems

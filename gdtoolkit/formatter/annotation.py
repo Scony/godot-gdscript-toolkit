@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from lark import Tree
 
+from ..common.utils import get_line, get_end_line
 from .types import FormattedLine, FormattedLines, Outcome
 from .context import Context, ExpressionContext
 from .expression import format_concrete_expression
@@ -56,7 +57,7 @@ def prepend_annotations_to_formatted_line(
 
 def format_standalone_annotation(annotation: Tree, context: Context) -> Outcome:
     return format_concrete_expression(
-        annotation, ExpressionContext("", annotation.line, "", -1), context
+        annotation, ExpressionContext("", get_line(annotation), "", -1), context
     )
 
 
@@ -72,8 +73,8 @@ def _annotations_have_standalone_comments(
     return any(
         comment is not None
         for comment in standalone_comments[
-            annotations[0].line : last_line
+            get_line(annotations[0]) : last_line
             if last_line is not None
-            else annotations[-1].end_line
+            else get_end_line(annotations[-1])
         ]
     )

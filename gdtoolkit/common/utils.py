@@ -3,6 +3,8 @@ from typing import FrozenSet, List, Optional
 
 from lark import Tree, Token
 
+from .types import Node
+
 Path = str
 
 
@@ -35,3 +37,24 @@ def find_tree_among_children(tree_name_to_find: str, tree: Tree) -> Optional[Tre
         if isinstance(child, Tree) and child.data == tree_name_to_find:
             return child
     return None
+
+
+# TODO: remove
+def get_line(node: Node) -> int:
+    if isinstance(node, Tree):
+        return node.meta.line
+    return node.line
+
+
+# TODO: remove
+def get_end_line(node: Node) -> int:
+    if isinstance(node, Tree):
+        return node.meta.end_line
+    return node.end_line
+
+
+# TODO: remove
+def get_column(node: Node) -> int:
+    if isinstance(node, Tree):
+        return node.meta.column
+    return node.column

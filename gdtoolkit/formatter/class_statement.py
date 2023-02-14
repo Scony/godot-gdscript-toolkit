@@ -3,6 +3,7 @@ from functools import partial
 
 from lark import Tree
 
+from ..common.utils import get_line, get_end_line
 from .types import FormattedLines, Outcome
 from .context import Context, ExpressionContext
 from .block import format_block
@@ -61,19 +62,19 @@ def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
         )
     expression_context = ExpressionContext(
         f"signal {statement.children[0].value}",
-        statement.line,
+        get_line(statement),
         "",
-        statement.end_line,
+        get_end_line(statement),
     )
     signal_args = statement.children[-1]
     return format_concrete_expression(signal_args, expression_context, context)
 
 
 def _format_classname_statement(statement: Tree, context: Context) -> Outcome:
-    last_processed_line_no = statement.line
+    last_processed_line_no = get_line(statement)
     formatted_lines: FormattedLines = [
         (
-            statement.line,
+            get_line(statement),
             f"{context.indent_string}class_name {statement.children[0].value}",
         )
     ]
@@ -81,7 +82,7 @@ def _format_classname_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_extends_statement(statement: Tree, context: Context) -> Outcome:
-    last_processed_line_no = statement.line
+    last_processed_line_no = get_line(statement)
     optional_attributes = (
         ""
         if len(statement.children) == 1
@@ -91,7 +92,7 @@ def _format_extends_statement(statement: Tree, context: Context) -> Outcome:
     )
     formatted_lines: FormattedLines = [
         (
-            statement.line,
+            get_line(statement),
             "{}extends {}{}".format(
                 context.indent_string,
                 expression_to_str(statement.children[0]),
@@ -103,7 +104,7 @@ def _format_extends_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_classname_extends_statement(statement: Tree, context: Context) -> Outcome:
-    last_processed_line_no = statement.line
+    last_processed_line_no = get_line(statement)
     extendee_pos = 2 + 1
     optional_attributes = (
         ""
@@ -119,7 +120,7 @@ def _format_classname_extends_statement(statement: Tree, context: Context) -> Ou
     )
     formatted_lines: FormattedLines = [
         (
-            statement.line,
+            get_line(statement),
             "{}class_name {} extends {}{}".format(
                 context.indent_string,
                 statement.children[1].value,
@@ -143,17 +144,19 @@ def _format_var_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_docstring_statement(statement: Tree, context: Context) -> Outcome:
-    expression_context = ExpressionContext("", statement.line, "", statement.end_line)
+    expression_context = ExpressionContext(
+        "", get_line(statement), "", get_end_line(statement)
+    )
     return format_concrete_expression(
         statement.children[0], expression_context, context
     )
 
 
 def _format_class_statement(statement: Tree, context: Context) -> Outcome:
-    last_processed_line_no = statement.line
+    last_processed_line_no = get_line(statement)
     name = statement.children[0].value
     formatted_lines: FormattedLines = [
-        (statement.line, f"{context.indent_string}class {name}:")
+        (get_line(statement), f"{context.indent_string}class {name}:")
     ]
     class_lines, last_processed_line_no = format_block(
         statement.children[1:],
@@ -181,9 +184,9 @@ def _format_func_header(statement: Tree, context: Context) -> Outcome:
     has_return_type = len(statement.children) > 2
     expression_context = ExpressionContext(
         f"func {name}",
-        statement.line,
+        get_line(statement),
         f" -> {statement.children[2].value}:" if has_return_type else ":",
-        statement.end_line,
+        get_end_line(statement),
     )
     func_args = statement.children[1]
     return format_concrete_expression(func_args, expression_context, context)
@@ -197,7 +200,7 @@ def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
         else "enum "
     )
     expression_context = ExpressionContext(
-        prefix, statement.line, "", statement.end_line
+        prefix, get_line(statement), "", get_end_line(statement)
     )
     enum_body = actual_enum.children[-1]
     return format_concrete_expression(enum_body, expression_context, context)

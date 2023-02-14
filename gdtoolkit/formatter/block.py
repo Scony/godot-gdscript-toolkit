@@ -4,6 +4,7 @@ from typing import List, Callable
 
 from lark import Tree
 
+from ..common.utils import get_line
 from .types import Outcome, FormattedLines
 from .context import Context
 from .constants import (
@@ -32,7 +33,7 @@ def format_block(
             if not is_first_annotation:
                 continue
         blank_lines = reconstruct_blank_lines_in_range(
-            previously_processed_line_number, statement.line, context
+            previously_processed_line_number, get_line(statement), context
         )
         if previous_statement_name is None:
             blank_lines = _remove_empty_strings_from_begin(blank_lines)

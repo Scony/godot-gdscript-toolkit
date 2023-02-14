@@ -5,7 +5,7 @@ from typing import Callable, List, Tuple
 from lark import Token, Tree
 
 from ..common.ast import AbstractSyntaxTree, Class, Statement, Annotation
-from ..common.utils import find_name_token_among_children
+from ..common.utils import find_name_token_among_children, get_line, get_column
 
 from .problem import Problem
 from .helpers import is_function_public
@@ -58,8 +58,8 @@ def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
             Problem(
                 name="private-method-call",
                 description='Private method "{}" has been called'.format(callee_name),
-                line=callee_name_token.line,
-                column=callee_name_token.column,
+                line=get_line(callee_name_token),
+                column=get_column(callee_name_token),
             )
         )
     return problems
@@ -93,8 +93,8 @@ def _class_definitions_order_check_for_class(
                 Problem(
                     name="class-definitions-order",
                     description="Definition out of order in {}".format(a_class.name),
-                    line=statement.lark_node.line,
-                    column=statement.lark_node.column,
+                    line=get_line(statement.lark_node),
+                    column=get_column(statement.lark_node),
                 )
             )
     return problems

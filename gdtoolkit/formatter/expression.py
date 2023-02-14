@@ -3,8 +3,10 @@ from typing import Dict, Callable, List, Optional
 from lark import Tree, Token
 from lark.tree import Meta
 
+from ..common.utils import get_line, get_end_line
+from ..common.types import Node
 from .context import Context, ExpressionContext
-from .types import Node, Outcome, FormattedLines
+from .types import Outcome, FormattedLines
 from .expression_utils import (
     remove_outer_parentheses,
     is_foldable,
@@ -22,7 +24,7 @@ def format_expression(
     concrete_expression = expression.children[0]
     return (
         _format_standalone_expression(concrete_expression, expression_context, context),
-        expression.end_line,
+        get_end_line(expression),
     )
 
 
@@ -31,7 +33,7 @@ def format_concrete_expression(
 ) -> Outcome:
     return (
         _format_concrete_expression(expression, expression_context, context),
-        expression.end_line,
+        get_end_line(expression),
     )
 
 
@@ -202,7 +204,7 @@ def _format_array_to_multiple_lines(
         f"{expression_context.prefix_string}[",
         expression_context.prefix_line,
         f"]{expression_context.suffix_string}",
-        array.end_line,
+        get_end_line(array),
     )
     return _format_comma_separated_list(array.children, new_expression_context, context)
 
@@ -214,7 +216,7 @@ def _format_dict_to_multiple_lines(
         f"{expression_context.prefix_string}{{",
         expression_context.prefix_line,
         f"}}{expression_context.suffix_string}",
-        a_dict.end_line,
+        get_end_line(a_dict),
     )
     return _format_comma_separated_list(
         a_dict.children, new_expression_context, context
@@ -228,7 +230,7 @@ def _format_args_to_multiple_lines(
         f"{expression_context.prefix_string}(",
         expression_context.prefix_line,
         f"){expression_context.suffix_string}",
-        args.end_line,
+        get_end_line(args),
     )
     return _format_comma_separated_list(args.children, new_expression_context, context)
 
@@ -262,7 +264,7 @@ def _format_parentheses_to_multiple_lines(
         f"{expression_context.prefix_string}(",
         expression_context.prefix_line,
         f"){expression_context.suffix_string}",
-        par_expr.end_line,
+        get_end_line(par_expr),
     )
     return _format_standalone_expression(
         par_expr.children[0],
@@ -285,9 +287,9 @@ def _format_string_to_multiple_lines(
         )
     ]  # type: FormattedLines
     for middle_line in lines[1:-1]:
-        formatted_lines.append((string.line, middle_line))
+        formatted_lines.append((get_line(string), middle_line))
     formatted_lines.append(
-        (string.line, f"{lines[-1]}{expression_context.suffix_string}")
+        (get_line(string), f"{lines[-1]}{expression_context.suffix_string}")
     )
     return formatted_lines
 
@@ -332,7 +334,7 @@ def _format_func_arg_to_multiple_lines(
     if expression.data == "func_arg_typed" and len(expression.children) == 2:
         return [
             (
-                expression.children[1].line,
+                get_line(expression.children[1]),
                 f"{context.indent_string}{expression_to_str(expression)}",
             )
         ]
@@ -372,9 +374,9 @@ def _format_call_expression_to_multiple_lines(
         ]
     new_expression_context = ExpressionContext(
         "{}{}(".format(expression_context.prefix_string, callee),
-        callee_node.line,
+        get_line(callee_node),
         "){}".format(expression_context.suffix_string),
-        expression.end_line,
+        get_end_line(expression),
     )
     return _format_comma_separated_list(
         expression.children[1:], new_expression_context, context
@@ -464,7 +466,7 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     )
     formatted_lines.append(
         (
-            expression.children[-1].end_line,
+            get_end_line(expression.children[-1]),
             "{}{}{}".format(
                 context.indent_string, rpar, expression_context.suffix_string
             ),
@@ -479,14 +481,16 @@ def _format_contextless_operator_chain_based_expression_to_multiple_lines(
     formatted_lines = []  # type: FormattedLines
     value = expression.children[0]
     lines = _format_concrete_expression(
-        value, ExpressionContext("", value.line, "", value.end_line), context
+        value, ExpressionContext("", get_line(value), "", get_end_line(value)), context
     )
     formatted_lines += lines
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
     for operator, child in operator_expr_chain:
         lines = _format_concrete_expression(
             child,
-            ExpressionContext(f"{operator.value} ", child.line, "", child.end_line),
+            ExpressionContext(
+                f"{operator.value} ", get_line(child), "", get_end_line(child)
+            ),
             context,
         )
         formatted_lines += lines
@@ -537,7 +541,7 @@ def _format_contextless_comma_separated_list_to_multiple_lines(
     for i, element in enumerate(elements):
         suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
         child_expression_context = ExpressionContext(
-            "", element.line, suffix, element.end_line
+            "", get_line(element), suffix, get_end_line(element)
         )
         lines = _format_standalone_expression(
             element, child_expression_context, context
@@ -606,9 +610,9 @@ def _format_annotation_to_multiple_lines(
 ) -> FormattedLines:
     annotation_name = annotation.children[0].value
     if len(annotation.children) == 1:
-        return [(annotation.line, f"{context.indent_string}@{annotation_name}")]
+        return [(get_line(annotation), f"{context.indent_string}@{annotation_name}")]
     new_expression_context = ExpressionContext(
-        f"@{annotation_name}", annotation.line, "", -1
+        f"@{annotation_name}", get_line(annotation), "", -1
     )
     return _format_concrete_expression(
         annotation.children[-1], new_expression_context, context
@@ -635,8 +639,8 @@ def _format_inline_lambda_to_multiple_lines(
         expression_context.suffix_line,
     )
     fake_meta = Meta()
-    fake_meta.line = inline_lambda.children[1].line
-    fake_meta.end_line = inline_lambda.children[-1].end_line
+    fake_meta.line = get_line(inline_lambda.children[1])
+    fake_meta.end_line = get_end_line(inline_lambda.children[-1])
     fake_expression = Tree(
         "inline_lambda_statements", inline_lambda.children[1:], fake_meta
     )
@@ -701,8 +705,8 @@ def _format_inline_lambda_statements_to_multiple_lines(
         expression_context.suffix_line,
     )
     fake_meta = Meta()
-    fake_meta.line = lambda_statements[1].line
-    fake_meta.end_line = lambda_statements[-1].end_line
+    fake_meta.line = get_line(lambda_statements[1])
+    fake_meta.end_line = get_end_line(lambda_statements[-1])
     fake_expression = Tree("inline_lambda_statements", lambda_statements[1:], fake_meta)
     return first_statement_formatted_lines[:-1] + _format_concrete_expression(
         fake_expression, remaining_statements_expression_context, context
@@ -728,8 +732,8 @@ def _collapse_getattr_tree_to_dot_chain(expression: Tree) -> Tree:
             else:
                 matching_attr = next_expression_to_process.children[-1]
                 fake_meta = Meta()
-                fake_meta.line = matching_attr.line
-                fake_meta.end_line = pending_getattr_call_to_match.end_line
+                fake_meta.line = get_line(matching_attr)
+                fake_meta.end_line = get_end_line(pending_getattr_call_to_match)
                 fake_expression = Tree(
                     "actual_getattr_call",
                     [matching_attr] + pending_getattr_call_to_match.children[1:],
@@ -754,8 +758,8 @@ def _collapse_getattr_tree_to_dot_chain(expression: Tree) -> Tree:
             next_expression_to_process = None
     dot_chain_children = list(reversed(reversed_dot_chain_children))
     fake_meta = Meta()
-    fake_meta.line = dot_chain_children[0].line
-    fake_meta.end_line = dot_chain_children[-1].end_line
+    fake_meta.line = get_line(dot_chain_children[0])
+    fake_meta.end_line = get_end_line(dot_chain_children[-1])
     fake_expression = Tree(
         "dot_chain",
         dot_chain_children,
@@ -779,8 +783,8 @@ def _collapse_subscr_expr_tree_to_dot_chain(expression: Tree) -> Tree:
     )
     matching_expr = sub_dot_chain[-1]
     fake_meta = Meta()
-    fake_meta.line = matching_expr.line
-    fake_meta.end_line = expression.end_line
+    fake_meta.line = get_line(matching_expr)
+    fake_meta.end_line = get_end_line(expression)
     fake_expression = Tree(
         "actual_subscr_expr",
         [matching_expr, subscript_to_match],
@@ -789,8 +793,8 @@ def _collapse_subscr_expr_tree_to_dot_chain(expression: Tree) -> Tree:
 
     dot_chain_children = sub_dot_chain[:-1] + [fake_expression]
     fake_meta = Meta()
-    fake_meta.line = dot_chain_children[0].line
-    fake_meta.end_line = dot_chain_children[-1].end_line
+    fake_meta.line = get_line(dot_chain_children[0])
+    fake_meta.end_line = get_end_line(dot_chain_children[-1])
     fake_expression = Tree(
         "dot_chain",
         dot_chain_children,
@@ -836,8 +840,8 @@ def _format_dot_chain_to_multiple_lines_bottom_up(
         )
 
     fake_meta = Meta()
-    fake_meta.line = dot_chain.line
-    fake_meta.end_line = last_chain_element.children[0].end_line
+    fake_meta.line = get_line(dot_chain)
+    fake_meta.end_line = get_end_line(last_chain_element.children[0])
     new_dot_chain = Tree(
         "non_foldable_dot_chain",
         dot_chain.children[:-1] + [last_chain_element.children[0]],
@@ -845,8 +849,8 @@ def _format_dot_chain_to_multiple_lines_bottom_up(
     )
 
     fake_meta = Meta()
-    fake_meta.line = new_dot_chain.line
-    fake_meta.end_line = last_chain_element.end_line
+    fake_meta.line = get_line(new_dot_chain)
+    fake_meta.end_line = get_end_line(last_chain_element)
     new_actual_expr = Tree(
         last_chain_element.data,
         [new_dot_chain] + last_chain_element.children[1:],

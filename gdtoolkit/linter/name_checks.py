@@ -5,7 +5,7 @@ from types import MappingProxyType
 
 from lark import Tree
 
-from ..common.utils import find_name_token_among_children
+from ..common.utils import find_name_token_among_children, get_line, get_column
 
 from .problem import Problem
 
@@ -214,8 +214,8 @@ def _generic_name_check(
                 Problem(
                     name=problem_name,
                     description=description_template.format(name),
-                    line=name_token.line,
-                    column=name_token.column,
+                    line=get_line(name_token),
+                    column=get_column(name_token),
                 )
             )
     return problems

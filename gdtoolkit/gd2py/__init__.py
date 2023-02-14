@@ -3,9 +3,9 @@ from typing import List, Callable, Dict
 
 from lark import Tree
 
+from ..common.types import Node
 from ..parser import parser
 from ..formatter.context import Context
-from ..formatter.types import Node  # TODO: extract to common
 
 
 def convert_code(gdscript_code: str) -> str:

@@ -2,6 +2,7 @@ from typing import List, Optional, Iterator
 
 from lark import Tree
 
+from ..common.utils import get_line, get_column
 from .problem import Problem
 
 
@@ -34,8 +35,8 @@ def _check_elif_problems(if_stmt: Tree) -> List[Problem]:
             Problem(
                 name="no-elif-return",
                 description='Unnecessary "elif" after "return"',
-                line=elif_branch.line,
-                column=elif_branch.column,
+                line=get_line(elif_branch),
+                column=get_column(elif_branch),
             )
         )
     return problems
@@ -72,8 +73,8 @@ def _check_else_problems(if_stmt: Tree, parent_var_names: List[str]) -> List[Pro
         Problem(
             name="no-else-return",
             description='Unnecessary "else" after "return"',
-            line=else_branch.line,
-            column=else_branch.column,
+            line=get_line(else_branch),
+            column=get_column(else_branch),
         )
     ]
 

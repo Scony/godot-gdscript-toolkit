@@ -1,4 +1,5 @@
 from gdtoolkit.linter import lint_code, DEFAULT_CONFIG
+from gdtoolkit.common.utils import get_line
 
 
 def simple_ok_check(code, **kwargs):
@@ -20,4 +21,4 @@ def simple_nok_check(code, check_name, line=2, **kwargs):
     outcome = lint_code(code, config)
     assert len(outcome) == 1
     assert outcome[0].name == check_name
-    assert outcome[0].line == line
+    assert get_line(outcome[0]) == line
