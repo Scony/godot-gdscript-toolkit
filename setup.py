@@ -31,7 +31,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        "lark[regex]==1.0.0",
+        "lark[regex]==1.1.5",
         "docopt-ng==0.8.1",
         "pyyaml>=5.1",
         "radon>=5.1",

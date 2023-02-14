@@ -1,4 +1,4 @@
-import lark
+import lark.exceptions
 
 
 class GDToolkitError(Exception):
