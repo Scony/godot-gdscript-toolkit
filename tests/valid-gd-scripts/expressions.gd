@@ -1,6 +1,11 @@
 extends Node
 
+enum Xyz { AAA }
+
 const XXXX = preload('functions.gd')
+
+class Zyx:
+	enum Qwe { BBB }
 
 class XNode extends Node:
 	class YNode extends Node:
@@ -38,7 +43,8 @@ func foo():
 	-8
 	~8
 	x is int
-	x is x.Type
+	x is Xyz # TODO: fix/remove x.Type
+	x is Zyx.Qwe # TODO: fix/remove x.Type
 	x.attr
 	x[10]
 	bar()

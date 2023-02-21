@@ -18,3 +18,4 @@ class X:
 			is bool
 			is bool
 		)
+		print([1, 2.1] is Array[int])

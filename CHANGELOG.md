@@ -15,7 +15,7 @@
 
 ### Changed
  - Removed support for legacy (Godot `3.x`) GDScript from core testcases
- - Updated `lark` dependency to the latest release - `0.12.0`
+ - Updated `lark` dependency to the latest release - `1.1.5`
  - Improved `subscr_expr`/`getattr`/`getattr_call` chains formatting
 
 ## [3.4.0] 2022-04-21

@@ -203,9 +203,9 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?asless_actual_bitw_not: "~" asless_bitw_not
 ?asless_bitw_not: asless_type_test
                 | asless_actual_bitw_not
-!?type_test: await_expr ("is" TYPE)*
-           | actual_type_cast ("is" TYPE)+
-!?asless_type_test: await_expr ("is" TYPE)*
+!?type_test: await_expr ("is" TYPE_HINT)*
+           | actual_type_cast ("is" TYPE_HINT)+
+!?asless_type_test: await_expr ("is" TYPE_HINT)*
 !?await_expr: ("await")* call_expr
 ?call_expr: attr_expr
           | NAME _call_arglist -> standalone_call
