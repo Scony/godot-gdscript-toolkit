@@ -102,6 +102,7 @@ def expression_to_str(expression: Node) -> str:
         "enum_body": _enum_body_to_str,
         "enum_element": _enum_element_to_str,
         "signal_args": _args_to_str,
+        "signal_arg_regular": lambda e: e.children[0].value,
         "signal_arg_typed": lambda e: "{}: {}".format(
             e.children[0].value,
             e.children[1].value,
