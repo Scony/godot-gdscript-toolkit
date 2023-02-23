@@ -29,7 +29,7 @@ enum_body: "{" [enum_element ("," enum_element)* [trailing_comma]] "}"
 enum_element: NAME ["=" type_cast]
 signal_stmt: "signal" NAME [signal_args]
 signal_args: "(" [signal_arg ("," signal_arg)* [trailing_comma]] ")"
-?signal_arg: NAME
+?signal_arg: NAME -> signal_arg_regular
            | NAME ":" TYPE_HINT -> signal_arg_typed
 extends_stmt: "extends" (NAME | string) ("." NAME)*
 classname_stmt: "class_name" NAME
