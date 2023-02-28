@@ -47,7 +47,12 @@ class_var_typed_assgnd: _var_typed "=" expr [inline_property_body]
 class_var_inf: "var" NAME ":" "=" expr [inline_property_body]
 inline_property_body: ":" [property_delegate_set ["," property_delegate_get]]
                     | ":" [property_delegate_get ["," property_delegate_set]]
-!const_stmt: "const" NAME [":" [TYPE_HINT]] "=" expr
+const_stmt: const_assigned
+          | const_typed_assigned
+          | const_inf
+const_assigned: "const" NAME "=" expr
+const_typed_assigned: "const" NAME ":" TYPE_HINT "=" expr
+const_inf: "const" NAME ":" "=" expr
 docstr_stmt: string
 
 class_def: "class" NAME [extends_stmt] ":" (_class_body | _class_stmt)

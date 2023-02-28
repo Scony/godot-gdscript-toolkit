@@ -7,15 +7,42 @@ from .expression import format_expression
 
 
 def format_const_statement(statement: Tree, context: Context) -> Outcome:
-    if len(statement.children) == 4:
-        prefix = f"const {statement.children[1].value} = "
-    elif len(statement.children) == 5:
-        prefix = f"const {statement.children[1].value} := "
-    elif len(statement.children) == 6:
-        prefix = (
-            f"const {statement.children[1].value}: {statement.children[3].value} = "
-        )
+    concrete_const_stmt = statement.children[0]
+    handlers = {
+        "const_assigned": _format_const_assigned_statement,
+        "const_typed_assigned": _format_const_typed_assigned_statement,
+        "const_inf": _format_const_inferred_statement,
+    }
+    return handlers[concrete_const_stmt.data](concrete_const_stmt, context)
+
+
+def _format_const_assigned_statement(statement: Tree, context: Context) -> Outcome:
     expression_context = ExpressionContext(
-        prefix, get_line(statement), "", get_end_line(statement)
+        f"const {statement.children[0].value} = ",
+        get_line(statement),
+        "",
+        get_end_line(statement),
+    )
+    return format_expression(statement.children[-1], expression_context, context)
+
+
+def _format_const_typed_assigned_statement(
+    statement: Tree, context: Context
+) -> Outcome:
+    expression_context = ExpressionContext(
+        f"const {statement.children[0].value}: {statement.children[1].value} = ",
+        get_line(statement),
+        "",
+        get_end_line(statement),
+    )
+    return format_expression(statement.children[-1], expression_context, context)
+
+
+def _format_const_inferred_statement(statement: Tree, context: Context) -> Outcome:
+    expression_context = ExpressionContext(
+        f"const {statement.children[0].value} := ",
+        get_line(statement),
+        "",
+        get_end_line(statement),
     )
     return format_expression(statement.children[-1], expression_context, context)

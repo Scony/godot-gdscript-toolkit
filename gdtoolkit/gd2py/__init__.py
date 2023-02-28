@@ -56,7 +56,7 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
         "const_stmt": lambda s, c: [
             "{}{} = {}".format(
                 c.indent_string,
-                s.children[1].value,
+                s.children[0].children[0].value,
                 _convert_expression_to_str(s.children[-1]),
             )
         ],
