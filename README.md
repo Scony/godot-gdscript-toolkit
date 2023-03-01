@@ -18,7 +18,7 @@ Regardless of the target version, installation is done by `pip3` command and for
 ### Godot 4
 
 ```
-pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
+pip3 install "gdtoolkit==4.*"
 ```
 
 ### Godot 3

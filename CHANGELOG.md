@@ -1,15 +1,15 @@
 # Changelog
 
-## [4.0.0] (to be released)
+## [4.0.0] 2023-03-01
 
 ### Added
  - Added new GDScript `2.0` constructs to the core testcases
- - Added support for `await` in parser & formatter
- - Added support for typed arrays in parser & formatter
- - Added support for annotations in parser & formatter
- - Added support for unique node names in parser & formatter
- - Added support for property etters in parser & formatter
- - Added support for inline-lambdas in parser & formatter
+ - Added support for `await`
+ - Added support for typed arrays
+ - Added support for annotations
+ - Added support for unique node names
+ - Added support for property etters
+ - Added support for inline-lambdas
  - Added support for func-level constants
  - Added support for typed signal arguments
 
