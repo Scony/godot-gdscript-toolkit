@@ -1,9 +1,10 @@
 # Changelog
 
-## [latest]
+## [3.5.0] 2023-03-15
 
 ### Added
  - Added support for multiline `preload` expression formatting (was fixed in Godot)
+ - Added full UTF-8 support
 
 ## [3.4.0] 2022-04-21
 
