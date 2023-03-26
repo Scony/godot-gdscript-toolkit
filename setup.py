@@ -34,7 +34,7 @@ setup(
         "lark[regex]==1.1.5",
         "docopt-ng==0.8.1",
         "pyyaml>=5.1",
-        "radon>=5.1",
+        "radon==6.0.1",
     ],
     python_requires=">=3.7",
     classifiers=[
