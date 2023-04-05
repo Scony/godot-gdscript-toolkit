@@ -1,5 +1,10 @@
 # Changelog
 
+## [master]
+
+### Fixed
+ - Fixed `max-returns` check's message
+
 ## [4.0.0] 2023-03-01
 
 ### Added

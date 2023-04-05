@@ -89,7 +89,7 @@ def _max_returns_check(threshold: int, ast: AbstractSyntaxTree) -> List[Problem]
             problems.append(
                 Problem(
                     name="max-returns",
-                    description='Function "{}" has more than {} arguments'.format(
+                    description='Function "{}" has more than {} return statements'.format(
                         function.name, threshold
                     ),
                     line=get_line(returns[-1].lark_node),
