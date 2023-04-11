@@ -257,7 +257,7 @@ c_dict_element: type_cast ":" type_cast
 eq_dict_element: NAME "=" type_cast
 
 TYPE: NAME ([" "] "." [" "] NAME)*
-TYPE_HINT: NAME ([" "] "." [" "] NAME)* ["[" NAME "]"]
+TYPE_HINT: NAME ([" "] "." [" "] NAME)* ["[" NAME ([" "] "." [" "] NAME)* "]"]
 NUMBER: ["+"|"-"] (FLOAT | INT)
 FLOAT: INT _EXP | DECIMAL _EXP?
 _EXP: ("e"|"E") SIGNED_INT

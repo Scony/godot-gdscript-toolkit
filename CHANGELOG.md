@@ -2,6 +2,9 @@
 
 ## [master]
 
+### Added
+ - Added support for user-defined types in type hints
+
 ### Fixed
  - Fixed `max-returns` check's message
 
