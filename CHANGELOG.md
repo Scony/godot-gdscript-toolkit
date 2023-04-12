@@ -7,6 +7,7 @@
 
 ### Fixed
  - Fixed `max-returns` check's message
+ - Fixed formatting of `static` functions
 
 ## [4.0.0] 2023-03-01
 

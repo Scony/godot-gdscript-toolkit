@@ -34,25 +34,13 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "docstr_stmt": _format_docstring_statement,
         "class_def": _format_class_statement,
         "func_def": _format_func_statement,
-        "static_func_def": partial(
-            _format_child_and_prepend_to_outcome, prefix="static "
+        "static_func_def": lambda s, c: _format_func_statement(
+            s.children[0], c, "static "
         ),
         "annotation": format_standalone_annotation,
         "property_body_def": format_property_body,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
-
-
-def _format_child_and_prepend_to_outcome(
-    statement: Tree, context: Context, prefix: str
-) -> Outcome:
-    lines, last_processed_line = format_class_statement(statement.children[0], context)
-    first_line_no, first_line = lines[0]
-    return (
-        [(first_line_no, f"{context.indent_string}{prefix}{first_line.strip()}")]
-        + lines[1:],
-        last_processed_line,
-    )
 
 
 def _format_signal_statement(statement: Tree, context: Context) -> Outcome:
@@ -167,9 +155,13 @@ def _format_class_statement(statement: Tree, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_func_statement(statement: Tree, context: Context) -> Outcome:
+def _format_func_statement(
+    statement: Tree, context: Context, prefix: str = ""
+) -> Outcome:
     func_header = statement.children[0]
-    formatted_lines, last_processed_line_no = _format_func_header(func_header, context)
+    formatted_lines, last_processed_line_no = _format_func_header(
+        func_header, context, prefix
+    )
     func_lines, last_processed_line_no = format_block(
         statement.children[1:],
         format_func_statement,
@@ -179,11 +171,11 @@ def _format_func_statement(statement: Tree, context: Context) -> Outcome:
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_func_header(statement: Tree, context: Context) -> Outcome:
+def _format_func_header(statement: Tree, context: Context, prefix: str) -> Outcome:
     name = statement.children[0].value
     has_return_type = len(statement.children) > 2
     expression_context = ExpressionContext(
-        f"func {name}",
+        f"{prefix}func {name}",
         get_line(statement),
         f" -> {statement.children[2].value}:" if has_return_type else ":",
         get_end_line(statement),
