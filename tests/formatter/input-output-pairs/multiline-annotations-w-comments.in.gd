@@ -1,6 +1,7 @@
+extends Node
 class_name Aclassname
 # a
-@icon( # inline a
+@export_group( # inline a
 	"res://aaaaaaaaaaaaa/bbbbbbbbbbbbbbb/cccccccccccc/ddddddddddd/eeeeeeeeeeeeeee/ffffffffff.tres" # inline b
 ) # inline c
 # b
@@ -14,7 +15,7 @@ var a # inline g
 # e
 
 # f
-@onready
+# @onready
 # g
 @export_enum( # inline h
 	"Aaaaaaaaaaa", # inline i

@@ -5,13 +5,12 @@ import shutil
 import pytest
 from gdtoolkit.parser import parser
 
-from ..common import write_project_settings, write_file
+from ..common import GODOT_SERVER, write_project_settings, write_file
 
 
 OK_DATA_DIR = "../valid-gd-scripts"
 NOK_DATA_DIR = "../invalid-gd-scripts"
 BUGS_DATA_DIR = "../potential-godot-bugs"
-GODOT_SERVER = "godot4"
 
 
 def pytest_generate_tests(metafunc):

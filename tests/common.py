@@ -1,6 +1,9 @@
 import os
 
 
+GODOT_SERVER = "godot4-latest"
+
+
 def write_file(a_dir, file_name, code):
     file_path = os.path.join(a_dir, file_name)
     with open(file_path, "w", encoding="utf-8") as handle:

@@ -4,11 +4,10 @@ import shutil
 
 import pytest
 
-from ..common import write_project_settings, write_file
+from ..common import GODOT_SERVER, write_project_settings, write_file
 
 
 DATA_DIR = "./input-output-pairs"
-GODOT_SERVER = "godot4"
 EXCEPTIONS = set(
     [
         # cases where Godot does more than just parsing
@@ -20,10 +19,6 @@ EXCEPTIONS = set(
         "long-inline-lambdas.out.gd",
         "type-cast-corner-case-expressions.in.gd",
         "type-cast-corner-case-expressions.out.gd",
-        # godot bugs
-        "multiline-annotations.out.gd",
-        "multiline-annotations-w-comments.in.gd",
-        "multiline-annotations-w-comments.out.gd",
     ]
 )
 
