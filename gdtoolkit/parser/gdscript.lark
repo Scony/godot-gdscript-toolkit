@@ -155,7 +155,7 @@ kv_pair_pattern: test_pattern ":" test_pattern
 expr: type_cast
     | assnmnt_expr
 assnmnt_expr: attr_expr _assnmnt_op type_cast
-!_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | ">>=" | "<<="
+!_assnmnt_op: "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | ">>=" | "<<=" | "**="
 ?type_cast: test_expr
           | actual_type_cast
 !?actual_type_cast: test_expr ("as" TYPE_HINT)+
