@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [4.0.1] 2023-04-22
 
 ### Added
  - Added support for user-defined types in type hints
