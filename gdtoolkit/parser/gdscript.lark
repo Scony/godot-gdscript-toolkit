@@ -203,11 +203,14 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?asless_actual_neg_expr: "-" asless_neg_expr
 ?asless_neg_expr: asless_bitw_not
                 | asless_actual_neg_expr
-?bitw_not: type_test
+?bitw_not: pow_expr
          | asless_actual_bitw_not
 !?asless_actual_bitw_not: "~" asless_bitw_not
-?asless_bitw_not: asless_type_test
+?asless_bitw_not: asless_pow_expr
                 | asless_actual_bitw_not
+!?pow_expr: type_test ("**" asless_type_test)*
+          | actual_type_cast ("**" asless_type_test)+
+!?asless_pow_expr: asless_type_test ("**" asless_type_test)*
 !?type_test: await_expr ("is" TYPE_HINT)*
            | actual_type_cast ("is" TYPE_HINT)+
 !?asless_type_test: await_expr ("is" TYPE_HINT)*

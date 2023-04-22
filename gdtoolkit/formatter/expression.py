@@ -133,6 +133,8 @@ def _format_foldable_to_multiple_lines(
         "asless_actual_bitw_not": lambda e, ec, c: _append_to_expression_context_and_pass(
             f"{expression_to_str(e.children[0])}", e.children[1], ec, c
         ),
+        "pow_expr": _format_operator_chain_based_expression_to_multiple_lines,
+        "asless_pow_expr": _format_operator_chain_based_expression_to_multiple_lines,
         "type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "asless_type_test": _format_operator_chain_based_expression_to_multiple_lines,
         "actual_type_cast": _format_operator_chain_based_expression_to_multiple_lines,

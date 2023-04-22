@@ -57,6 +57,8 @@ def expression_to_str(expression: Node) -> str:
         "asless_mdr_expr": _operator_chain_based_expression_to_str,
         "asless_actual_neg_expr": lambda e: f"-{expression_to_str(e.children[1])}",
         "asless_actual_bitw_not": lambda e: f"~{expression_to_str(e.children[1])}",
+        "pow_expr": _operator_chain_based_expression_to_str,
+        "asless_pow_expr": _operator_chain_based_expression_to_str,
         "type_test": _operator_chain_based_expression_to_str,
         "asless_type_test": _operator_chain_based_expression_to_str,
         "actual_type_cast": _operator_chain_based_expression_to_str,

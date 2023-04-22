@@ -61,6 +61,9 @@ class LoosenTreeTransformer(Transformer):
     def asless_mdr_expr(self, args):
         return Tree("mdr_expr", args)
 
+    def asless_pow_expr(self, args):
+        return Tree("pow_expr", args)
+
     def string(self, args):
         string_token = args[0]
         return expression_to_str(string_token)

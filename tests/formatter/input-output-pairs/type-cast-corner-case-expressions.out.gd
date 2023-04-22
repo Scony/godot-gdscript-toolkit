@@ -134,3 +134,14 @@ func foo():
 			is Array
 		)
 	)
+	# --
+	1 as int or 1 ** 1
+	(
+		1 as int
+		or (
+			[
+				1,
+			]
+			** 2
+		)
+	)
