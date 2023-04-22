@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for user-defined types in type hints
+ - Added support for annotations with empty argument list (e.g. `@onready()`)
 
 ### Fixed
  - Fixed `max-returns` check's message

@@ -18,7 +18,7 @@ _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_
                     | func_def
                     | "static" func_def -> static_func_def
 annotation: "@" NAME [annotation_args]
-annotation_args: "(" test_expr ("," test_expr)* [trailing_comma] ")"
+annotation_args: "(" [test_expr ("," test_expr)* [trailing_comma]] ")"
 
 pass_stmt: "pass"
 enum_stmt: enum_regular

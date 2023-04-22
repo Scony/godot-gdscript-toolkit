@@ -5,7 +5,7 @@ var x
 
 @onready @export_range(1, 100, 1, "or_greater") var ranged_var: int = 50
 
-@onready
+@onready()
 @export_range(1, 100, 1, "or_greater")
 var ranged_var_2_veryyyyyyy_loooong_naaaaaaaaaaaaaaaaaaaaaaaame: int = 50
 

@@ -9,7 +9,7 @@ var x
 
 var ranged_var: int = 50
 
-@onready @export_range(1, 100, 1, "or_greater") var ranged_var_2_veryyyyyyy_loooong_naaaaaaaaaaaaaaaaaaaaaaaame: int = 50
+@onready() @export_range(1, 100, 1, "or_greater") var ranged_var_2_veryyyyyyy_loooong_naaaaaaaaaaaaaaaaaaaaaaaame: int = 50
 
 @onready @export_range(1, 100, 1, "or_greater")
 var ranged_var_3: int = 50
