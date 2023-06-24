@@ -173,9 +173,9 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?asless_actual_not_test: ("not" | "!") asless_not_test
 ?asless_not_test: asless_content_test
                 | asless_actual_not_test
-!?content_test: comparison ("in" asless_comparison)*
-              | actual_type_cast ("in" asless_comparison)+
-!?asless_content_test: asless_comparison ("in" asless_comparison)*
+!?content_test: comparison ("not"? "in" asless_comparison)*
+              | actual_type_cast ("not"? "in" asless_comparison)+
+!?asless_content_test: asless_comparison ("not"? "in" asless_comparison)*
 ?comparison: bitw_or [_comp_op asless_bitw_or]
            | actual_type_cast _comp_op asless_bitw_or
 ?asless_comparison: asless_bitw_or [_comp_op asless_bitw_or]

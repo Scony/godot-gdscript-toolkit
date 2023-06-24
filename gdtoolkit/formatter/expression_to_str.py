@@ -39,8 +39,8 @@ def expression_to_str(expression: Node) -> str:
             "" if e.children[0].value == "!" else " ",
             expression_to_str(e.children[1]),
         ),
-        "content_test": _operator_chain_based_expression_to_str,
-        "asless_content_test": _operator_chain_based_expression_to_str,
+        "content_test": _content_test_expression_to_str,
+        "asless_content_test": _content_test_expression_to_str,
         "comparison": _operator_chain_based_expression_to_str,
         "asless_comparison": _operator_chain_based_expression_to_str,
         "bitw_or": _operator_chain_based_expression_to_str,
@@ -177,6 +177,10 @@ def expression_to_str(expression: Node) -> str:
             expression_to_str(e.children[0]), expression_to_str(e.children[1])
         ),
     }[expression.data](expression)
+
+
+def _content_test_expression_to_str(expression: Tree) -> str:
+    return " ".join(map(expression_to_str, expression.children))
 
 
 def _operator_chain_based_expression_to_str(expression: Tree) -> str:
