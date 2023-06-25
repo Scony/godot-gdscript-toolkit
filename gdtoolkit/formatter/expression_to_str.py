@@ -21,6 +21,7 @@ def expression_to_str(expression: Node) -> str:
         token_handlers = {
             "LONG_STRING": _long_string_to_str,
             "REGULAR_STRING": _regular_string_to_str,
+            "NOT_IN": lambda e: "not in",
         }
         if expression.type in token_handlers:
             return token_handlers[expression.type](expression)
