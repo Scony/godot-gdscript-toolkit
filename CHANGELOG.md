@@ -6,6 +6,7 @@
  - Added support for user-defined types in type hints
  - Added support for annotations with empty argument list (e.g. `@onready()`)
  - Added support for power operator `**`
+ - Added support for `not in` operator
 
 ### Fixed
  - Fixed `max-returns` check's message
