@@ -202,7 +202,9 @@ def _format_code(
         success = False
         print(
             f"{file_path}:\n",
-            lark_unexpected_token_to_str(exception, code),
+            lark_unexpected_token_to_str(
+                exception, formatted_code if actually_formatted else code
+            ),
             sep="\n",
             file=sys.stderr,
         )

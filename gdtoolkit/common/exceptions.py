@@ -11,6 +11,6 @@ def lark_unexpected_input_to_str(exception: lark.exceptions.UnexpectedInput):
 
 def lark_unexpected_token_to_str(exception: lark.exceptions.UnexpectedToken, code: str):
     try:
-        return f"{exception.get_context(code)}\n{exception}".strip()
+        return f"{exception.get_context(code)}\n{exception}"
     except:  # pylint: disable=bare-except # noqa: E722, B001
         return f"{exception}".strip()
