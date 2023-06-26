@@ -39,6 +39,7 @@ def expression_to_str(expression: Node) -> str:
             "" if e.children[0].value == "!" else " ",
             expression_to_str(e.children[1]),
         ),
+        "not_in_op": lambda _: "not in",
         "content_test": _operator_chain_based_expression_to_str,
         "asless_content_test": _operator_chain_based_expression_to_str,
         "comparison": _operator_chain_based_expression_to_str,
@@ -183,7 +184,7 @@ def _operator_chain_based_expression_to_str(expression: Tree) -> str:
     operator_expr_chain = zip(expression.children[1::2], expression.children[2::2])
 
     def _padding(operator):
-        return "" if operator.value == "." else " "
+        return "" if expression_to_str(operator).startswith(".") else " "
 
     chain = [
         "{}{}{}{}".format(

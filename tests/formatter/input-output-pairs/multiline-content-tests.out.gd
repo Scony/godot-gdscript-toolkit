@@ -13,3 +13,10 @@ func foo():
 			true,
 		]
 	)
+	var c = not (
+		1
+		not in [1]
+		not in [
+			true,
+		]
+	)

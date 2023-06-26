@@ -173,7 +173,8 @@ assnmnt_expr: attr_expr _assnmnt_op type_cast
 !?asless_actual_not_test: ("not" | "!") asless_not_test
 ?asless_not_test: asless_content_test
                 | asless_actual_not_test
-!_content_test_op: "not in" | "in"
+not_in_op: "not" "in"
+!_content_test_op: not_in_op | "in"
 !?content_test: comparison (_content_test_op asless_comparison)*
               | actual_type_cast (_content_test_op asless_comparison)+
 !?asless_content_test: asless_comparison (_content_test_op asless_comparison)*

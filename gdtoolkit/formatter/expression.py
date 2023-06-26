@@ -491,7 +491,10 @@ def _format_contextless_operator_chain_based_expression_to_multiple_lines(
         lines = _format_concrete_expression(
             child,
             ExpressionContext(
-                f"{operator.value} ", get_line(child), "", get_end_line(child)
+                f"{expression_to_str(operator)} ",
+                get_line(child),
+                "",
+                get_end_line(child),
             ),
             context,
         )
