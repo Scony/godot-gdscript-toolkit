@@ -1,12 +1,20 @@
 # Changelog
 
+## [4.1.0] 2023-07-06
+
+### Added
+ - Added support for `not in` operator
+ - Added support for `static` class variables
+
+## Changed
+ - Improved exceptions formatting
+
 ## [4.0.1] 2023-04-22
 
 ### Added
  - Added support for user-defined types in type hints
  - Added support for annotations with empty argument list (e.g. `@onready()`)
  - Added support for power operator `**`
- - Added support for `not in` operator
 
 ### Fixed
  - Fixed `max-returns` check's message
