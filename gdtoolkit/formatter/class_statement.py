@@ -30,6 +30,9 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "classname_stmt": _format_classname_statement,
         "classname_extends_stmt": _format_classname_extends_statement,
         "class_var_stmt": _format_var_statement,
+        "static_class_var_stmt": lambda s, c: _format_var_statement(
+            s.children[0], c, "static "
+        ),
         "const_stmt": format_const_statement,
         "docstr_stmt": _format_docstring_statement,
         "class_def": _format_class_statement,
@@ -120,8 +123,12 @@ def _format_classname_extends_statement(statement: Tree, context: Context) -> Ou
     return (formatted_lines, last_processed_line_no)
 
 
-def _format_var_statement(statement: Tree, context: Context) -> Outcome:
-    formatted_lines, last_processed_line = format_var_statement(statement, context)
+def _format_var_statement(
+    statement: Tree, context: Context, prefix: str = ""
+) -> Outcome:
+    formatted_lines, last_processed_line = format_var_statement(
+        statement, context, prefix
+    )
     concrete_var_statement = statement.children[0]
     if has_inline_property_body(concrete_var_statement):
         inline_property_body = concrete_var_statement.children[-1]

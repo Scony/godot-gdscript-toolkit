@@ -11,6 +11,7 @@ _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_
                   | classname_extends_stmt
                   | classname_stmt
                   | class_var_stmt
+                  | "static" class_var_stmt -> static_class_var_stmt
                   | const_stmt
                   | docstr_stmt
 ?compound_class_stmt: class_def
