@@ -194,7 +194,10 @@ def _fetch_problem_disabling_lines(lines: List[str]) -> Dict[str, List[int]]:
                 p.strip() for p in pattern_matching_outcome.group(1).split(",")
             ]
             for problem in ignored_problems:
-                problem_to_disabling_lines[problem].append(line_no + 1)
+                disable_from_next_line = not line.strip().startswith("#")
+                problem_to_disabling_lines[problem].append(
+                    line_no + (1 if disable_from_next_line else 0)
+                )
     return problem_to_disabling_lines
 
 
