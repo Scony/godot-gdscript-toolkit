@@ -1,5 +1,10 @@
 # Changelog
 
+## [not released]
+
+### Changed
+ - Fixed `max-public-methods` linter check disabling (#222)
+
 ## [4.1.0] 2023-07-06
 
 ### Added
