@@ -41,6 +41,29 @@ def test_linting_ok_when_problem_ignored(code):
 func some_Button_pressed():
     pass
 """,
+"""# gdlint: disable=max-public-methods
+func f0(): pass
+func f1(): pass
+func f2(): pass
+func f3(): pass
+func f4(): pass
+func f5(): pass
+func f6(): pass
+func f7(): pass
+func f8(): pass
+func f9(): pass
+func f10(): pass
+func f11(): pass
+func f12(): pass
+func f13(): pass
+func f14(): pass
+func f15(): pass
+func f16(): pass
+func f17(): pass
+func f18(): pass
+func f19(): pass
+func f20(): pass
+""",
 ])
 def test_linting_ok_when_problem_disabled(code):
     simple_ok_check(code)
