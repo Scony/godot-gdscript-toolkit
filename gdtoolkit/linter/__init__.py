@@ -19,6 +19,7 @@ PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
 SNAKE_CASE = r"[a-z][a-z0-9]*(_[a-z0-9]+)*"
 PRIVATE_SNAKE_CASE = r"_?{}".format(SNAKE_CASE)
 UPPER_SNAKE_CASE = r"[A-Z][A-Z0-9]*(_[A-Z0-9]+)*"
+PRIVATE_UPPER_SNAKE_CASE = f"_?{UPPER_SNAKE_CASE}"
 
 DEFAULT_CONFIG = MappingProxyType(
     {
@@ -39,8 +40,8 @@ DEFAULT_CONFIG = MappingProxyType(
         "loop-variable-name": PRIVATE_SNAKE_CASE,
         "enum-name": PASCAL_CASE,
         "enum-element-name": UPPER_SNAKE_CASE,
-        "constant-name": UPPER_SNAKE_CASE,
-        "load-constant-name": r"({}|{})".format(PASCAL_CASE, UPPER_SNAKE_CASE),
+        "constant-name": PRIVATE_UPPER_SNAKE_CASE,
+        "load-constant-name": r"({}|{})".format(PASCAL_CASE, PRIVATE_UPPER_SNAKE_CASE),
         # basic checks
         "duplicated-load": None,
         "expression-not-assigned": None,

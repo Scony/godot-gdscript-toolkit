@@ -4,6 +4,7 @@
 
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)
+ - Default regex for names of constants now allows underscore as a prefix to denote private contants (#223)
 
 ## [4.1.0] 2023-07-06
 

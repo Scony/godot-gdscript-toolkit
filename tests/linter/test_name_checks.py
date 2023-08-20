@@ -312,6 +312,9 @@ def test_function_preload_variable_name_nok(code):
 const X = 1
 """,
 """
+const _X = 2
+""",
+"""
 const X_Y_Z = 2
 """,
 ])
@@ -322,9 +325,6 @@ def test_constant_name_ok(code):
 @pytest.mark.parametrize('code', [
 """
 const Xx = 1
-""",
-"""
-const _X = 2
 """,
 """
 const x_x = 2
