@@ -9,6 +9,7 @@ func bar():
 	var x
 	var y = 5
 	xxx
+	breakpoint
 	if true:
 		pass
 	pass

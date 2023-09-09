@@ -86,6 +86,7 @@ _simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
                  | return_stmt
                  | func_var_stmt
                  | break_stmt
+                 | breakpoint_stmt
                  | continue_stmt
                  | expr_stmt
                  | const_stmt
@@ -105,6 +106,7 @@ func_var_typed: _var_typed
 func_var_typed_assgnd: _var_typed "=" expr
 func_var_inf: "var" NAME ":" "=" expr
 break_stmt.2: "break"
+breakpoint_stmt.2: "breakpoint"
 continue_stmt.2: "continue"
 expr_stmt: expr
 if_stmt: if_branch (_NL? elif_branch)* [_NL? else_branch]

@@ -38,6 +38,10 @@ func foo():
 func foo():
     ('''docstr''')
 """,
+"""
+func foo():
+    breakpoint
+""",
 ])
 def test_expression_not_assigned_ok(code):
     simple_ok_check(code)
