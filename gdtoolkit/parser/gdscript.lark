@@ -79,9 +79,11 @@ func_arg_inf: NAME ":" "=" expr
 func_arg_typed: NAME ":" TYPE_HINT ["=" expr]
 _func_suite: _func_body
            | _func_stmt
-_func_body: _NL _INDENT (_func_stmt+ | _func_stmt* _simple_func_stmt) _DEDENT
-_func_stmt: (_simple_func_stmt _NL) | compound_func_stmt
-_simple_func_stmt: single_func_stmt (";" single_func_stmt)* [";"]
+_func_body: _NL _INDENT (_func_stmt+ | _func_stmt* (_simple_func_stmt | annotation+)) _DEDENT
+_func_stmt: _simple_func_stmt _NL
+          | annotation* compound_func_stmt
+          | annotation* _NL
+_simple_func_stmt: annotation* single_func_stmt (";" annotation* single_func_stmt)* [";"]
 ?single_func_stmt: pass_stmt
                  | return_stmt
                  | func_var_stmt

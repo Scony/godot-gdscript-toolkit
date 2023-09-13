@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for `breakpoint` statement
+ - Added support for function-level annotations
 
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)

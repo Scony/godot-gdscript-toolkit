@@ -11,6 +11,7 @@ from .block import format_block, reconstruct_blank_lines_in_range
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
 from .const_statement import format_const_statement
+from .annotation import format_standalone_annotation
 
 
 def format_func_statement(statement: Tree, context: Context) -> Outcome:
@@ -26,6 +27,7 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
         "while_stmt": partial(_format_branch, "while ", ":", 0),
         "for_stmt": _format_for_statement,
         "match_stmt": _format_match_statement,
+        "annotation": format_standalone_annotation,
         # fake statements:
         "match_branch": _format_match_branch,
     }  # type: Dict[str, Callable]
