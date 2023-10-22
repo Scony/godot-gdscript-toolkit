@@ -11,14 +11,14 @@ DATA_DIR = "./input-output-pairs"
 EXCEPTIONS = set(
     [
         # cases where Godot does more than just parsing
-        "simple-inline-lambdas.in.gd",
-        "simple-inline-lambdas.out.gd",
-        "inline-lambdas-w-comments.in.gd",
-        "inline-lambdas-w-comments.out.gd",
-        "long-inline-lambdas.in.gd",
-        "long-inline-lambdas.out.gd",
-        "type-cast-corner-case-expressions.in.gd",
-        "type-cast-corner-case-expressions.out.gd",
+        "simple_inline_lambdas.in.gd",
+        "simple_inline_lambdas.out.gd",
+        "inline_lambdas_w_comments.in.gd",
+        "inline_lambdas_w_comments.out.gd",
+        "long_inline_lambdas.in.gd",
+        "long_inline_lambdas.out.gd",
+        "type_cast_corner_case_expressions.in.gd",
+        "type_cast_corner_case_expressions.out.gd",
     ]
 )
 

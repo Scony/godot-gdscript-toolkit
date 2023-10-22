@@ -1,3 +1,3 @@
 const Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx = preload(
-	'class-stmt-chain.in.gd'
+	"class_stmt_chain.in.gd"
 )
