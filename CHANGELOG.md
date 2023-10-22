@@ -9,6 +9,7 @@
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)
  - Default regex for names of constants now allows underscore as a prefix to denote private contants (#223)
+ - Fixed parsing of files without newline at the end of file ending with comment (#237)
 
 ## [4.1.0] 2023-07-06
 

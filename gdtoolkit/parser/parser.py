@@ -54,11 +54,14 @@ class Parser:
         If gather_metadata is True, parsing is slower but the returned Tree comes with
         line and column numbers for statements and rules.
         """
+        # adding newline at the end of code
+        # workarounds a few corner cases not addressed in the grammar
+        adjusted_code = code + "\n"
         # pylint: disable=no-member
         return (
-            self._parser_with_metadata.parse(code)
+            self._parser_with_metadata.parse(adjusted_code)
             if gather_metadata
-            else self._parser.parse(code)
+            else self._parser.parse(adjusted_code)
         )
 
     def parse_comments(self, code: str) -> Tree:
