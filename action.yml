@@ -1,0 +1,35 @@
+name: Godot toolkit install
+author: Pawel Lampe
+description: Install the Godot toolkit
+branding:
+  icon: activity
+  color: blue
+
+inputs:
+  version:
+    description: Version of the gdtoolkit to install
+    default: "4.*"
+
+runs:
+  using: composite
+  steps:
+    - id: create-requirements-if-not-exists
+      run: |
+        if [ ! -f requirements.txt ]; then
+          echo "gdtoolkit==${{inputs.version}}" > requirements.txt
+        fi
+      shell: bash
+
+    - id: install-python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+        cache: "pip"
+
+    - id: upgrade-setuptools
+      run: pip install --upgrade setuptools
+      shell: bash
+
+    - id: install-gdtoolkit
+      run: pip install gdtoolkit==${{inputs.version}}
+      shell: bash
