@@ -4,7 +4,7 @@ from typing import Dict, List, Set
 from lark import Tree, Token
 
 from ..common.utils import find_name_token_among_children, get_line, get_column
-from ..formatter.expression_utils import remove_outer_parentheses
+from ..formatter.expression_utils import remove_outer_parentheses, is_trailing_comma
 
 from .problem import Problem
 
@@ -127,7 +127,7 @@ def _unused_argument_check(parse_tree: Tree) -> List[Problem]:
             argument_definitions = {}  # type: Dict[str, int]
             argument_tokens = {}
             func_args = func_header.children[1]
-            for func_arg in func_args.children:
+            for func_arg in [r for r in func_args.children if not is_trailing_comma(r)]:
                 arg_name_token = find_name_token_among_children(func_arg)
                 arg_name = arg_name_token.value  # type: ignore
                 argument_definitions[arg_name] = (
