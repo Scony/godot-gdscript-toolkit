@@ -36,6 +36,7 @@ def test_private_method_call_nok(code):
 pass
 class_name Foo
 extends Node
+"docstring"
 signal s
 enum { A, B, C }
 const X = 1
@@ -89,6 +90,9 @@ const X = 1
 """,
 """static func foo(): pass
 var x
+""",
+"""'docstring'
+extends Node
 """,
 ])
 def test_class_definitions_order_nok(code):

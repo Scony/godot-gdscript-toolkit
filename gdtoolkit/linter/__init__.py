@@ -61,6 +61,7 @@ DEFAULT_CONFIG = MappingProxyType(
             "tools",
             "classnames",
             "extends",
+            "docstrings",
             "signals",
             "enums",
             "consts",

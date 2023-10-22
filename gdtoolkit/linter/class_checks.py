@@ -141,6 +141,8 @@ def _map_statement_to_section(statement: Statement) -> str:
         return "others"
     if statement.kind == "static_func_def":
         return "others"
+    if statement.kind == "docstr_stmt":
+        return "docstrings"
     raise NotImplementedError
 
 
