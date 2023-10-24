@@ -46,6 +46,7 @@ _var_typed: "var" NAME ":" TYPE_HINT
 class_var_typed: _var_typed [inline_property_body]
 class_var_typed_assgnd: _var_typed "=" expr [inline_property_body]
 class_var_inf: "var" NAME ":" "=" expr [inline_property_body]
+_for_iterator_var_typed: NAME ":" TYPE_HINT
 inline_property_body: ":" [property_delegate_set ["," property_delegate_get]]
                     | ":" [property_delegate_get ["," property_delegate_set]]
 const_stmt: const_assigned
@@ -95,6 +96,7 @@ _simple_func_stmt: annotation* single_func_stmt (";" annotation* single_func_stm
 ?compound_func_stmt: if_stmt
                    | while_stmt
                    | for_stmt
+                   | for_stmt_typed
                    | match_stmt
 return_stmt: "return" [expr]
 func_var_stmt: func_var_empty
@@ -117,6 +119,7 @@ elif_branch: "elif" expr ":" _func_suite
 else_branch: "else" ":" _func_suite
 while_stmt: "while" expr ":" _func_suite
 for_stmt: "for" NAME "in" expr ":" _func_suite
+for_stmt_typed: "for" _for_iterator_var_typed "in" expr ":" _func_suite
 match_stmt: "match" expr ":" _match_body
 _match_body: _NL _INDENT match_branch+ _DEDENT
 match_branch: pattern ":" _func_suite

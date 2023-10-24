@@ -22,6 +22,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             "enum_named",
             "enum_element",
             "for_stmt",
+            "for_stmt_typed",
             "func_arg_regular",
             "func_arg_inf",
             "func_arg_typed",
@@ -93,7 +94,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
             partial(
                 _generic_name_check,
                 config["loop-variable-name"],
-                rule_name_tokens["for_stmt"],
+                rule_name_tokens["for_stmt"] + rule_name_tokens["for_stmt_typed"],
                 "loop-variable-name",
                 'Loop variable name "{}" is not valid',
             ),

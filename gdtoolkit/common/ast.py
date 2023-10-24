@@ -31,6 +31,7 @@ class Statement:
 
         self._load_sub_statements()
 
+    # pylint: disable=too-many-branches
     def _load_sub_statements(self):
         if self.kind == "class_def":
             pass  # TODO: implement
@@ -48,6 +49,8 @@ class Statement:
             self.sub_statements = [Statement(n) for n in self.lark_node.children[1:]]
         elif self.kind == "for_stmt":
             self.sub_statements = [Statement(n) for n in self.lark_node.children[2:]]
+        elif self.kind == "for_stmt_typed":
+            self.sub_statements = [Statement(n) for n in self.lark_node.children[3:]]
         elif self.kind == "match_stmt":
             for branch in self.lark_node.children:
                 self.sub_statements += [Statement(n) for n in branch.children[1:]]
