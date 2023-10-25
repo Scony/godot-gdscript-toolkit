@@ -193,6 +193,18 @@ def test_enum_element_name_nok(code):
     for aaa_bbb in y:
         pass
 """,
+"""func foo():
+    for _x: int in y:
+        pass
+""",
+"""func foo():
+    for xyz: int in y:
+        pass
+""",
+"""func foo():
+    for aaa_bbb: int in y:
+        pass
+""",
 ])
 def test_loop_variable_name_ok(code):
     simple_ok_check(code)
@@ -209,6 +221,18 @@ def test_loop_variable_name_ok(code):
 """,
 """func foo():
     for X_X in y:
+        pass
+""",
+"""func foo():
+    for x_: int in y:
+        pass
+""",
+"""func foo():
+    for xX: int in y:
+        pass
+""",
+"""func foo():
+    for X_X: int in y:
         pass
 """,
 ])

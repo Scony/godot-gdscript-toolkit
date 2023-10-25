@@ -26,6 +26,7 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
         "if_stmt": _format_if_statement,
         "while_stmt": partial(_format_branch, "while ", ":", 0),
         "for_stmt": _format_for_statement,
+        "for_stmt_typed": _format_for_statement_typed,
         "match_stmt": _format_match_statement,
         "annotation": format_standalone_annotation,
         # fake statements:
@@ -80,6 +81,13 @@ def _format_for_statement(statement: Tree, context: Context) -> Outcome:
     prefix = f"for {statement.children[0].value} in "
     suffix = ":"
     expr_position = 1
+    return _format_branch(prefix, suffix, expr_position, statement, context)
+
+
+def _format_for_statement_typed(statement: Tree, context: Context) -> Outcome:
+    prefix = f"for {statement.children[0].value}: {statement.children[1].value} in "
+    suffix = ":"
+    expr_position = 2
     return _format_branch(prefix, suffix, expr_position, statement, context)
 
 

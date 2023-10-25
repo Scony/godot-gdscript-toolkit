@@ -16,6 +16,8 @@ func foo():
 		break
 	for i in 1:
 		continue
+	for j: int in 1:
+		continue
 	match 1:
 		1:
 			pass

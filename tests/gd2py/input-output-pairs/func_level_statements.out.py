@@ -16,6 +16,8 @@ def foo():
 		break
 	for i in 1:
 		continue
+	for j in 1:
+		continue
 	if 1:
 		pass
 	elif 1:

@@ -100,6 +100,14 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
             )
         ]
         + _convert_block(s.children[2:], c.create_child_context(-1)),
+        "for_stmt_typed": lambda s, c: [
+            "{}for {} in {}:".format(
+                c.indent_string,
+                s.children[0].value,
+                _convert_expression_to_str(s.children[2]),
+            )
+        ]
+        + _convert_block(s.children[3:], c.create_child_context(-2)),
         "match_stmt": _convert_match_statement,
         "match_branch": partial(_convert_branch_with_expression, "elif"),
     }  # type: Dict[str, Callable]
