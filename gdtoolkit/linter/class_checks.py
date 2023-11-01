@@ -110,7 +110,7 @@ def _is_statement_irrelevant(statement: Statement) -> bool:
     return False
 
 
-# pylint: disable-next=too-many-return-statements
+# pylint: disable-next=too-many-return-statements, too-many-branches
 def _map_statement_to_section(statement: Statement) -> str:
     if statement.kind == "class_var_stmt":
         if any(
@@ -125,6 +125,8 @@ def _map_statement_to_section(statement: Statement) -> str:
     if statement.kind == "signal_stmt":
         return "signals"
     if statement.kind == "extends_stmt":
+        return "extends"
+    if statement.kind == "classname_extends_stmt":
         return "extends"
     if statement.kind == "enum_stmt":
         return "enums"
@@ -143,6 +145,8 @@ def _map_statement_to_section(statement: Statement) -> str:
         return "others"
     if statement.kind == "docstr_stmt":
         return "docstrings"
+    if statement.kind == "static_class_var_stmt":
+        return "staticvars"
     raise NotImplementedError
 
 

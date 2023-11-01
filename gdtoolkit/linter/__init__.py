@@ -70,6 +70,7 @@ DEFAULT_CONFIG = MappingProxyType(
             "prvvars",
             "onreadypubvars",
             "onreadyprvvars",
+            "staticvars",
             "others",
         ],
         # useless-super-delegation

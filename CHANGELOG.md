@@ -5,6 +5,7 @@
 ### Added
  - Added support for `breakpoint` statement
  - Added support for function-level annotations
+ - Added support for typed `for` loop iterator (#241)
 
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)
@@ -12,6 +13,7 @@
  - Fixed parsing of files without newline at the end of file ending with comment (#237)
  - Fixed linter support for docstrings (#233)
  - Fixed linter support for trailing comma in function's args list (#206)
+ - Fixed linter support for static variables and classnames bundled with `extends` (#242)
 
 ## [4.1.0] 2023-07-06
 
