@@ -59,12 +59,12 @@ def _format_property_statement(statement: Tree, context: Context) -> Outcome:
 
 
 def _format_property_setter(property_setter: Tree, context: Context) -> Outcome:
-    assert isinstance(property_setter.children[0], Token)
-    argument_name = property_setter.children[0].value
+    assert isinstance(property_setter.children[1], Token)
+    argument_name = property_setter.children[1].value
     formatted_lines: FormattedLines = [
         (get_line(property_setter), f"{context.indent_string}set({argument_name}):")
     ]
-    statements = property_setter.children[1:]
+    statements = property_setter.children[2:]
     block_lines, last_processed_line = format_block(
         statements,
         format_func_statement,
@@ -78,7 +78,7 @@ def _format_property_getter(property_getter: Tree, context: Context) -> Outcome:
     formatted_lines: FormattedLines = [
         (get_line(property_getter), f"{context.indent_string}get:")
     ]
-    statements = property_getter.children
+    statements = property_getter.children[1:]
     block_lines, last_processed_line = format_block(
         statements,
         format_func_statement,

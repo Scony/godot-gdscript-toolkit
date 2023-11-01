@@ -64,10 +64,10 @@ property_body_def: _INDENT _property_delegates _NL _DEDENT
                  | _INDENT property_custom_etter+ _DEDENT
 _property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
                    | property_delegate_get ["," [_NL] property_delegate_set]
-!property_delegate_set: "set" "=" NAME
-!property_delegate_get: "get" "=" NAME
-?property_custom_etter: "set" "(" NAME ")" ":" _func_suite -> property_custom_setter
-                      | "get" ":" _func_suite -> property_custom_getter
+!property_delegate_set: SET "=" NAME
+!property_delegate_get: GET "=" NAME
+?property_custom_etter: SET "(" NAME ")" ":" _func_suite -> property_custom_setter
+                      | GET ":" _func_suite -> property_custom_getter
 
 func_def: func_header _func_suite
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
@@ -226,13 +226,13 @@ not_in_op: "not" "in"
 !?asless_type_test: await_expr ("is" TYPE_HINT)*
 !?await_expr: ("await")* call_expr
 ?call_expr: attr_expr
-          | NAME _call_arglist -> standalone_call
+          | (NAME | GET | SET) _call_arglist -> standalone_call
           | getattr _call_arglist -> getattr_call
 _call_arglist: "(" [type_cast ("," type_cast)* [trailing_comma]] ")"
 ?attr_expr: subscr_expr
           | getattr
 getattr: call_expr _attr+
-!_attr: ("." NAME)
+!_attr: ("." (NAME | GET | SET))
 ?subscr_expr: call_expr "[" type_cast "]"
             | _plus_atom
 _plus_atom: ["+"] atom
@@ -269,6 +269,8 @@ dict: "{" [c_dict_element ("," c_dict_element)* [trailing_comma]] "}"
 c_dict_element: type_cast ":" type_cast
 eq_dict_element: NAME "=" type_cast
 
+SET: "set"
+GET: "get"
 TYPE: NAME ([" "] "." [" "] NAME)*
 TYPE_HINT: NAME ([" "] "." [" "] NAME)* ["[" NAME ([" "] "." [" "] NAME)* "]"]
 NUMBER: ["+"|"-"] (FLOAT | INT)
