@@ -13,7 +13,8 @@ def convert_code(gdscript_code: str) -> str:
         gdscript_code, gather_metadata=True
     )  # TODO: is metadata needed?
     context = Context(
-        indent=0,
+        single_indent_size=1,
+        single_indent_string="\t",
         previously_processed_line_number=-1,
         max_line_length=-1,
         gdscript_code_lines=[],

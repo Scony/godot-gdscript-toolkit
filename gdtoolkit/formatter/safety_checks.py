@@ -135,12 +135,14 @@ def check_formatting_stability(
     max_line_length: int,
     parse_tree: Optional[Tree] = None,
     comment_parse_tree: Optional[Tree] = None,
+    spaces_for_indent: Optional[int] = None,
 ) -> None:
     code_formatted_again = format_code(
         formatted_code,
         max_line_length,
         parse_tree=parse_tree,
         comment_parse_tree=comment_parse_tree,
+        spaces_for_indent=spaces_for_indent,
     )
     if formatted_code != code_formatted_again:
         diff = "\n".join(

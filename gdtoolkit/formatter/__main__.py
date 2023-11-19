@@ -1,8 +1,8 @@
 """GDScript formatter
 
 Uncompromising GDScript code formatter. The only configurable thing is
-max line length allowed. The rest will be taken care of by gdformat in a one,
-consistent way.
+max line length allowed and tabs/spaces indent. The rest will be taken
+care of by gdformat in a one, consistent way.
 
 Usage:
   gdformat <path>... [options]
@@ -16,6 +16,7 @@ Options:
   -f --fast                  Skip safety checks.
   -l --line-length=<int>     How many characters per line to allow.
                              [default: 100]
+  -s --use-spaces=<int>      Use spaces for indent instead of tabs.
   -h --help                  Show this screen.
   --version                  Show version.
 
@@ -24,7 +25,7 @@ Examples:
 """
 import sys
 import difflib
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import pkg_resources
 
 from docopt import docopt
@@ -57,29 +58,45 @@ def main():
         arguments["--check"] = True
 
     line_length = int(arguments["--line-length"])
+    spaces_for_indent = (
+        int(arguments["--use-spaces"])
+        if arguments["--use-spaces"] is not None
+        else None
+    )
     safety_checks = not arguments["--fast"]
     files: List[str] = find_gd_files_from_paths(
         arguments["<path>"], excluded_directories=set(".git")
     )
 
     if files == ["-"]:
-        _format_stdin(line_length, safety_checks)
+        _format_stdin(line_length, spaces_for_indent, safety_checks)
     elif arguments["--check"]:
-        _check_files_formatting(files, line_length, arguments["--diff"], safety_checks)
+        _check_files_formatting(
+            files, line_length, spaces_for_indent, arguments["--diff"], safety_checks
+        )
     else:
-        _format_files(files, line_length, safety_checks)
+        _format_files(files, line_length, spaces_for_indent, safety_checks)
 
 
-def _format_stdin(line_length: int, safety_checks: bool) -> None:
+def _format_stdin(
+    line_length: int, spaces_for_indent: Optional[int], safety_checks: bool
+) -> None:
     code = sys.stdin.read()
-    success, _, formatted_code = _format_code(code, line_length, "STDIN", safety_checks)
+    success, _, formatted_code = _format_code(
+        code, line_length, spaces_for_indent, "STDIN", safety_checks
+    )
     if not success:
         sys.exit(1)
     print(formatted_code, end="")
 
 
+# pylint: disable-next=too-many-locals
 def _check_files_formatting(
-    files: List[str], line_length: int, print_diff: bool, safety_checks: bool
+    files: List[str],
+    line_length: int,
+    spaces_for_indent: Optional[int],
+    print_diff: bool,
+    safety_checks: bool,
 ) -> None:
     formattable_files = set()
     failed_files = set()
@@ -88,7 +105,7 @@ def _check_files_formatting(
             with open(file_path, "r", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, file_path, safety_checks
+                    code, line_length, spaces_for_indent, file_path, safety_checks
                 )
                 if success and actually_formatted:
                     print(f"would reformat {file_path}", file=sys.stderr)
@@ -135,7 +152,12 @@ def _check_files_formatting(
     sys.exit(1)
 
 
-def _format_files(files: List[str], line_length: int, safety_checks: bool) -> None:
+def _format_files(
+    files: List[str],
+    line_length: int,
+    spaces_for_indent: Optional[int],
+    safety_checks: bool,
+) -> None:
     formatted_files = set()
     failed_files = set()
     for file_path in files:
@@ -143,7 +165,7 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
             with open(file_path, "r+", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, file_path, safety_checks
+                    code, line_length, spaces_for_indent, file_path, safety_checks
                 )
                 if success and actually_formatted:
                     print(f"reformatted {file_path}")
@@ -173,7 +195,11 @@ def _format_files(files: List[str], line_length: int, safety_checks: bool) -> No
 
 
 def _format_code(
-    code: str, line_length: int, file_path: str, safety_checks: bool
+    code: str,
+    line_length: int,
+    spaces_for_indent: Optional[int],
+    file_path: str,
+    safety_checks: bool,
 ) -> Tuple[bool, bool, str]:
     success = True
     actually_formatted = False
@@ -185,6 +211,7 @@ def _format_code(
         formatted_code = format_code(
             gdscript_code=code,
             max_line_length=line_length,
+            spaces_for_indent=spaces_for_indent,
             parse_tree=code_parse_tree,
             comment_parse_tree=comment_parse_tree,
         )
@@ -195,6 +222,7 @@ def _format_code(
                     code,
                     formatted_code,
                     max_line_length=line_length,
+                    spaces_for_indent=spaces_for_indent,
                     given_code_parse_tree=code_parse_tree,
                     given_code_comment_parse_tree=comment_parse_tree,
                 )

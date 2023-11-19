@@ -8,7 +8,7 @@ from ..common.utils import get_line
 from .types import Outcome, FormattedLines
 from .context import Context
 from .constants import (
-    INDENT_SIZE,
+    TAB_INDENT_SIZE,
     DEFAULT_SURROUNDING_EMPTY_LINES_TABLE as DEFAULT_SURROUNDINGS_TABLE,
 )
 from .annotation import (
@@ -109,7 +109,7 @@ def _find_dedent_line_number(
         if (
             line.startswith("\t")
             and re.search(
-                r"^\t{0,%d}[^\t]+" % ((context.indent / INDENT_SIZE) - 1), line
+                r"^\t{0,%d}[^\t]+" % ((context.indent / TAB_INDENT_SIZE) - 1), line
             )
             is not None
         ):

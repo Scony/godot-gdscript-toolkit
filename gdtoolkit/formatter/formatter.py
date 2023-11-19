@@ -5,7 +5,11 @@ from lark import Tree
 
 from ..parser import parser
 from .context import Context
-from .constants import INLINE_COMMENT_OFFSET, GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
+from .constants import (
+    TAB_INDENT_SIZE,
+    INLINE_COMMENT_OFFSET,
+    GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
+)
 from .types import FormattedLines
 from .block import format_block
 from .class_statement import format_class_statement
@@ -14,12 +18,11 @@ from .comments import (
     gather_inline_comments,
 )
 
-INDENT_REGEX = re.compile(r"^\t+")
-
 
 def format_code(
     gdscript_code: str,
     max_line_length: int,
+    spaces_for_indent: Optional[int] = None,
     parse_tree: Optional[Tree] = None,
     comment_parse_tree: Optional[Tree] = None,
 ) -> str:
@@ -38,8 +41,15 @@ def format_code(
         *gdscript_code.splitlines(),
     ]  # type: List[str]
     formatted_lines = []  # type: FormattedLines
+    single_indent_size = (
+        TAB_INDENT_SIZE if spaces_for_indent is None else spaces_for_indent
+    )
+    single_indent_string = (
+        "\t" if spaces_for_indent is None else " " * spaces_for_indent
+    )
     context = Context(
-        indent=0,
+        single_indent_size=single_indent_size,
+        single_indent_string=single_indent_string,
         previously_processed_line_number=0,
         max_line_length=max_line_length,
         gdscript_code_lines=gdscript_code_lines,
@@ -57,7 +67,7 @@ def format_code(
     formatted_lines.append((None, ""))
     formatted_lines = _add_inline_comments(formatted_lines, context.inline_comments)
     formatted_lines = _add_standalone_comments(
-        formatted_lines, context.standalone_comments
+        formatted_lines, context.standalone_comments, context.indent_regex
     )
     return "\n".join([line for _, line in formatted_lines])
 
@@ -87,7 +97,9 @@ def _add_inline_comments(
 
 
 def _add_standalone_comments(
-    formatted_lines: FormattedLines, standalone_comments: List[Optional[str]]
+    formatted_lines: FormattedLines,
+    standalone_comments: List[Optional[str]],
+    indent_regex: re.Pattern,
 ) -> FormattedLines:
     remaining_comments = standalone_comments[:]
     postprocessed_lines = []  # type: FormattedLines
@@ -106,7 +118,7 @@ def _add_standalone_comments(
             continue
         comments = remaining_comments[line_no:last_experssion_line_no]
         remaining_comments = remaining_comments[:line_no]
-        indent = _get_greater_indent(line, postprocessed_lines[-1][1])
+        indent = _get_greater_indent(line, postprocessed_lines[-1][1], indent_regex)
         postprocessed_lines += [
             (None, f"{indent}{comment}")
             for comment in reversed(comments)
@@ -117,9 +129,9 @@ def _add_standalone_comments(
     return list(reversed(postprocessed_lines))
 
 
-def _get_greater_indent(line_a: str, line_b: str):
-    line_a_match = INDENT_REGEX.search(line_a)
-    line_b_match = INDENT_REGEX.search(line_b)
+def _get_greater_indent(line_a: str, line_b: str, indent_regex: re.Pattern):
+    line_a_match = indent_regex.search(line_a)
+    line_b_match = indent_regex.search(line_b)
     line_a_indent = "" if line_a_match is None else line_a_match.group(0)
     line_b_indent = "" if line_b_match is None else line_b_match.group(0)
     return line_a_indent if len(line_a_indent) > len(line_b_indent) else line_b_indent

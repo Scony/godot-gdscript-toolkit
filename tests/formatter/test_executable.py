@@ -126,3 +126,35 @@ def test_valid_unformatted_file_diff(tmp_path):
     assert len(outcome.stdout.decode().splitlines()) == 0
     assert len(outcome.stderr.decode().splitlines()) > 2
     assert "+++" in outcome.stderr.decode()
+
+
+def test_valid_unformatted_file_indentation_using_tabs(tmp_path):
+    dummy_file = write_file(tmp_path, "script.gd", "func foo():\n  pass")
+    outcome = subprocess.run(
+        ["gdformat", "--diff", dummy_file],
+        check=False,
+        capture_output=True,
+    )
+    new_pass_lines = [
+        line
+        for line in outcome.stderr.decode().splitlines()
+        if "pass" in line and line.startswith("+")
+    ]
+    assert len(new_pass_lines) == 1
+    assert "\tpass" in new_pass_lines[0]
+
+
+def test_valid_unformatted_file_indentation_using_spaces(tmp_path):
+    dummy_file = write_file(tmp_path, "script.gd", "func foo():\n  pass")
+    outcome = subprocess.run(
+        ["gdformat", "--diff", "--use-spaces=7", dummy_file],
+        check=False,
+        capture_output=True,
+    )
+    new_pass_lines = [
+        line
+        for line in outcome.stderr.decode().splitlines()
+        if "pass" in line and line.startswith("+")
+    ]
+    assert len(new_pass_lines) == 1
+    assert "       pass" in new_pass_lines[0]

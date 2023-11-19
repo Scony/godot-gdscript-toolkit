@@ -15,7 +15,7 @@ from .expression_utils import (
     is_trailing_comma,
 )
 from .expression_to_str import expression_to_str
-from .constants import INDENT_SIZE
+from .constants import TAB_INDENT_SIZE
 
 
 def format_expression(
@@ -91,7 +91,7 @@ def _format_foldable(
     single_line_number, single_line = _format_concrete_expression_to_single_line(
         expression, expression_context, context
     )[0]
-    single_line_length = len(single_line.replace("\t", " " * INDENT_SIZE))
+    single_line_length = len(single_line.replace("\t", " " * TAB_INDENT_SIZE))
     if single_line_length <= context.max_line_length:
         return [(single_line_number, single_line)]
     return _format_foldable_to_multiple_lines(expression, expression_context, context)
@@ -821,7 +821,7 @@ def _format_dot_chain_to_multiple_lines(
         dot_chain, expression_context, context
     )
     if all(
-        len(line.replace("\t", " " * INDENT_SIZE)) <= context.max_line_length
+        len(line.replace("\t", " " * TAB_INDENT_SIZE)) <= context.max_line_length
         for line_number, line in lines_formatted_bottom_up
     ):
         return lines_formatted_bottom_up

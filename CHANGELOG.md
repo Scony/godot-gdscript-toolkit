@@ -6,6 +6,7 @@
  - Added support for `breakpoint` statement
  - Added support for function-level annotations
  - Added support for typed `for` loop iterator (#241)
+ - Added the `--use-spaces=<int>` option to `gdformat` so that space-based indentations can be used instead of tab-based ones
 
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)
