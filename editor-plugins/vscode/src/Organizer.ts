@@ -24,10 +24,10 @@ const TYPE_MATCHES = [
     new RegExp(/^signal/),
     new RegExp(/^enum/),
     new RegExp(/^const/),
-    new RegExp(/^export/),
+    new RegExp(/^@?export/),
     new RegExp(/^var [a-zA-Z]/),
     new RegExp(/^var _/),
-    new RegExp(/^onready/),
+    new RegExp(/^@?onready/),
     new RegExp(/^func _init/),
     new RegExp(/^func _ready/),
     new RegExp(/^func _/),
@@ -103,6 +103,12 @@ export class Organizer {
                 this.start_index = diff + 1;
                 return;
             }
+
+            // Don't assume the first comment found is the class docstring
+            let match_index = TYPE_MATCHES.findIndex(tm => line.match(tm));
+            if (match_index !== -1) {
+                return;
+            }
         }
     }
 
@@ -137,10 +143,9 @@ export class Organizer {
             i < this.script_objects.length;
             ++i, ++count
         ) {
+            const line = this.script_objects[i]
             let done =
-                TYPE_MATCHES.findIndex(tm =>
-                    this.script_objects[i].match(tm)
-                ) !== -1;
+                TYPE_MATCHES.findIndex(tm => line.match(tm)) !== -1;
             if (done) {
                 this.put_lines_into(commented_index, i, type);
                 return count;
@@ -264,18 +269,6 @@ export class Organizer {
 
     private put_lines_into(from: number, to: number, type: LineTypes) {
         let block: string[] = this.script_objects.slice(from, to);
-
-        for (let i = block.length - 1; i > 0; --i) {
-            let match_index = TYPE_MATCHES.findIndex(tm => block[i].match(tm));
-            if (match_index === -1) {
-                if (block[i].length === 0) {
-                    block.pop();
-                }
-            } else {
-                break;
-            }
-        }
-
         this.parsed_objects.push({
             block: block,
             type: type,
