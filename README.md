@@ -133,6 +133,32 @@ tests/gd2py/input-output-pairs/func-level-statements.in.gd
     F 1:0 foo - B (8)
 ```
 
+## Using gdtoolkit's GitHub action
+
+In order to setup a simple action with gdtoolkit's static checks, the base action from this repo can be used:
+
+```
+name: Static checks
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  static-checks:
+    name: 'Static checks'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: Scony/godot-gdscript-toolkit@master
+    - run: gdformat --check source/
+    - run: gdlint source/
+```
+
+See the discussion in https://github.com/Scony/godot-gdscript-toolkit/issues/239 for more details.
+
 ## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
 
 Everyone is free to fix bugs or introduce new features. For that, however, please refer to existing issue or create one before starting implementation.
