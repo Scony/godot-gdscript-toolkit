@@ -15,6 +15,7 @@
  - Fixed linter support for docstrings (#233)
  - Fixed linter support for trailing comma in function's args list (#206)
  - Fixed linter support for static variables and classnames bundled with `extends` (#242)
+ - Enforced function statement annotations to be formatted to separate lines (#252)
 
 ## [4.1.0] 2023-07-06
 

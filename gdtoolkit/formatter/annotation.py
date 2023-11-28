@@ -36,11 +36,15 @@ def prepend_annotations_to_formatted_line(
     single_line_length = (
         context.indent + len(annotations_string) + len(whitelineless_line)
     )
+    standalone_formatting_enforced = whitelineless_line.startswith(
+        "func"
+    ) or whitelineless_line.startswith("static func")
     if (
         not _annotations_have_standalone_comments(
             context.annotations, context.standalone_comments, line_to_prepend_to[0]
         )
         and single_line_length <= context.max_line_length
+        and not standalone_formatting_enforced
     ):
         single_line = "{}{} {}".format(
             context.indent_string, annotations_string, whitelineless_line

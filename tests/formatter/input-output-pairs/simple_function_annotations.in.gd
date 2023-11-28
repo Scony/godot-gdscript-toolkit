@@ -25,3 +25,11 @@ func g():
 func h():
 	if true:
 		@warning_ignore("unused_variable")
+
+@rpc
+func i():
+	pass
+
+@rpc("any_peer", "call_local")
+func j():
+	pass
