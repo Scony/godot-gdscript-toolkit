@@ -195,6 +195,10 @@ def _format_foldable_to_multiple_lines(
         "dot_chain": _format_dot_chain_to_multiple_lines,
         "actual_getattr_call": _format_call_expression_to_multiple_lines,
         "actual_subscr_expr": _format_subscription_to_multiple_lines,
+        # patterns (fake expressions):
+        "list_pattern": _format_args_to_multiple_lines,
+        "test_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "par_pattern": _format_parentheses_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 

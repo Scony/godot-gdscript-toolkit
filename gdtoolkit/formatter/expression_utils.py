@@ -15,21 +15,16 @@ def remove_outer_parentheses(expression: Node) -> Node:
 def is_foldable(expression: Node) -> bool:
     if _is_multiline_string(expression):
         return True
-    return (
-        not isinstance(expression, Token)
-        and expression.data
-        not in [
-            "string",
-            "get_node",
-            "node_path",
-            "string_name",
-            "unique_node_path",
-            "signal_arg_typed",
-            "signal_arg_regular",
-            "non_foldable_dot_chain",
-        ]
-        and not expression.data.endswith("_pattern")
-    )
+    return not isinstance(expression, Token) and expression.data not in [
+        "string",
+        "get_node",
+        "node_path",
+        "string_name",
+        "unique_node_path",
+        "signal_arg_typed",
+        "signal_arg_regular",
+        "non_foldable_dot_chain",
+    ]
 
 
 def has_trailing_comma(expression: Node) -> bool:
