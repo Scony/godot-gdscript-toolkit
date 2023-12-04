@@ -199,6 +199,10 @@ def _format_foldable_to_multiple_lines(
         "list_pattern": _format_args_to_multiple_lines,
         "test_pattern": _format_operator_chain_based_expression_to_multiple_lines,
         "par_pattern": _format_parentheses_to_multiple_lines,
+        "or_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "and_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "not_pattern": _format_concrete_expression_to_single_line,
+        "comp_pattern": _format_operator_chain_based_expression_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
