@@ -1,6 +1,6 @@
 # Changelog
 
-## [not released]
+## [4.2.0] 2023-11-30
 
 ### Added
  - Added support for `breakpoint` statement
