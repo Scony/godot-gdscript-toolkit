@@ -1,5 +1,10 @@
 # Changelog
 
+## [not released]
+
+### Added
+ - Added support for multiline patterns within `match` statement branches
+
 ## [4.2.0] 2023-11-30
 
 ### Added
