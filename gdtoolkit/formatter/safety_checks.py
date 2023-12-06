@@ -14,6 +14,7 @@ from .exceptions import (
 )
 
 
+# pylint: disable-next=too-many-public-methods
 class LoosenTreeTransformer(Transformer):
     def par_expr(self, args):
         return args[0] if len(args) > 0 else args
@@ -67,6 +68,9 @@ class LoosenTreeTransformer(Transformer):
     def string(self, args):
         string_token = args[0]
         return expression_to_str(string_token)
+
+    def par_pattern(self, args):
+        return args[0] if len(args) > 0 else args
 
     def signal_stmt(self, args):
         if len(args) > 1 and len(args[1].children) == 0:
