@@ -203,6 +203,12 @@ def _format_foldable_to_multiple_lines(
         "and_pattern": _format_operator_chain_based_expression_to_multiple_lines,
         "not_pattern": _format_concrete_expression_to_single_line,
         "comp_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "bitw_or_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "bitw_xor_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "bitw_and_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "shift_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "arith_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "mdr_pattern": _format_operator_chain_based_expression_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
