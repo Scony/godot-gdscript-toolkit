@@ -209,6 +209,13 @@ def _format_foldable_to_multiple_lines(
         "shift_pattern": _format_operator_chain_based_expression_to_multiple_lines,
         "arith_pattern": _format_operator_chain_based_expression_to_multiple_lines,
         "mdr_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "neg_pattern": _format_concrete_expression_to_single_line,
+        "bitw_not_pattern": _format_concrete_expression_to_single_line,
+        "attr_pattern": _format_operator_chain_based_expression_to_multiple_lines,
+        "call_pattern": _format_call_expression_to_multiple_lines,
+        "array_pattern": _format_concrete_expression_to_single_line,
+        "dict_pattern": _format_concrete_expression_to_single_line,
+        "kv_pair_pattern": _format_kv_pair_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)
 
@@ -254,7 +261,7 @@ def _format_args_to_multiple_lines(
 def _format_kv_pair_to_multiple_lines(
     expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
-    suffix = ":" if expression.data == "c_dict_element" else " ="
+    suffix = ":" if expression.data in ["c_dict_element", "kv_pair_pattern"] else " ="
     key_expression_context = ExpressionContext(
         expression_context.prefix_string,
         expression_context.prefix_line,

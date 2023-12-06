@@ -24,6 +24,9 @@ def is_foldable(expression: Node) -> bool:
         "signal_arg_typed",
         "signal_arg_regular",
         "non_foldable_dot_chain",
+        "var_capture_pattern",
+        "etc_pattern",
+        "wildcard_pattern",
     ]
 
 
