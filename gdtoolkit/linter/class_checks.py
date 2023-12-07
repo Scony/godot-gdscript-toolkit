@@ -83,16 +83,33 @@ def _class_definitions_order_check_for_class(
     for statement in a_class.statements:
         if _is_statement_irrelevant(statement):
             continue
-        current_section_rank = order.index(current_section)
-        statement_section = _map_statement_to_section(statement)
-        section_rank = order.index(statement_section)
-        if section_rank >= current_section_rank:
-            current_section = statement_section
-        else:
+        try:
+            current_section_rank = order.index(current_section)
+            statement_section = _map_statement_to_section(statement)
+            section_rank = order.index(statement_section)
+            if section_rank >= current_section_rank:
+                current_section = statement_section
+            else:
+                problems.append(
+                    Problem(
+                        name="class-definitions-order",
+                        description="Definition out of order in {}".format(
+                            a_class.name
+                        ),
+                        line=get_line(statement.lark_node),
+                        column=get_column(statement.lark_node),
+                    )
+                )
+        except ValueError:
             problems.append(
                 Problem(
                     name="class-definitions-order",
-                    description="Definition out of order in {}".format(a_class.name),
+                    description=" ".join(
+                        [
+                            "Definition order not specified for '{}' or '{}',",
+                            "please fix/re-generate your gdlintrc file",
+                        ]
+                    ).format(current_section, statement_section),
                     line=get_line(statement.lark_node),
                     column=get_column(statement.lark_node),
                 )
