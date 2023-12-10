@@ -69,6 +69,10 @@ class LoosenTreeTransformer(Transformer):
         string_token = args[0]
         return expression_to_str(string_token)
 
+    def rstring(self, args):
+        string_token = args[0]
+        return expression_to_str(string_token)
+
     def par_pattern(self, args):
         return args[0] if len(args) > 0 else args
 

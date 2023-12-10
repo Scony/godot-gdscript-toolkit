@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for multiline patterns within `match` statement branches
+ - Added support for r-strings
 
 ## [4.2.0] 2023-11-30
 

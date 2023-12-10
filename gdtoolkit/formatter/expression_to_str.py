@@ -77,6 +77,7 @@ def expression_to_str(expression: Node) -> str:
         "c_dict_element": _dict_element_to_str,
         "eq_dict_element": _dict_element_to_str,
         "string": lambda e: expression_to_str(e.children[0]),
+        "rstring": lambda e: f"r{expression_to_str(e.children[0])}",
         "get_node": lambda e: f"${expression_to_str(e.children[0])}",
         "path": lambda e: "".join([name_token.value for name_token in e.children]),
         "node_path": lambda e: f"^{expression_to_str(e.children[0])}",

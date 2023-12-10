@@ -253,6 +253,7 @@ _simple_lambda_stmt: single_lambda_stmt (";" single_lambda_stmt)* [";"]
                    | expr_stmt
 ?literal: NUMBER
         | string
+        | rstring
         | get_node
         | "^" string -> node_path
         | "&" string -> string_name
@@ -281,7 +282,9 @@ DECIMAL: INT "." INT? | "." INT
 INT: DIGIT (DIGIT | "_")*
 DIGIT: "0".."9"
 
-string: LONG_STRING | REGULAR_STRING
+rstring: "r" _string
+string: _string
+_string: LONG_STRING | REGULAR_STRING
 REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
 LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is | /'''.*?(?<!\\)(\\\\)*?'''/is
 
