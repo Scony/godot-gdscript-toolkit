@@ -20,7 +20,9 @@ def expression_to_str(expression: Node) -> str:
     if isinstance(expression, Token):
         token_handlers = {
             "LONG_STRING": _long_string_to_str,
+            "LONG_RSTRING": _long_rstring_to_str,
             "REGULAR_STRING": _regular_string_to_str,
+            "REGULAR_RSTRING": _regular_rstring_to_str,
         }
         if expression.type in token_handlers:
             return token_handlers[expression.type](expression)
@@ -317,6 +319,11 @@ def _long_string_to_str(string: Token) -> str:
     return actual_string
 
 
+def _long_rstring_to_str(rstring: Token) -> str:
+    actual_string = rstring.value
+    return _long_string_to_str(Token("LONG_STRING", actual_string[1:]))
+
+
 def _regular_string_to_str(string: Token) -> str:
     actual_string = string.value
     actual_string_data = actual_string[1:-1]
@@ -330,3 +337,8 @@ def _regular_string_to_str(string: Token) -> str:
         actual_string_data = actual_string_data.replace('\\"', '"')
         actual_string_data = actual_string_data.replace("'", "\\'")
     return "{}{}{}".format(target, actual_string_data, target)  # pylint: disable=W1308
+
+
+def _regular_rstring_to_str(rstring: Token) -> str:
+    actual_string = rstring.value
+    return _regular_string_to_str(Token("REGULAR_STRING", actual_string[1:]))

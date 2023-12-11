@@ -282,11 +282,12 @@ DECIMAL: INT "." INT? | "." INT
 INT: DIGIT (DIGIT | "_")*
 DIGIT: "0".."9"
 
-rstring: "r" _string
-string: _string
-_string: LONG_STRING | REGULAR_STRING
-REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
+string: LONG_STRING | REGULAR_STRING
+rstring: LONG_RSTRING | REGULAR_RSTRING
 LONG_STRING: /""".*?(?<!\\)(\\\\)*?"""/is | /'''.*?(?<!\\)(\\\\)*?'''/is
+LONG_RSTRING: /r""".*?(?<!\\)(\\\\)*?"""/is | /r'''.*?(?<!\\)(\\\\)*?'''/is
+REGULAR_STRING: /("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
+REGULAR_RSTRING: /(r"(?!"").*?(?<!\\)(\\\\)*?"|r'(?!'').*?(?<!\\)(\\\\)*?')/i
 
 _NL: ( /\r?\n[\t ]*/ | COMMENT )+
 COMMENT: /#[^\n]*/

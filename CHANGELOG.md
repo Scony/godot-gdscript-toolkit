@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.2.2] 2023-12-11
+
+### Changed
+ - Fixed support for r-strings
+
 ## [4.2.1] 2023-12-10
 
 ### Added
