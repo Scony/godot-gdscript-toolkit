@@ -24,12 +24,17 @@ Examples:
   echo 'pass' | gdformat -   # reads from STDIN
 """
 import sys
+import os
+import logging
+import pathlib
 import difflib
 from typing import List, Tuple, Optional
+from types import MappingProxyType
 import pkg_resources
 
 from docopt import docopt
 import lark
+import yaml
 
 from gdtoolkit.formatter import format_code, check_formatting_safety
 from gdtoolkit.formatter.exceptions import (
@@ -43,6 +48,9 @@ from gdtoolkit.common.exceptions import (
     lark_unexpected_token_to_str,
     lark_unexpected_input_to_str,
 )
+from gdtoolkit.linter import DEFAULT_CONFIG
+
+CONFIG_FILE_NAME = "gdlintrc"
 
 
 def main():
@@ -64,8 +72,13 @@ def main():
         else None
     )
     safety_checks = not arguments["--fast"]
+
+    config_file_path = _find_config_file()
+    config = _load_config_file_or_default(config_file_path)
+    _log_config_entries(config)
+
     files: List[str] = find_gd_files_from_paths(
-        arguments["<path>"], excluded_directories=set(".git")
+        arguments["<path>"], excluded_directories=set(config["excluded_directories"])
     )
 
     if files == ["-"]:
@@ -76,6 +89,39 @@ def main():
         )
     else:
         _format_files(files, line_length, spaces_for_indent, safety_checks)
+
+
+def _find_config_file() -> Optional[str]:
+    search_dir = pathlib.Path(os.getcwd())
+    config_file_path = None
+    while search_dir != pathlib.Path(os.path.abspath(os.sep)):
+        file_path = os.path.join(search_dir, CONFIG_FILE_NAME)
+        if os.path.isfile(file_path):
+            config_file_path = file_path
+            break
+        file_path = os.path.join(search_dir, ".{}".format(CONFIG_FILE_NAME))
+        if os.path.isfile(file_path):
+            config_file_path = file_path
+            break
+        search_dir = search_dir.parent
+    return config_file_path
+
+
+def _load_config_file_or_default(config_file_path: Optional[str]) -> MappingProxyType:
+    # TODO: error handling
+    if config_file_path is not None:
+        logging.info("Config file found: '%s'", config_file_path)
+        with open(config_file_path, "r", encoding="utf-8") as handle:
+            return yaml.load(handle.read(), Loader=yaml.Loader)
+
+    logging.info("""No 'gdlintrc' nor '.gdlintrc' found. Using default config...""")
+    return DEFAULT_CONFIG
+
+
+def _log_config_entries(config: MappingProxyType) -> None:
+    logging.info("Loaded config:")
+    for entry in config.items():
+        logging.info(entry)
 
 
 def _format_stdin(
