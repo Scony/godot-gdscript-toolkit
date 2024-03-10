@@ -2,8 +2,12 @@
 
 ## [4.2.2] 2023-12-11
 
+### Added
+ - Added `gdformatrc` configuration file to `gdformat`
+
 ### Changed
  - Fixed support for r-strings
+ - Fixed support for `breakpoint` statement in formatter
 
 ## [4.2.1] 2023-12-10
 
