@@ -151,7 +151,7 @@ jobs:
     name: 'Static checks'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: Scony/godot-gdscript-toolkit@master
     - run: gdformat --check source/
     - run: gdlint source/
