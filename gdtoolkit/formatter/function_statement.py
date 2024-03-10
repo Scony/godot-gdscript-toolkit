@@ -22,6 +22,7 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
         "expr_stmt": _format_expr_statement,
         "return_stmt": _format_return_statement,
         "break_stmt": partial(format_simple_statement, "break"),
+        "breakpoint_stmt": partial(format_simple_statement, "breakpoint"),
         "continue_stmt": partial(format_simple_statement, "continue"),
         "if_stmt": _format_if_statement,
         "while_stmt": partial(_format_branch, "while ", ":", 0),
