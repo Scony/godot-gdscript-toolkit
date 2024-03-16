@@ -8,13 +8,6 @@ const opn = require("opn");
 const SCRIPT_PATH = path.resolve(__dirname + "/../scripts/");
 const SCRIPT_NAME = "code_formatter.py";
 
-const PY_ARGS = [
-    "",
-    `${vscode.workspace
-        .getConfiguration("gdscript_formatter")
-        .get("line_size")}`,
-];
-
 export function activate(context: vscode.ExtensionContext) {
     let organize_command = vscode.commands.registerCommand(
         "gdscript-formatter.organize_script",
@@ -75,6 +68,30 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(convert_command);
 }
 
+function get_formatter_args(script: string): string[] {
+    let lineSize = vscode
+        .workspace
+        .getConfiguration("gdscript_formatter")
+        .get("line_size") as number;
+
+    let args = [script, String(lineSize)];
+
+    let useSpaces = vscode
+        .workspace
+        .getConfiguration("gdscript_formatter")
+        .get("use_spaces.enabled");
+
+    if (useSpaces) {
+        let nSpaces = vscode
+            .workspace
+            .getConfiguration("gdscript_formatter")
+            .get("use_spaces.count") as number;
+        args.push(String(nSpaces));
+    }
+
+    return args;
+}
+
 export async function run_formatter(
     script: string,
     uri: vscode.Uri
@@ -91,10 +108,8 @@ export async function run_formatter(
         }
     }
 
-    let input = script;
+    options.args = get_formatter_args(script);
 
-    options.args = PY_ARGS;
-    options.args[0] = input;
     try {
         return await runPythonCommand(options);
     } catch (error) {
