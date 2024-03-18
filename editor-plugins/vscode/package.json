@@ -59,6 +59,16 @@
                     "type": "number",
                     "default": 100,
                     "description": "The maximum size a given line can be before being wrapped."
+                },
+                "gdscript_formatter.use_spaces.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use spaces instead of tabs for indentation"
+                },
+                "gdscript_formatter.use_spaces.count": {
+                    "type": "number",
+                    "default": 4,
+                    "description": "How many spaces to use for indenting (only used if use_spaces is enabled)"
                 }
             }
         }
