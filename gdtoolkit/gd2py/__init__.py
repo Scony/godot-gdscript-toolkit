@@ -52,6 +52,7 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
         "func_def": _convert_func_def,
         "enum_stmt": _pass,  # TODO: implement
         "classname_stmt": _pass,
+        "property_body_def": _pass,
         "classname_extends_stmt": _pass,
         "signal_stmt": _pass,
         "const_stmt": lambda s, c: [
