@@ -262,7 +262,7 @@ HEX.2: /-?0x[a-fA-F0-9][a-fA-F0-9_]*/
 BIN.2: /-?0b[01][01_]*/
 get_node: "$" (path | string | unique_node_path)
 !path: NAME ("/" NAME)*
-!unique_node_path: "%" path
+!unique_node_path: "%" (path | REGULAR_STRING)
 array: "[" [type_cast ("," type_cast)* [trailing_comma]] "]"
 trailing_comma: ","
 dict: "{" [c_dict_element ("," c_dict_element)* [trailing_comma]] "}"

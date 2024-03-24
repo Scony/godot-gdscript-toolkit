@@ -21,3 +21,4 @@ func foo():
 	var xb=$%UniqueNodeName/Xyz
 	var xc=%UniqueNodeName
 	var xd=%UniqueNodeName/Xyz
+	var xe=%"a/b/c"

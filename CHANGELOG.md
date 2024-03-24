@@ -1,13 +1,20 @@
 # Changelog
 
-## [4.2.2] 2023-12-11
+## [master]
 
 ### Added
  - Added `gdformatrc` configuration file to `gdformat`
+ - Added support for Allman-style enum definitions to parser
+ - Added support for string-based unique node names
+ - Added support for properties in `gd2py`
+
+### Changed
+ - Fixed support for `breakpoint` statement in formatter
+
+## [4.2.2] 2023-12-11
 
 ### Changed
  - Fixed support for r-strings
- - Fixed support for `breakpoint` statement in formatter
 
 ## [4.2.1] 2023-12-10
 
