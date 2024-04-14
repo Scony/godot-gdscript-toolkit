@@ -25,3 +25,4 @@ func g():
 func h():
 	if true:
 		@warning_ignore("unused_variable")
+		pass
