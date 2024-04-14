@@ -67,7 +67,8 @@ _property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
 !property_delegate_set: SET "=" NAME
 !property_delegate_get: GET "=" NAME
 ?property_custom_etter: SET "(" NAME ")" ":" _func_suite -> property_custom_setter
-                      | GET ":" _func_suite -> property_custom_getter
+                      | GET [property_custom_getter_args] ":" _func_suite -> property_custom_getter
+property_custom_getter_args: "(" ")"
 
 func_def: func_header _func_suite
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"

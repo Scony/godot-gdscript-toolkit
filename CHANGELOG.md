@@ -7,6 +7,7 @@
  - Added support for Allman-style enum definitions to parser
  - Added support for string-based unique node names
  - Added support for properties in `gd2py`
+ - Added support for `get():` property syntax
 
 ### Changed
  - Fixed support for `breakpoint` statement in formatter

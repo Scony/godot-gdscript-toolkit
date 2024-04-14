@@ -148,6 +148,7 @@ def expression_to_str(expression: Node) -> str:
         "non_foldable_dot_chain": lambda e: "".join(map(expression_to_str, e.children)),
         "actual_getattr_call": _getattr_call_to_str,
         "actual_subscr_expr": _subscription_to_str,
+        "property_custom_getter_args": lambda _: "()",
         # patterns (fake expressions):
         "list_pattern": lambda e: ", ".join(map(expression_to_str, e.children)),
         "test_pattern": _operator_chain_based_expression_to_str,

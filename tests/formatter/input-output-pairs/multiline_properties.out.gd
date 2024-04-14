@@ -27,6 +27,9 @@ var p9:
 		pass
 	get:
 		return 1
+var p9x:
+	get():
+		return 1
 var p10:
 	get:
 		var xyz = 123

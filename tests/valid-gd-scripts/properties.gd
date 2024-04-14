@@ -84,3 +84,9 @@ class Foo:
 		
 	func __set(v):
 		pass
+
+var p11:
+	set(value):
+		pass
+	get():
+		pass

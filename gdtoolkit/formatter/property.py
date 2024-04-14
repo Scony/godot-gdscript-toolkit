@@ -6,6 +6,7 @@ from .types import FormattedLine, FormattedLines, Outcome
 from .context import Context
 from .block import format_block
 from .function_statement import format_func_statement
+from .expression_to_str import expression_to_str
 
 
 def has_inline_property_body(statement: Tree) -> bool:
@@ -75,10 +76,18 @@ def _format_property_setter(property_setter: Tree, context: Context) -> Outcome:
 
 
 def _format_property_getter(property_getter: Tree, context: Context) -> Outcome:
+    args = (
+        expression_to_str(property_getter.children[1])
+        if property_getter.children[1].data == "property_custom_getter_args"
+        else ""
+    )
     formatted_lines: FormattedLines = [
-        (get_line(property_getter), f"{context.indent_string}get:")
+        (get_line(property_getter), f"{context.indent_string}get{args}:")
     ]
-    statements = property_getter.children[1:]
+    statements_offset = (
+        2 if property_getter.children[1].data == "property_custom_getter_args" else 1
+    )
+    statements = property_getter.children[statements_offset:]
     block_lines, last_processed_line = format_block(
         statements,
         format_func_statement,
