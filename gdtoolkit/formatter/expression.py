@@ -213,8 +213,8 @@ def _format_foldable_to_multiple_lines(
         "bitw_not_pattern": _format_concrete_expression_to_single_line,
         "attr_pattern": _format_operator_chain_based_expression_to_multiple_lines,
         "call_pattern": _format_call_expression_to_multiple_lines,
-        "array_pattern": _format_concrete_expression_to_single_line,
-        "dict_pattern": _format_concrete_expression_to_single_line,
+        "array_pattern": _format_array_to_multiple_lines,
+        "dict_pattern": _format_dict_to_multiple_lines,
         "kv_pair_pattern": _format_kv_pair_to_multiple_lines,
     }  # type: Dict[str, Callable]
     return handlers[expression.data](expression, expression_context, context)

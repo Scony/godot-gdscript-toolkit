@@ -8,6 +8,7 @@
  - Added support for string-based unique node names
  - Added support for properties in `gd2py`
  - Added support for `get():` property syntax
+ - Added support for multiline arrays and dictionaries in `match` statement branches
 
 ### Changed
  - Fixed support for `breakpoint` statement in formatter
