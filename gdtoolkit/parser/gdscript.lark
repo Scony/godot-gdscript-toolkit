@@ -123,7 +123,8 @@ for_stmt: "for" NAME "in" expr ":" _func_suite
 for_stmt_typed: "for" _for_iterator_var_typed "in" expr ":" _func_suite
 match_stmt: "match" expr ":" _match_body
 _match_body: _NL _INDENT match_branch+ _DEDENT
-match_branch: pattern ":" _func_suite
+?match_branch: pattern ":" _func_suite
+             | pattern "when" expr ":" _func_suite -> guarded_match_branch
 
 pattern: list_pattern
 ?list_pattern: test_pattern ("," test_pattern)*

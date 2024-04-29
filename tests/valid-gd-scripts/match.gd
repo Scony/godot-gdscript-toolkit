@@ -3,6 +3,14 @@ func foo(x):
 	match x:
 		1:
 			pass
+		5 when true:
+			pass
+		6 when 1 + 2 > 0:
+			pass
+		7 when y.aaa.bb == 0:
+			pass
+		8 when 1.0 as int:
+			pass
 		# TODO: remove support for
 		# y.aaa:
 		# 	pass

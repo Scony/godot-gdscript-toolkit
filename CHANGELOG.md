@@ -9,6 +9,7 @@
  - Added support for properties in `gd2py`
  - Added support for `get():` property syntax
  - Added support for multiline arrays and dictionaries in `match` statement branches
+ - Added support for guarded `match` branches
 
 ### Changed
  - Fixed support for `breakpoint` statement in formatter

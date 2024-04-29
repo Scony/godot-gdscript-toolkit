@@ -45,6 +45,12 @@ class X:
 				pass
 			1 if 1 else 2:
 				pass
+			2 when true:
+				pass
+			2 when 1 == 1:
+				pass
+			2 when 1.0 as int:
+				pass
 			_:
 				pass
 		match Vector3(1,1,1):

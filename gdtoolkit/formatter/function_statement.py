@@ -7,6 +7,7 @@ from ..common.utils import get_line
 from .context import Context, ExpressionContext
 from .types import Outcome, FormattedLines
 from .expression import format_expression
+from .expression_to_str import expression_to_str
 from .block import format_block, reconstruct_blank_lines_in_range
 from .statement_utils import format_simple_statement
 from .var_statement import format_var_statement
@@ -32,6 +33,7 @@ def format_func_statement(statement: Tree, context: Context) -> Outcome:
         "annotation": format_standalone_annotation,
         # fake statements:
         "match_branch": _format_match_branch,
+        "guarded_match_branch": _format_guarded_match_branch,
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
 
@@ -103,6 +105,15 @@ def _format_match_branch(statement: Tree, context: Context) -> Outcome:
     prefix = ""
     suffix = ":"
     expr_position = 0
+    return _format_branch(prefix, suffix, expr_position, statement, context)
+
+
+def _format_guarded_match_branch(statement: Tree, context: Context) -> Outcome:
+    # TODO: fold pattern as well
+    pattern_str = expression_to_str(statement.children[0].children[0])
+    prefix = f"{pattern_str} when "
+    suffix = ":"
+    expr_position = 1
     return _format_branch(prefix, suffix, expr_position, statement, context)
 
 
