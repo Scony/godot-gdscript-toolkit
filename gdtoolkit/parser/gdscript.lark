@@ -244,15 +244,19 @@ _plus_atom: ["+"] atom
      | NAME
      | HEX
      | BIN
-     | inline_lambda
+     | lambda
      | literal
-inline_lambda: lambda_header _simple_lambda_stmt
+lambda: lambda_header _lambda_suite
 lambda_header: "func" [NAME] func_args ["->" TYPE_HINT] ":"
-_simple_lambda_stmt: single_lambda_stmt (";" single_lambda_stmt)* [";"]
-?single_lambda_stmt: pass_stmt
-                   | return_stmt
-                   | func_var_stmt
-                   | expr_stmt
+// the only difference between _lambda_suite and _func_suite is that
+// _lambda_suite never consumes last _NL (after stmt or _DEDENT)
+// as the last _NL in every lambda case belongs to parent stmt
+_lambda_suite: _lambda_body
+             | _standalone_lambda_stmt
+_lambda_body: _NL _INDENT _func_stmt+ _DEDENT
+_standalone_lambda_stmt: _simple_func_stmt
+                       | annotation* compound_func_stmt
+                       | annotation*
 ?literal: NUMBER
         | string
         | rstring
