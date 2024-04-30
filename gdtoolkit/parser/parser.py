@@ -7,7 +7,7 @@ import os
 import sys
 import pkg_resources
 
-from lark import Lark, Tree, indenter
+from lark import Lark, Tree
 
 from .gdscript_indenter import GDScriptIndenter
 

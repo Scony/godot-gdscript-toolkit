@@ -1,9 +1,10 @@
 from typing import Iterator
 
-from lark import Token, indenter
+from lark.indenter import DedentError, Indenter
+from lark.lexer import Token
 
 
-class GDScriptIndenter(indenter.Indenter):
+class GDScriptIndenter(Indenter):
     NL_type = "_NL"
     OPEN_PAREN_types = ["LPAR", "LSQB", "LBRACE"]
     CLOSE_PAREN_types = ["RPAR", "RSQB", "RBRACE"]
@@ -14,7 +15,7 @@ class GDScriptIndenter(indenter.Indenter):
 
     def handle_NL(self, token: Token) -> Iterator[Token]:
         if self.paren_level > 0:
-            return              # TODO: special handling for lambdas
+            return  # TODO: special handling for lambdas
 
         yield token
 
