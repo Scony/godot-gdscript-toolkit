@@ -79,7 +79,7 @@ func_args: "(" [func_arg ("," func_arg)* [trailing_comma]] ")"
 func_arg_regular: NAME ["=" expr]
 func_arg_inf: NAME ":" "=" expr
 func_arg_typed: NAME ":" TYPE_HINT ["=" expr]
-_func_suite: _func_body
+_func_suite: _func_body _NL
            | _func_stmt
 _func_body: _NL _INDENT (_func_stmt+ | _func_stmt* (_simple_func_stmt | annotation+)) _DEDENT
 _func_stmt: _simple_func_stmt _NL
