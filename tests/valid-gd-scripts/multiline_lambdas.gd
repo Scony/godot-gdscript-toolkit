@@ -35,14 +35,33 @@ func foo():
 		@warning_ignore("unused_variable") var x
 	var f19 = func():
 		@warning_ignore("unused_variable") @warning_ignore("unused_variable") var x
-	# var f2s = [func():
-	# 	pass]
-	# var f3s = [func():
-	# 	pass, func():
-	# 	pass]
-	# var f4s = [func():
-	# 	return [1,2,3], func():
-	# 	pass]
+	var f2s = [func():
+		pass
+	]
+	var f3s = [func():
+		pass
+		pass
+	]
+	var f4s = [func():
+		pass]
+	var f5s = [func():
+		pass
+		pass]
+	var f6s = [func():
+		pass, func():
+		pass]
+	var f7s = [func():
+		return [1,2,3], func():
+		pass]
+	var f8s = [func():
+		pass
+		var f8sr = func():
+			pass
+			var dct = {'f':func():
+				pass
+				var f8srr = func():
+					pass
+					return [1,2,3]}]
 	# Godot 4.3 failing:
 	# var fx = func():
 	# 	pass if true else func():
