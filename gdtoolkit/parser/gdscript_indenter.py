@@ -25,37 +25,11 @@ class GDScriptIndenter(Indenter):
         indent = indent_str.count(" ") + indent_str.count("\t") * self.tab_len
 
         if self.paren_level > 0:
-            # {{ special handling for lambdas # TODO: extract
-
-            # if just after lambda header and indent is right:
-            #     yield INDENT
-            if (
-                self._current_token_is_just_after_lambda_header()
-                and indent > self.indent_level[-1]
+            for new_token in self._handle_lambdas_on_newline_token_in_parens(
+                token, indent, indent_str
             ):
-                self.indent_level.append(indent)
-                self.undedented_lambdas_at_paren_level[self.paren_level] += 1
-                # self.lambda_level += 1
-                yield token
-                yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
-            # elif in lambda and indent is right:
-            #     yield DEDENT
-            elif (
-                indent <= self.indent_level[-1]
-                and self.undedented_lambdas_at_paren_level[self.paren_level] > 0
-            ):
-                yield token
-                while indent < self.indent_level[-1]:
-                    self.indent_level.pop()
-                    self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-                    yield Token.new_borrow_pos(self.DEDENT_type, indent_str, token)
-
-                if indent != self.indent_level[-1]:
-                    raise DedentError(
-                        "Unexpected dedent to column %s. Expected dedent to %s"
-                        % (indent, self.indent_level[-1])
-                    )
-            # }} special handling for lambdas
+                yield new_token
+            # special handling for lambdas
             return
 
         yield token
@@ -88,18 +62,14 @@ class GDScriptIndenter(Indenter):
                 self.paren_level += 1
             elif token.type in self.CLOSE_PAREN_types:
                 while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    self.indent_level.pop()
-                    self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-                    yield Token.new_borrow_pos(self.NL_type, "N/A", token)
-                    yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
+                    for new_token in self._dedent_lambda_at_token(token):
+                        yield new_token
                 self.paren_level -= 1
                 assert self.paren_level >= 0
             elif token.type in self.LAMBDA_SEPARATOR_types:
                 if self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    self.indent_level.pop()
-                    self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-                    yield Token.new_borrow_pos(self.NL_type, "N/A", token)
-                    yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
+                    for new_token in self._dedent_lambda_at_token(token):
+                        yield new_token
 
             if token.type != self.NL_type:
                 yield token
@@ -109,25 +79,53 @@ class GDScriptIndenter(Indenter):
             yield Token(self.DEDENT_type, "")
 
         assert self.indent_level == [0], self.indent_level
-        # return super()._process(stream)
+
+    def _handle_lambdas_on_newline_token_in_parens(
+        self, token: Token, indent: int, indent_str: str
+    ):
+        if (
+            self._current_token_is_just_after_lambda_header()
+            and indent > self.indent_level[-1]
+        ):
+            self.indent_level.append(indent)
+            self.undedented_lambdas_at_paren_level[self.paren_level] += 1
+            yield token
+            yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
+        elif (
+            indent <= self.indent_level[-1]
+            and self.undedented_lambdas_at_paren_level[self.paren_level] > 0
+        ):
+            yield token
+
+            while indent < self.indent_level[-1]:
+                self.indent_level.pop()
+                self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
+                yield Token.new_borrow_pos(self.DEDENT_type, indent_str, token)
+
+            if indent != self.indent_level[-1]:
+                raise DedentError(
+                    "Unexpected dedent to column %s. Expected dedent to %s"
+                    % (indent, self.indent_level[-1])
+                )
+
+    def _dedent_lambda_at_token(self, token: Token):
+        self.indent_level.pop()
+        self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
+        yield Token.new_borrow_pos(self.NL_type, "N/A", token)
+        yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
 
     def _current_token_is_just_after_lambda_header(self):
+        # TODO: handle newlines etc. in between tokens
         return (
             len(self.processed_tokens) > 0
-            and self.processed_tokens[-2].value == ":"
-            and self.processed_tokens[-3].value == ")"
-            and self.processed_tokens[-4].value == "("
+            and self.processed_tokens[-2].type == "COLON"
+            and self.processed_tokens[-3].type == "RPAR"
+            and self.processed_tokens[-4].type == "LPAR"
             and (
-                self.processed_tokens[-5].value == "func"
+                self.processed_tokens[-5].type == "FUNC"
                 or (
                     self.processed_tokens[-5].type == "NAME"
                     and self.processed_tokens[-6].type == "FUNC"
                 )
             )
         )
-
-    # def process(self, stream):
-    #     import pdb;pdb.set_trace()
-    #     self.paren_level = 0
-    #     self.indent_level = [0]
-    #     return self._process(stream)
