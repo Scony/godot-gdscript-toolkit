@@ -9,6 +9,7 @@ from .expression_utils import (
     remove_outer_parentheses,
     has_trailing_comma,
 )
+from .function_statement_to_str import function_statement_to_str
 
 
 def standalone_expression_to_str(expression: Node) -> str:
@@ -87,6 +88,8 @@ def expression_to_str(expression: Node) -> str:
             [expression_to_str(n) for n in e.children]
         ),
         "string_name": lambda e: f"&{expression_to_str(e.children[0])}",
+        "lambda": _lambda_to_str,
+        "lambda_header": _lambda_header_to_str,
         # fake expressions:
         "func_args": _args_to_str,
         "func_arg_regular": lambda e: "{}{}".format(
@@ -121,30 +124,6 @@ def expression_to_str(expression: Node) -> str:
         "trailing_comma": lambda _: "",
         "annotation": _annotation_to_str,
         "annotation_args": _annotation_args_to_str,
-        "inline_lambda": _inline_lambda_to_str,
-        "lambda_header": _lambda_header_to_str,
-        "inline_lambda_statements": lambda e: " ; ".join(
-            expression_to_str(statement) for statement in e.children
-        ),
-        "pass_stmt": lambda _: "pass",
-        "return_stmt": lambda e: f"return {standalone_expression_to_str(e.children[0])}",
-        "expr_stmt": lambda e: f"{standalone_expression_to_str(e.children[0])}",
-        "func_var_stmt": lambda e: expression_to_str(e.children[0]),
-        "func_var_empty": lambda e: f"var {e.children[0].value}",
-        "func_var_assigned": lambda e: "var {} = {}".format(
-            e.children[0].value, standalone_expression_to_str(e.children[1])
-        ),
-        "func_var_inf": lambda e: "var {} := {}".format(
-            e.children[0].value, standalone_expression_to_str(e.children[1])
-        ),
-        "func_var_typed": lambda e: "var {}: {}".format(
-            e.children[0].value, standalone_expression_to_str(e.children[1])
-        ),
-        "func_var_typed_assgnd": lambda e: "var {}: {} = {}".format(
-            e.children[0].value,
-            e.children[1].value,
-            standalone_expression_to_str(e.children[2]),
-        ),
         "non_foldable_dot_chain": lambda e: "".join(map(expression_to_str, e.children)),
         "actual_getattr_call": _getattr_call_to_str,
         "actual_subscr_expr": _subscription_to_str,
@@ -242,10 +221,11 @@ def _annotation_args_to_str(annotation: Tree) -> str:
     return "({}{})".format(", ".join(elements), trailing_comma)
 
 
-def _inline_lambda_to_str(inline_lambda: Tree) -> str:
-    fake_expression = Tree("inline_lambda_statements", inline_lambda.children[1:])
+def _lambda_to_str(a_lambda: Tree) -> str:
+    assert len(a_lambda.children) == 2
     return "{} {}".format(
-        expression_to_str(inline_lambda.children[0]), expression_to_str(fake_expression)
+        expression_to_str(a_lambda.children[0]),
+        function_statement_to_str(a_lambda.children[1]),
     )
 
 

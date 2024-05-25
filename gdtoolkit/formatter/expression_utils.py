@@ -47,13 +47,13 @@ def is_trailing_comma(expression: Node) -> bool:
 def is_expression_forcing_multiple_lines(
     expression: Node, standalone_comments: List[Optional[str]]
 ) -> bool:
-    if has_trailing_comma(expression):
-        return True
-    if _is_multiline_string(expression):
+    if has_trailing_comma(expression) or _is_multiline_string(expression):
         return True
     if isinstance(expression, Token):
         return False
-    if _has_standalone_comments(expression, standalone_comments):
+    if _has_standalone_comments(
+        expression, standalone_comments
+    ) or _is_multistatement_lambda(expression):
         return True
     for child in expression.children:
         if is_expression_forcing_multiple_lines(child, standalone_comments):
@@ -82,10 +82,18 @@ def _is_multiline_string(expression: Node) -> bool:
 
 def _has_standalone_comments(
     expression: Tree, standalone_comments: List[Optional[str]]
-):
+) -> bool:
     return any(
         comment is not None
         for comment in standalone_comments[
             get_line(expression) : get_end_line(expression)
         ]
+    )
+
+
+def _is_multistatement_lambda(expression: Tree) -> bool:
+    return (
+        isinstance(expression, Tree)
+        and expression.data == "lambda"
+        and len(expression.children) > 2
     )
