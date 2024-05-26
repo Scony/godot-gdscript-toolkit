@@ -11,8 +11,6 @@ DATA_DIR = "./input-output-pairs"
 EXCEPTIONS = set(
     [
         # cases where Godot does more than just parsing
-        "simple_lambdas.in.gd",
-        "simple_lambdas.out.gd",
         "inline_lambdas_w_comments.in.gd",
         "inline_lambdas_w_comments.out.gd",
         "long_inline_lambdas.in.gd",
