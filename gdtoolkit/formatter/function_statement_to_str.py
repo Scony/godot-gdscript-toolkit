@@ -10,11 +10,11 @@ def function_statement_to_str(statement: Tree) -> str:
     return {
         "pass_stmt": lambda _: "pass",
         "func_var_stmt": lambda s: function_statement_to_str(s.children[0]),
-        "const_stmt": _not_implemented,
+        "const_stmt": lambda s: function_statement_to_str(s.children[0]),
         "expr_stmt": lambda s: expression_to_str(s.children[0]),  # TODO: standalone?
-        "return_stmt": _not_implemented,
+        "return_stmt": lambda s: f"return {standalone_expression_to_str(s.children[0])}",
         "break_stmt": _not_implemented,
-        "breakpoint_stmt": _not_implemented,
+        "breakpoint_stmt": lambda _: "breakpoint",
         "continue_stmt": _not_implemented,
         "if_stmt": _not_implemented,
         "while_stmt": _not_implemented,
@@ -37,6 +37,17 @@ def function_statement_to_str(statement: Tree) -> str:
             s.children[0].value,
             s.children[1].value,
             standalone_expression_to_str(s.children[2]),
+        ),
+        "const_assigned": lambda s: "const {} = {}".format(
+            s.children[0].value, standalone_expression_to_str(s.children[1])
+        ),
+        "const_typed_assigned": lambda s: "const {}: {} = {}".format(
+            s.children[0].value,
+            s.children[1].value,
+            standalone_expression_to_str(s.children[2]),
+        ),
+        "const_inf": lambda s: "const {} := {}".format(
+            s.children[0].value, standalone_expression_to_str(s.children[1])
         ),
         "match_branch": _not_implemented,
         "guarded_match_branch": _not_implemented,
