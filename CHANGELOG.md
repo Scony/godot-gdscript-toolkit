@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [4.3.0] 2024-08-18
 
 ### Added
  - Added `gdformatrc` configuration file to `gdformat`
