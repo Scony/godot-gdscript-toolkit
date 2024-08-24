@@ -19,12 +19,16 @@ Regardless of the target version, installation is done by `pip3` command and for
 
 ```
 pip3 install "gdtoolkit==4.*"
+# or
+pipx install "gdtoolkit==4.*"
 ```
 
 ### Godot 3
 
 ```
 pip3 install "gdtoolkit==3.*"
+# or
+pipx install "gdtoolkit==3.*"
 ```
 
 ### `master` (latest)
@@ -32,6 +36,8 @@ pip3 install "gdtoolkit==3.*"
 Latest version (potentially unstable) can be installed directly from git:
 ```
 pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
+# or
+pipx install git+https://github.com/Scony/godot-gdscript-toolkit.git
 ```
 
 ## Linting with gdlint [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/3.-Linter)
