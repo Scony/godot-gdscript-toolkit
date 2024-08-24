@@ -3,7 +3,7 @@
 ## [4.3.1] 2024-08-24
 
 ### Added
- - Added support for "is not" type test
+ - Added support for `is not` type test
 
 ## [4.3.0] 2024-08-18
 
@@ -18,6 +18,7 @@
 
 ### Changed
  - Fixed support for `breakpoint` statement in formatter
+ - Fixed nested unique name (`%`)
 
 ## [4.2.2] 2023-12-11
 
