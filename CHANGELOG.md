@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.3.1] 2024-08-24
+
+### Added
+ - Added support for "is not" type test
+
 ## [4.3.0] 2024-08-18
 
 ### Added

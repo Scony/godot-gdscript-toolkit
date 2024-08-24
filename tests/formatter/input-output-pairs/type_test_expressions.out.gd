@@ -19,3 +19,17 @@ class X:
 			is bool
 		)
 		print([1, 2.1] is Array[int])
+		var z = 1 is not int
+		var z1 = (
+			1
+			is not int
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+			is not bool
+		)

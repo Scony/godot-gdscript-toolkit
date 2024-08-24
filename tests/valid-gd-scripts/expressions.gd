@@ -44,6 +44,7 @@ func foo():
 	~8
 	5 ** 5
 	x is int
+	x is not int
 	x is Xyz # TODO: fix/remove x.Type
 	x is Zyx.Qwe # TODO: fix/remove x.Type
 	x.attr
