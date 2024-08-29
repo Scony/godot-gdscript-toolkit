@@ -56,7 +56,6 @@ DEFAULT_CONFIG = MappingProxyType(
         # unreachable # check in godot
         # using-constant-test # check in godot
         # class checks
-        "private-method-call": None,
         "class-definitions-order": [
             "tools",
             "classnames",

@@ -1,8 +1,8 @@
 from functools import partial
 from types import MappingProxyType
-from typing import Callable, List, Tuple
+from typing import List
 
-from lark import Token, Tree
+from lark import Tree
 
 from ..common.ast import AbstractSyntaxTree, Class, Statement, Annotation
 from ..common.utils import find_name_token_among_children, get_line, get_column
@@ -13,17 +13,6 @@ from .helpers import is_function_public
 
 def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
     disable = config["disable"]
-    checks_to_run_w_tree = [
-        (
-            "private-method-call",
-            _private_method_call_check,
-        ),
-    ]  # type: List[Tuple[str, Callable]]
-    problem_clusters = (
-        function(parse_tree) if name not in disable else []
-        for name, function in checks_to_run_w_tree
-    )
-    problems = [problem for cluster in problem_clusters for problem in cluster]
     checks_to_run_w_ast = [
         (
             "class-definitions-order",
@@ -35,34 +24,7 @@ def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
         function(ast) if name not in disable else []
         for name, function in checks_to_run_w_ast
     )
-    problems += [problem for cluster in problem_clusters for problem in cluster]
-    return problems
-
-
-def _private_method_call_check(parse_tree: Tree) -> List[Problem]:
-    problems = []
-    for getattr_call in parse_tree.find_data("getattr_call"):
-        _getattr = getattr_call.children[0]
-        callee_name_token = _getattr.children[-1]
-        callee_name = callee_name_token.value
-        called = _getattr.children[-3]
-        if (
-            isinstance(called, Token)
-            and called.type == "NAME"
-            and called.value == "self"
-        ):
-            continue
-        if is_function_public(callee_name):
-            continue
-        problems.append(
-            Problem(
-                name="private-method-call",
-                description='Private method "{}" has been called'.format(callee_name),
-                line=get_line(callee_name_token),
-                column=get_column(callee_name_token),
-            )
-        )
-    return problems
+    return [problem for cluster in problem_clusters for problem in cluster]
 
 
 def _class_definitions_order_check(
