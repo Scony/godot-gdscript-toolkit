@@ -4,6 +4,7 @@
 
 ### Changed
  - Removed `private-method-call` linter check due to false positives when calling `super._foo()`
+ - Fixed support for `get_node` syntax to accommodate for `$/(...)`
 
 ## [4.3.1] 2024-08-24
 

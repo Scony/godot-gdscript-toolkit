@@ -10,3 +10,5 @@ func foo():
 	# @'xx'
 	# @"""xxxx"""
 	$Child/Sub.text = "xx"
+	$/root
+	$/root/A/B/C

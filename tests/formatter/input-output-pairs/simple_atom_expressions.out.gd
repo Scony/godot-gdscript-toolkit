@@ -24,3 +24,5 @@ func foo():
 	var xd = %UniqueNodeName/Xyz
 	var xe = %"a/b/c"
 	var xf = %UniqueNodeName/%AnotherUniqueNodeName
+	var xg = $/root
+	var xh = $/root/a/b/c
