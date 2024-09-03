@@ -51,9 +51,11 @@ def is_expression_forcing_multiple_lines(
         return True
     if isinstance(expression, Token):
         return False
-    if _has_standalone_comments(
-        expression, standalone_comments
-    ) or _is_multistatement_lambda(expression):
+    if (
+        _has_standalone_comments(expression, standalone_comments)
+        or _is_multistatement_lambda(expression)
+        or _is_unistatement_lambda_with_compoud_statement(expression)
+    ):
         return True
     for child in expression.children:
         if is_expression_forcing_multiple_lines(child, standalone_comments):
@@ -96,4 +98,16 @@ def _is_multistatement_lambda(expression: Tree) -> bool:
         isinstance(expression, Tree)
         and expression.data == "lambda"
         and len(expression.children) > 2
+    )
+
+
+# TODO: remove once such statements are supported
+def _is_unistatement_lambda_with_compoud_statement(expression: Tree) -> bool:
+    return (
+        isinstance(expression, Tree)
+        and expression.data == "lambda"
+        and len(expression.children) == 2
+        and isinstance(expression.children[1], Tree)
+        and expression.children[1].data
+        in ["if_stmt", "while_stmt", "for_stmt", "for_stmt_typed", "match_stmt"]
     )
