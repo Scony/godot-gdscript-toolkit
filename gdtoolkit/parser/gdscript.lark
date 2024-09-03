@@ -255,8 +255,18 @@ _lambda_suite: _lambda_body
              | _standalone_lambda_stmt
 _lambda_body: _NL _INDENT _func_stmt+ _DEDENT
 _standalone_lambda_stmt: _simple_func_stmt
-                       | annotation* compound_func_stmt
+                       // | annotation* compound_lambda_stmt
+                       // | annotation* compound_func_stmt
                        | annotation*
+// ?compound_lambda_stmt: lambda_if_stmt
+                     // | while_stmt
+                     // | for_stmt
+                     // | for_stmt_typed
+                     // | match_stmt
+// lambda_if_stmt: lambda_if_branch (_NL? lambda_elif_branch)* [_NL? lambda_else_branch]
+// lambda_if_branch: "if" expr ":" _lambda_suite
+// lambda_elif_branch: "elif" expr ":" _lambda_suite
+// lambda_else_branch: "else" ":" _lambda_suite
 ?literal: NUMBER
         | string
         | rstring
