@@ -151,6 +151,7 @@ def _format_foldable_to_multiple_lines(
         "c_dict_element": _format_kv_pair_to_multiple_lines,
         "eq_dict_element": _format_kv_pair_to_multiple_lines,
         "lambda": _format_lambda_to_multiple_lines,
+        "lambda_header": _format_lambda_header_to_multiple_lines,
         # fake expressions:
         "func_args": _format_args_to_multiple_lines,
         "func_arg_regular": _format_func_arg_to_multiple_lines,

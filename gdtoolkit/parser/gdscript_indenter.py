@@ -40,7 +40,9 @@ class GDScriptIndenter(Indenter):
         else:
             while indent < self.indent_level[-1]:
                 self.indent_level.pop()
-                yield Token.new_borrow_pos(self.DEDENT_type, indent_str, token)
+                yield Token(
+                    self.DEDENT_type, indent_str, None, token.line, None, token.line
+                )
                 # produce extra newline after dedent to simplify grammar:
                 yield token
 
