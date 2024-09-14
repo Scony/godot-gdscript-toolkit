@@ -772,7 +772,6 @@ def _format_lambda_to_multiple_lines(
     expression_context: ExpressionContext,
     context: Context,
 ) -> FormattedLines:
-    assert expression_context.suffix_string == ""
     expression_context_for_header = ExpressionContext(
         expression_context.prefix_string, expression_context.prefix_line, "", -1
     )
@@ -788,8 +787,18 @@ def _format_lambda_to_multiple_lines(
         function_statement_module.format_func_statement,
         child_context,
     )
+    last_block_line_number, last_block_line_content = block_lines[-1]
 
-    return header_lines + block_lines
+    return (
+        header_lines
+        + block_lines[:-1]
+        + [
+            (
+                last_block_line_number,
+                f"{last_block_line_content}{expression_context.suffix_string}",
+            )
+        ]
+    )
 
 
 def _format_lambda_header_to_multiple_lines(
