@@ -7,7 +7,7 @@ from .common import format_and_compare
 DATA_DIR = "./input-output-pairs"
 EXCEPTIONS = set(
     [
-        "long_inline_lambdas",
+        # TODO: fix
         "inline_lambdas_w_comments",
     ]
 )  # type: Set[str]

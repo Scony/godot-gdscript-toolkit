@@ -26,7 +26,8 @@ func foo():
 		p21,
 		p22,
 		p23
-	): pass  # inline b
+	):
+		pass  # inline b
 	# c
 	var x3 = func baz(  # inline c
 		# d
@@ -55,48 +56,52 @@ func foo():
 		p22,
 		p23  # inline e
 		# f
-	) -> int: pass ; pass ; var x := [  # inline f
-		# g
-		0,  # inline g
-		# h
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0  # inline h
-		# i
-	] ; pass  # inline i
+	) -> int:
+		pass
+		pass
+		var x := [  # inline f
+			# g
+			0,  # inline g
+			# h
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0  # inline h
+			# i
+		]
+		pass  # inline i
 	# j
