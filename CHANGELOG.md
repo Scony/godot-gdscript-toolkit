@@ -2,9 +2,14 @@
 
 ## [master]
 
+### Added
+ - Added support for multi-statement lambdas (#191)
+
 ### Changed
  - Removed `private-method-call` linter check due to false positives when calling `super._foo()`
  - Fixed support for `get_node` syntax to accommodate for `$/(...)`
+ - Changed formatting of some uni-statement lambdas
+ - Changed formatting of multi-statement, inline lambdas
 
 ## [4.3.1] 2024-08-24
 

@@ -1,4 +1,5 @@
 from typing import Dict, Callable, List, Optional
+from importlib import import_module
 
 from lark import Tree, Token
 from lark.tree import Meta
@@ -149,6 +150,8 @@ def _format_foldable_to_multiple_lines(
         "dict": _format_dict_to_multiple_lines,
         "c_dict_element": _format_kv_pair_to_multiple_lines,
         "eq_dict_element": _format_kv_pair_to_multiple_lines,
+        "lambda": _format_lambda_to_multiple_lines,
+        "lambda_header": _format_lambda_header_to_multiple_lines,
         # fake expressions:
         "func_args": _format_args_to_multiple_lines,
         "func_arg_regular": _format_func_arg_to_multiple_lines,
@@ -165,33 +168,6 @@ def _format_foldable_to_multiple_lines(
         ),
         "annotation": _format_annotation_to_multiple_lines,
         "annotation_args": _format_args_to_multiple_lines,
-        "inline_lambda": _format_inline_lambda_to_multiple_lines,
-        "lambda_header": _format_lambda_header_to_multiple_lines,
-        "inline_lambda_statements": _format_inline_lambda_statements_to_multiple_lines,
-        "pass_stmt": _format_concrete_expression_to_single_line,
-        "return_stmt": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
-            "return ", e.children[0], ec, c
-        ),
-        "expr_stmt": lambda e, ec, c: _format_standalone_expression(
-            e.children[0].children[0], ec, c
-        ),
-        "func_var_stmt": lambda e, ec, c: _format_standalone_expression(
-            e.children[0], ec, c
-        ),
-        "func_var_empty": _format_concrete_expression_to_single_line,
-        "func_var_assigned": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
-            f"var {expression_to_str(e.children[0])} = ", e.children[1], ec, c
-        ),
-        "func_var_typed": _format_concrete_expression_to_single_line,
-        "func_var_typed_assgnd": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
-            f"var {expression_to_str(e.children[0])}: {expression_to_str(e.children[1])} = ",
-            e.children[2],
-            ec,
-            c,
-        ),
-        "func_var_inf": lambda e, ec, c: _append_to_expression_context_and_pass_standalone(
-            f"var {expression_to_str(e.children[0])} := ", e.children[1], ec, c
-        ),
         "dot_chain": _format_dot_chain_to_multiple_lines,
         "actual_getattr_call": _format_call_expression_to_multiple_lines,
         "actual_subscr_expr": _format_subscription_to_multiple_lines,
@@ -645,100 +621,6 @@ def _format_annotation_to_multiple_lines(
     )
 
 
-def _format_inline_lambda_to_multiple_lines(
-    inline_lambda: Tree,
-    expression_context: ExpressionContext,
-    context: Context,
-) -> FormattedLines:
-    expression_context_for_header = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, "", -1
-    )
-    header_lines = _format_concrete_expression(
-        inline_lambda.children[0], expression_context_for_header, context
-    )
-    last_header_line_number, last_header_line = header_lines[-1]
-    assert last_header_line_number is not None
-    expression_context_for_statements = ExpressionContext(
-        f"{last_header_line.strip()} ",
-        last_header_line_number,  # type:ignore
-        expression_context.suffix_string,
-        expression_context.suffix_line,
-    )
-    fake_meta = Meta()
-    fake_meta.line = get_line(inline_lambda.children[1])
-    fake_meta.end_line = get_end_line(inline_lambda.children[-1])
-    fake_expression = Tree(
-        "inline_lambda_statements", inline_lambda.children[1:], fake_meta
-    )
-    statement_lines = _format_concrete_expression(
-        fake_expression, expression_context_for_statements, context
-    )
-    return header_lines[:-1] + statement_lines
-
-
-def _format_lambda_header_to_multiple_lines(
-    lambda_header: Tree,
-    expression_context: ExpressionContext,
-    context: Context,
-) -> FormattedLines:
-    append_to_prefix = (
-        f"func {lambda_header.children[0].value}"
-        if isinstance(lambda_header.children[0], Token)
-        else "func"
-    )
-    args_offset = 1 if isinstance(lambda_header.children[0], Token) else 0
-    theres_something_after_args = len(lambda_header.children) > args_offset + 1
-    optional_type_hint = (
-        f" -> {lambda_header.children[args_offset+1]}"
-        if theres_something_after_args
-        else ""
-    )
-    prepend_to_suffix = f"{optional_type_hint}:"
-    new_expression_context = ExpressionContext(
-        f"{expression_context.prefix_string}{append_to_prefix}",
-        expression_context.prefix_line,
-        f"{prepend_to_suffix}{expression_context.suffix_string}",
-        expression_context.suffix_line,
-    )
-    return _format_concrete_expression(
-        lambda_header.children[args_offset], new_expression_context, context
-    )
-
-
-def _format_inline_lambda_statements_to_multiple_lines(
-    inline_lambda_statements: Tree,
-    expression_context: ExpressionContext,
-    context: Context,
-) -> FormattedLines:
-    lambda_statements = inline_lambda_statements.children
-    if len(lambda_statements) == 1:
-        return _format_concrete_expression(
-            lambda_statements[0], expression_context, context
-        )
-    expression_context_for_first_statement = ExpressionContext(
-        expression_context.prefix_string, expression_context.prefix_line, "", -1
-    )
-    first_statement_formatted_lines = _format_concrete_expression(
-        lambda_statements[0], expression_context_for_first_statement, context
-    )
-    last_line_number, last_line = first_statement_formatted_lines[-1]
-    assert last_line_number is not None
-    remaining_statements_prefix = last_line.strip()
-    remaining_statements_expression_context = ExpressionContext(
-        f"{remaining_statements_prefix} ; ",
-        last_line_number,  # type: ignore
-        expression_context.suffix_string,
-        expression_context.suffix_line,
-    )
-    fake_meta = Meta()
-    fake_meta.line = get_line(lambda_statements[1])
-    fake_meta.end_line = get_end_line(lambda_statements[-1])
-    fake_expression = Tree("inline_lambda_statements", lambda_statements[1:], fake_meta)
-    return first_statement_formatted_lines[:-1] + _format_concrete_expression(
-        fake_expression, remaining_statements_expression_context, context
-    )
-
-
 def _collapse_getattr_tree_to_dot_chain(expression: Tree) -> Tree:
     reversed_dot_chain_children = []  # type: List[Node]
     pending_getattr_call_to_match = None
@@ -883,3 +765,66 @@ def _format_dot_chain_to_multiple_lines_bottom_up(
         fake_meta,
     )
     return _format_concrete_expression(new_actual_expr, expression_context, context)
+
+
+def _format_lambda_to_multiple_lines(
+    a_lambda: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    expression_context_for_header = ExpressionContext(
+        expression_context.prefix_string, expression_context.prefix_line, "", -1
+    )
+    header_lines = _format_concrete_expression(
+        a_lambda.children[0], expression_context_for_header, context
+    )
+
+    block_module = import_module("gdtoolkit.formatter.block")
+    function_statement_module = import_module("gdtoolkit.formatter.function_statement")
+    child_context = context.create_child_context(expression_context.prefix_line)
+    (block_lines, _) = block_module.format_block(
+        a_lambda.children[1:],
+        function_statement_module.format_func_statement,
+        child_context,
+    )
+    last_block_line_number, last_block_line_content = block_lines[-1]
+
+    return (
+        header_lines
+        + block_lines[:-1]
+        + [
+            (
+                last_block_line_number,
+                f"{last_block_line_content}{expression_context.suffix_string}",
+            )
+        ]
+    )
+
+
+def _format_lambda_header_to_multiple_lines(
+    lambda_header: Tree,
+    expression_context: ExpressionContext,
+    context: Context,
+) -> FormattedLines:
+    append_to_prefix = (
+        f"func {lambda_header.children[0].value}"
+        if isinstance(lambda_header.children[0], Token)
+        else "func"
+    )
+    args_offset = 1 if isinstance(lambda_header.children[0], Token) else 0
+    theres_something_after_args = len(lambda_header.children) > args_offset + 1
+    optional_type_hint = (
+        f" -> {lambda_header.children[args_offset+1]}"
+        if theres_something_after_args
+        else ""
+    )
+    prepend_to_suffix = f"{optional_type_hint}:"
+    new_expression_context = ExpressionContext(
+        f"{expression_context.prefix_string}{append_to_prefix}",
+        expression_context.prefix_line,
+        f"{prepend_to_suffix}{expression_context.suffix_string}",
+        expression_context.suffix_line,
+    )
+    return _format_concrete_expression(
+        lambda_header.children[args_offset], new_expression_context, context
+    )

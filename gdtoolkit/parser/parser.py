@@ -7,17 +7,9 @@ import os
 import sys
 import pkg_resources
 
-from lark import Lark, Tree, indenter
+from lark import Lark, Tree
 
-
-class Indenter(indenter.Indenter):
-    NL_type = "_NL"
-    OPEN_PAREN_types = ["LPAR", "LSQB", "LBRACE"]
-    CLOSE_PAREN_types = ["RPAR", "RSQB", "RBRACE"]
-    INDENT_type = "_INDENT"
-    DEDENT_type = "_DEDENT"
-    # TODO: guess tab length
-    tab_len = 4
+from .gdscript_indenter import GDScriptIndenter
 
 
 # TODO: when upgrading to Python 3.8, replace with functools.cached_property
@@ -92,7 +84,7 @@ class Parser:
             grammar_filepath,
             parser="lalr",
             start="start",
-            postlex=Indenter(),  # type: ignore
+            postlex=GDScriptIndenter(),  # type: ignore
             propagate_positions=add_metadata,
             maybe_placeholders=False,
             cache=cache_filepath,
