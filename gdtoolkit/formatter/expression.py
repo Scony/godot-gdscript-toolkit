@@ -12,6 +12,7 @@ from .expression_utils import (
     remove_outer_parentheses,
     is_foldable,
     is_expression_forcing_multiple_lines,
+    expression_contains_lambda,
     is_any_comma,
     is_trailing_comma,
 )
@@ -716,6 +717,12 @@ def _format_dot_chain_to_multiple_lines(
     expression_context: ExpressionContext,
     context: Context,
 ) -> FormattedLines:
+    # temporary workaround for likely Godot bug
+    # TODO: remove once not needed anymore (this probably should be kept until Godot 5 for compat)
+    if expression_contains_lambda(dot_chain):
+        return _format_dot_chain_to_multiple_lines_bottom_up(
+            dot_chain, expression_context, context
+        )
     if is_expression_forcing_multiple_lines(dot_chain, context.standalone_comments):
         return _format_operator_chain_based_expression_to_multiple_lines(
             dot_chain, expression_context, context

@@ -10,6 +10,7 @@
  - Fixed support for `get_node` syntax to accommodate for `$/(...)`
  - Changed formatting of some uni-statement lambdas
  - Changed formatting of multi-statement, inline lambdas
+ - Changed formatting of dot-chains containing a lambda(s)
 
 ## [4.3.1] 2024-08-24
 

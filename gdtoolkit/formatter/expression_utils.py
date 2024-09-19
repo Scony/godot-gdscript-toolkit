@@ -63,6 +63,17 @@ def is_expression_forcing_multiple_lines(
     return False
 
 
+def expression_contains_lambda(expression: Node):
+    if isinstance(expression, Token):
+        return False
+    if expression.data == "lambda":
+        return True
+    for child in expression.children:
+        if expression_contains_lambda(child):
+            return True
+    return False
+
+
 def is_any_comma(expression: Node) -> bool:
     return (isinstance(expression, Tree) and expression.data == "trailing_comma") or (
         isinstance(expression, Token) and expression.type == "COMMA"
