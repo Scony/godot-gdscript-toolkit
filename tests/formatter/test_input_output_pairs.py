@@ -9,6 +9,8 @@ EXCEPTIONS = set(
     [
         # TODO: fix
         "inline_lambdas_w_comments",
+        # Desired yet not possible to support due to Godot bug:
+        "bug_326_multistatement_lambda_corner_case",
     ]
 )  # type: Set[str]
 

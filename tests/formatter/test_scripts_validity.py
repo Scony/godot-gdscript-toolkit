@@ -10,6 +10,8 @@ from ..common import GODOT_SERVER, write_project_settings, write_file
 DATA_DIR = "./input-output-pairs"
 EXCEPTIONS = set(
     [
+        # Godot bugs:
+        "bug_326_multistatement_lambda_corner_case.out.gd",
         # cases where Godot does more than just parsing
         "inline_lambdas_w_comments.in.gd",
         "inline_lambdas_w_comments.out.gd",
