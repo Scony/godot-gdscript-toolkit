@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for multi-statement lambdas (#191)
+ - Added support for typed dictionaries (#322)
 
 ### Changed
  - Removed `private-method-call` linter check due to false positives when calling `super._foo()`

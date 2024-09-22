@@ -288,8 +288,9 @@ eq_dict_element: NAME "=" type_cast
 
 SET: "set"
 GET: "get"
+// TODO: fix whitespaces
 TYPE: NAME ([" "] "." [" "] NAME)*
-TYPE_HINT: NAME ([" "] "." [" "] NAME)* ["[" NAME ([" "] "." [" "] NAME)* "]"]
+TYPE_HINT: TYPE ["[" TYPE [[" "] "," [" "] TYPE] "]"]
 NUMBER: ["+"|"-"] (FLOAT | INT)
 FLOAT: INT _EXP | DECIMAL _EXP?
 _EXP: ("e"|"E") SIGNED_INT
