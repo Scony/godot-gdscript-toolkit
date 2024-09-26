@@ -9,6 +9,7 @@
 ### Changed
  - Removed `private-method-call` linter check due to false positives when calling `super._foo()`
  - Fixed support for `get_node` syntax to accommodate for `$/(...)`
+ - Fixed `gd2py` and `gdradon` to support latest GDScript
  - Changed formatting of some uni-statement lambdas
  - Changed formatting of multi-statement, inline lambdas
  - Changed formatting of dot-chains containing a lambda(s)
