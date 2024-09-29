@@ -130,4 +130,18 @@ class GDScriptIndenter(Indenter):
                     and self.processed_tokens[-6].type == "FUNC"
                 )
             )
+        ) or (
+            len(self.processed_tokens) > 0
+            and self.processed_tokens[-2].type == "COLON"
+            and self.processed_tokens[-3].type == "TYPE_HINT"
+            and self.processed_tokens[-4].value == "->"
+            and self.processed_tokens[-5].type == "RPAR"
+            and self.processed_tokens[-6].type == "LPAR"
+            and (
+                self.processed_tokens[-7].type == "FUNC"
+                or (
+                    self.processed_tokens[-7].type == "NAME"
+                    and self.processed_tokens[-8].type == "FUNC"
+                )
+            )
         )
