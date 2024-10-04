@@ -117,31 +117,36 @@ class GDScriptIndenter(Indenter):
         yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
 
     def _current_token_is_just_after_lambda_header(self):
-        # TODO: handle newlines etc. in between tokens
-        return (
-            len(self.processed_tokens) > 0
-            and self.processed_tokens[-2].type == "COLON"
-            and self.processed_tokens[-3].type == "RPAR"
-            and self.processed_tokens[-4].type == "LPAR"
-            and (
-                self.processed_tokens[-5].type == "FUNC"
-                or (
-                    self.processed_tokens[-5].type == "NAME"
-                    and self.processed_tokens[-6].type == "FUNC"
-                )
-            )
-        ) or (
-            len(self.processed_tokens) > 0
-            and self.processed_tokens[-2].type == "COLON"
-            and self.processed_tokens[-3].type == "TYPE_HINT"
-            and self.processed_tokens[-4].value == "->"
-            and self.processed_tokens[-5].type == "RPAR"
-            and self.processed_tokens[-6].type == "LPAR"
-            and (
-                self.processed_tokens[-7].type == "FUNC"
-                or (
-                    self.processed_tokens[-7].type == "NAME"
-                    and self.processed_tokens[-8].type == "FUNC"
-                )
-            )
-        )
+        extra_rpars = [0]
+        pattern_functions = [
+            lambda t: t.type == "COLON",
+            lambda t: t.type == "RPAR",
+            lambda t: t.type == "LPAR" and extra_rpars[0] == 0,
+            lambda t: t.type == "FUNC",
+        ]
+
+        def lpar_accept_function(token: Token) -> bool:
+            if token.type == "RPAR":
+                extra_rpars[0] += 1
+            elif token.type == "LPAR":
+                if extra_rpars[0] <= 0:
+                    return False
+                extra_rpars[0] -= 1
+            return True
+
+        accept_functions = [
+            lambda t: t.type == "_NL",
+            lambda t: t.type in ["_NL", "TYPE_HINT"] or t.value == "->",
+            lpar_accept_function,
+            lambda t: t.type in ["_NL", "NAME"],
+        ]
+        i = 0
+        for processed_token in reversed(self.processed_tokens):
+            if i >= len(pattern_functions):
+                return True
+            if pattern_functions[i](processed_token):
+                i += 1
+                continue
+            if not accept_functions[i](processed_token):
+                return False
+        return i >= len(pattern_functions)
