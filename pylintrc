@@ -1,0 +1,9 @@
+[MESSAGES CONTROL]
+disable =
+    fixme,
+    missing-function-docstring, # too pedantic
+    missing-module-docstring,   # too pedantic
+    missing-class-docstring,    # too pedantic
+    consider-using-f-string,    # TODO: fix only cases that make sense
+    duplicate-code,              # TODO: check (fails on CI)
+    W1514,C0411,R0903,W0719,C0200,R0022,C0206,C1803,C0103,C0301,R1732
