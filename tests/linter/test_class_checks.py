@@ -13,6 +13,7 @@ extends Node
 signal s
 enum { A, B, C }
 const X = 1
+static var sx
 @export_group("Foo")
 @export var k = 1
 var x = 1

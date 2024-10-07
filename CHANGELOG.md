@@ -13,6 +13,7 @@
  - Changed formatting of some uni-statement lambdas
  - Changed formatting of multi-statement, inline lambdas
  - Changed formatting of dot-chains containing a lambda(s)
+ - Changed linter check `class-definitions-order` in a way that static class variables are recommended to be placed just after constants
 
 ## [4.3.1] 2024-08-24
 

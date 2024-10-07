@@ -64,12 +64,12 @@ DEFAULT_CONFIG = MappingProxyType(
             "signals",
             "enums",
             "consts",
+            "staticvars",
             "exports",
             "pubvars",
             "prvvars",
             "onreadypubvars",
             "onreadyprvvars",
-            "staticvars",
             "others",
         ],
         # useless-super-delegation
