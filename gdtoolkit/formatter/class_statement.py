@@ -40,6 +40,24 @@ def format_class_statement(statement: Node, context: Context) -> Outcome:
         "puppet_var_stmt": lambda s, c: format_var_statement(
             s.children[0], c, prefix="puppet "
         ),
+        "puppetsync_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="puppetsync "
+        ),
+        "remote_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="remote "
+        ),
+        "remotesync_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="remotesync "
+        ),
+        "master_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="master "
+        ),
+        "mastersync_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="mastersync "
+        ),
+        "sync_var_stmt": lambda s, c: format_var_statement(
+            s.children[0], c, prefix="sync "
+        ),
         "static_func_def": partial(
             _format_child_and_prepend_to_outcome, prefix="static "
         ),
@@ -86,9 +104,20 @@ def _format_child_and_prepend_to_outcome(
 def _format_export_statement(statement: Tree, context: Context) -> Outcome:
     concrete_export_statement = statement.children[0]
     addons = [
-        child.data
+        child.value
         for child in concrete_export_statement.children
-        if isinstance(child, Tree) and child.data in ["puppet", "onready"]
+        if isinstance(child, Token)
+        and child.value
+        in [
+            "puppet",
+            "onready",
+            "puppetsync",
+            "sync",
+            "master",
+            "mastersync",
+            "remote",
+            "remotesync",
+        ]
     ]
     addon_present = len(addons) > 0
     if concrete_export_statement.data == "export_inf":
