@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [4.3.2] 2024-10-20
 
 ### Added
  - Added support for multi-statement lambdas (#191)
