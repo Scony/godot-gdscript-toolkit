@@ -1,7 +1,9 @@
 # Changelog
 
-## [not released]
+## [3.6.0] 2024-10-20
 
+### Added
+ - Added support for missing network-related keywords (#209)
 ### Changed
  - Fixed `max-public-methods` linter check disabling (#222)
 
