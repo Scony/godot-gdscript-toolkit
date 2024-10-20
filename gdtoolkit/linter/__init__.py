@@ -180,8 +180,7 @@ def _fetch_problem_inactivity_ranges(gdscript_code: str) -> Dict[str, List[Range
     for problem, range_ends in problem_range_ends.items():
         for range_end in range_ends:
             for a_range in problem_inactivity_ranges[problem]:
-                if range_end < a_range.end:
-                    a_range.end = range_end
+                a_range.end = min(a_range.end, range_end)
 
     return problem_inactivity_ranges
 

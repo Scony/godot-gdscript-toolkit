@@ -25,10 +25,9 @@ class GDScriptIndenter(Indenter):
         indent = indent_str.count(" ") + indent_str.count("\t") * self.tab_len
 
         if self.paren_level > 0:
-            for new_token in self._handle_lambdas_on_newline_token_in_parens(
+            yield from self._handle_lambdas_on_newline_token_in_parens(
                 token, indent, indent_str
-            ):
-                yield new_token
+            )
             # special handling for lambdas
             return
 
@@ -64,14 +63,12 @@ class GDScriptIndenter(Indenter):
                 self.paren_level += 1
             elif token.type in self.CLOSE_PAREN_types:
                 while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    for new_token in self._dedent_lambda_at_token(token):
-                        yield new_token
+                    yield from self._dedent_lambda_at_token(token)
                 self.paren_level -= 1
                 assert self.paren_level >= 0
             elif token.type in self.LAMBDA_SEPARATOR_types:
                 if self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    for new_token in self._dedent_lambda_at_token(token):
-                        yield new_token
+                    yield from self._dedent_lambda_at_token(token)
 
             if token.type != self.NL_type:
                 yield token

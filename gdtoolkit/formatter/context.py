@@ -8,6 +8,7 @@ from lark import Tree
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-few-public-methods
+# pylint: disable=too-many-positional-arguments
 class Context:
     def __init__(
         self,

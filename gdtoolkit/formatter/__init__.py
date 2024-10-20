@@ -20,6 +20,8 @@ DEFAULT_CONFIG = MappingProxyType(
 
 
 # pylint: disable-next=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-arguments
 def check_formatting_safety(
     given_code: str,
     formatted_code: str,
