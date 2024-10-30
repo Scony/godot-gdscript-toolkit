@@ -21,67 +21,47 @@ class GDScriptIndenter(Indenter):
         self.undedented_lambdas_at_paren_level = defaultdict(int)
 
     def handle_NL(self, token: Token) -> Iterator[Token]:
-        indent_str = token.rsplit("\n", 1)[1]  # Tabs and spaces
-        indent = indent_str.count(" ") + indent_str.count("\t") * self.tab_len
-
         if self.paren_level > 0:
-            yield from self._handle_lambdas_on_newline_token_in_parens(
-                token, indent, indent_str
-            )
-            # special handling for lambdas
-            return
-
-        yield token
-
-        if indent > self.indent_level[-1]:
-            self.indent_level.append(indent)
-            yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
+            # NL handling inside parens - required for multiline lambdas
+            yield from self._handle_NL_in_parens(token)
         else:
-            while indent < self.indent_level[-1]:
-                self.indent_level.pop()
-                yield Token(
-                    self.DEDENT_type, indent_str, None, token.line, None, token.line
-                )
-                # produce extra newline after dedent to simplify grammar:
-                yield token
-
-            if indent != self.indent_level[-1]:
-                raise DedentError(
-                    "Unexpected dedent to column %s. Expected dedent to %s"
-                    % (indent, self.indent_level[-1])
-                )
+            # regular NL handling
+            for produced_token in super().handle_NL(token):
+                if produced_token.type == self.DEDENT_type:
+                    # couple tweaks for handling multiline lambdas:
+                    # 1) setting custom DEDENT metadata
+                    yield Token(
+                        self.DEDENT_type, None, None, token.line, None, token.line
+                    )
+                    # 2) producing extra NL after DEDENT to simplify grammar
+                    yield token
+                else:
+                    yield produced_token
 
     def _process(self, stream):
         self.processed_tokens = []
         self.undedented_lambdas_at_paren_level = defaultdict(int)
+
+        for produced_token in super()._process(self._record_stream(stream)):
+            if (
+                produced_token.type in self.CLOSE_PAREN_types
+                or produced_token.type in self.LAMBDA_SEPARATOR_types
+            ):
+                # dedenting all undedented lambas (more than one if nested) at current paren level
+                while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
+                    yield from self._dedent_lambda_at_token(produced_token)
+            yield produced_token
+
+    def _record_stream(self, stream):
         for token in stream:
             self.processed_tokens.append(token)
-            if token.type == self.NL_type:
-                yield from self.handle_NL(token)
+            yield token
 
-            if token.type in self.OPEN_PAREN_types:
-                self.paren_level += 1
-            elif token.type in self.CLOSE_PAREN_types:
-                while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    yield from self._dedent_lambda_at_token(token)
-                self.paren_level -= 1
-                assert self.paren_level >= 0
-            elif token.type in self.LAMBDA_SEPARATOR_types:
-                if self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    yield from self._dedent_lambda_at_token(token)
+    # pylint: disable=invalid-name
+    def _handle_NL_in_parens(self, token: Token):
+        indent_str = token.rsplit("\n", 1)[1]  # tabs and spaces
+        indent = indent_str.count(" ") + indent_str.count("\t") * self.tab_len
 
-            if token.type != self.NL_type:
-                yield token
-
-        while len(self.indent_level) > 1:
-            self.indent_level.pop()
-            yield Token(self.DEDENT_type, "")
-
-        assert self.indent_level == [0], self.indent_level
-
-    def _handle_lambdas_on_newline_token_in_parens(
-        self, token: Token, indent: int, indent_str: str
-    ):
         if (
             self._current_token_is_just_after_lambda_header()
             and indent > self.indent_level[-1]
