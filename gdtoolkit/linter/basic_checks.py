@@ -70,6 +70,7 @@ def _expression_not_assigned_check(parse_tree: Tree) -> List[Problem]:
             "standalone_call",
             "getattr_call",
             "string",
+            "lambda",
         ]:
             problems.append(
                 Problem(
