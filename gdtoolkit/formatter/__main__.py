@@ -312,6 +312,14 @@ def _format_code(
             sep="\n",
             file=sys.stderr,
         )
+    except lark.indenter.DedentError as exception:
+        print(
+            f"{file_path}:\n",
+            str(exception),
+            sep="\n",
+            file=sys.stderr,
+        )
+        return 1
     except TreeInvariantViolation:
         success = False
         print(

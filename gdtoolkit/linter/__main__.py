@@ -158,6 +158,14 @@ def _lint_file(file_path: str, config: MappingProxyType) -> int:
             file=sys.stderr,
         )
         return 1
+    except lark.indenter.DedentError as exception:
+        print(
+            f"{file_path}:\n",
+            str(exception),
+            sep="\n",
+            file=sys.stderr,
+        )
+        return 1
 
 
 if __name__ == "__main__":
