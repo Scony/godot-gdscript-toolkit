@@ -1,7 +1,7 @@
 from typing import Iterator
 from collections import defaultdict
 
-from lark.indenter import DedentError, Indenter
+from lark.indenter import Indenter
 from lark.lexer import Token
 
 
@@ -81,11 +81,7 @@ class GDScriptIndenter(Indenter):
                 self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
                 yield Token.new_borrow_pos(self.DEDENT_type, indent_str, token)
 
-            if indent != self.indent_level[-1]:
-                raise DedentError(
-                    "Unexpected dedent to column %s. Expected dedent to %s"
-                    % (indent, self.indent_level[-1])
-                )
+            # never raising DedentError here as it doesn't make sense in parens
 
     def _dedent_lambda_at_token(self, token: Token):
         self.indent_level.pop()
