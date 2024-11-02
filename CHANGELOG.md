@@ -1,6 +1,6 @@
 # Changelog
 
-## [master]
+## [4.3.3] 2024-11-02
 
 ### Changed
  - Fixed false-positive `expression-not-assigned` linter check on lambdas
