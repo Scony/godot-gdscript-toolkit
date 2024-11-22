@@ -1,5 +1,10 @@
 # Changelog
 
+## [master]
+
+### Changed
+ - Fixed linter problem reports when global scope is used
+
 ## [4.3.3] 2024-11-02
 
 ### Changed

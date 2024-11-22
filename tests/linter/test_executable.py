@@ -48,3 +48,12 @@ def test_pretty_printing_unexpected_token(tmp_path):
     assert len(outcome.stdout.decode().splitlines()) == 0
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
+
+
+def test_linter_problem_report_in_global_scope(tmp_path):
+    dummy_file = write_file(tmp_path, "script.gd", "var foo = 1\nconst X = 1")
+    outcome = subprocess.run(["gdlint", dummy_file], check=False, capture_output=True)
+    assert outcome.returncode == 1
+    assert len(outcome.stdout.decode().splitlines()) == 0
+    assert len(outcome.stderr.decode().splitlines()) >= 0
+    assert "Definition out of order in global scope" in outcome.stderr.decode()

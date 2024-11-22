@@ -114,6 +114,7 @@ class Class:
         if parse_tree.data == "start":
             start = parse_tree
             self._load_data_from_node_children(start)
+            self.name = "global scope"
         elif parse_tree.data == "class_def":
             self._load_data_from_class_def(parse_tree)
         else:
