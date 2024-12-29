@@ -1,5 +1,5 @@
 # GDScript Toolkit
-[![](https://github.com/Scony/godot-gdscript-toolkit/workflows/Tests/badge.svg?branch=master)](https://github.com/Scony/godot-gdscript-toolkit/actions)
+[![](https://github.com/Scony/godot-gdscript-toolkit/workflows/Tests/badge.svg)](https://github.com/Scony/godot-gdscript-toolkit/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Buy me a coffe](https://img.shields.io/badge/Buy%20me%20a%20coffe-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/pawel_lampe)
