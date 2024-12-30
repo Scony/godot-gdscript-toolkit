@@ -1,40 +1,50 @@
 func foo():
-	# var f0 = func bar():
-	# 	pass
-	# var f1 = func():
-	# 	pass
-	# var f11 = func():
-	# 	var f11r = func():
-	# 		pass
-	# var f12 = func():
-	# 	var f12r = func():
-	# 		return func(): pass
-	# var f13 = func():
-	# 	pass
-	# 	var f13r = func():
-	# 		pass
-	# 		return func(): pass
-	# var f14 = func():
-	# 	pass
-	# 	var f14r = func():
-	# 		if true:
-	# 			pass
-	# var f15 = func():
-	# 	pass
-	# 	var f15r = func():
-	# 		if true:
-	# 			pass
-	# 		pass
-	# 	pass
-	# var f16 = func():
-	# 	@warning_ignore("unused_variable")
-	# var f17 = func():
-	# 	@warning_ignore("unused_variable")
-	# 	var x
-	# var f18 = func():
-	# 	@warning_ignore("unused_variable") var x
-	# var f19 = func():
-	# 	@warning_ignore("unused_variable") @warning_ignore("unused_variable") var x
+	stack(func():
+		print("foo")
+    if source == 1:
+      var x: = 1
+      pass)
+  stack(func():
+    if true:
+      pass
+    if false:
+      pass)
+	var f0 = func bar():
+		pass
+	var f1 = func():
+		pass
+	var f11 = func():
+		var f11r = func():
+			pass
+	var f12 = func():
+		var f12r = func():
+			return func(): pass
+	var f13 = func():
+		pass
+		var f13r = func():
+			pass
+			return func(): pass
+	var f14 = func():
+		pass
+		var f14r = func():
+			if true:
+				pass
+	var f15 = func():
+		pass
+		var f15r = func():
+			if true:
+				pass
+			pass
+		pass
+	var f16 = func():
+		@warning_ignore("unused_variable")
+	var f17 = func():
+		@warning_ignore("unused_variable")
+		var x
+	var f18 = func():
+		@warning_ignore("unused_variable") var x
+	var f19 = func():
+		@warning_ignore("unused_variable") @warning_ignore("unused_variable") var x
 	var f2s = [func():
 		pass
 	]
