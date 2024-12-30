@@ -43,6 +43,7 @@ class GDScriptIndenter(Indenter):
         self.processed_tokens = []
         self.undedented_lambdas_at_paren_level = defaultdict(int)
 
+        had_newline = False
         for produced_token in super()._process(self._record_stream(stream)):
             if (
                 produced_token.type in self.CLOSE_PAREN_types
@@ -50,7 +51,9 @@ class GDScriptIndenter(Indenter):
             ):
                 # dedenting all undedented lambas (more than one if nested) at current paren level
                 while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    yield from self._dedent_lambda_at_token(produced_token)
+                    yield from self._dedent_lambda_at_token(had_newline, produced_token)
+                    had_newline = False
+            had_newline = produced_token.type == self.NL_type
             yield produced_token
 
     def _record_stream(self, stream):
@@ -87,12 +90,12 @@ class GDScriptIndenter(Indenter):
                 # one with the same rationale as above
                 if self._in_multiline_lambda():
                     yield token
-            # Otherwise do nothing as other expressions don't  handle newlines
-
-    def _dedent_lambda_at_token(self, token: Token):
+            # Otherwise do nothing as other expressions don't handle newlines
+    def _dedent_lambda_at_token(self, had_newline: bool, token: Token):
         self.indent_level.pop()
         self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-        yield Token.new_borrow_pos(self.NL_type, "N/A", token)
+        if not had_newline:
+            yield Token.new_borrow_pos(self.NL_type, "N/A", token)
         yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
 
     def _current_token_is_just_after_lambda_header(self):
