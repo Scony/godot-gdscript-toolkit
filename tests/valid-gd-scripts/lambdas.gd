@@ -1,8 +1,15 @@
-func a():
+func parened1():
   stack(func():
     source.owner.remove_card(source)
     if source == 1:
       var x: = 1
+      pass)
+
+func parened2():
+  stack(func():
+    if true:
+      pass
+    if false:
       pass)
 
 func foo(x):
