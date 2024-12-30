@@ -76,7 +76,7 @@ class GDScriptIndenter(Indenter):
             self.undedented_lambdas_at_paren_level[self.paren_level] += 1
             yield token
             yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
-        elif indent == self.indent_level[-1]:
+        elif indent == self.indent_level[-1] and self._in_multiline_lambda():
             yield token
         else:
             while indent < self.indent_level[-1] and self._in_multiline_lambda():
