@@ -91,6 +91,7 @@ class GDScriptIndenter(Indenter):
                 if self._in_multiline_lambda():
                     yield token
             # Otherwise do nothing as other expressions don't handle newlines
+
     def _dedent_lambda_at_token(self, had_newline: bool, token: Token):
         self.indent_level.pop()
         self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
