@@ -72,18 +72,19 @@ class GDScriptIndenter(Indenter):
             or self._in_multiline_lambda()
         ):
             self.indent_level.append(indent)
-            if self._current_token_is_just_after_lambda_header():
-                self.undedented_lambdas_at_paren_level[self.paren_level] += 1
+            # if self._current_token_is_just_after_lambda_header():
+            self.undedented_lambdas_at_paren_level[self.paren_level] += 1
             yield token
             yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
-        elif indent <= self.indent_level[-1] and self._in_multiline_lambda():
+        elif indent == self.indent_level[-1]:
             yield token
-
+        else:
             while indent < self.indent_level[-1] and self._in_multiline_lambda():
                 self.indent_level.pop()
                 self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
+                yield token
                 yield Token(self.DEDENT_type, None, None, token.line, None, token.line)
-        # Otherwise do nothing as other expressions don't need to handle newlines
+            # Otherwise do nothing as other expressions don't need to handle newlines
 
     def _dedent_lambda_at_token(self, token: Token):
         self.indent_level.pop()
