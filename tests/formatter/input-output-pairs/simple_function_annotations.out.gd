@@ -23,6 +23,7 @@ func d():
 	]
 
 
+@warning_ignore("unused_parameter")
 func e():
 	@warning_ignore("unused_variable")
 	@warning_ignore("unused_variable")

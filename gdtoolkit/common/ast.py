@@ -3,7 +3,7 @@ from typing import List
 
 from lark import Tree
 
-from ..formatter.annotation import STANDALONE_ANNOTATIONS
+from ..formatter.annotation import is_non_standalone_annotation
 
 from .utils import find_name_token_among_children, find_tree_among_children
 from .exceptions import GDToolkitError
@@ -124,9 +124,7 @@ class Class:
         offset = 1 if node.data == "class_def" else 0
         annotations = []
         for stmt in node.children[offset:]:
-            if stmt.data == "annotation" and not _is_annotation_standalone(
-                Annotation(stmt)
-            ):
+            if stmt.data == "annotation" and is_non_standalone_annotation(stmt):
                 annotations.append(Annotation(stmt))
                 continue
             if stmt.data == "property_body_def":
@@ -159,7 +157,3 @@ class AbstractSyntaxTree:
         self.root_class = Class(parse_tree)
         self.all_classes = [self.root_class] + self.root_class.all_sub_classes
         self.all_functions = self.root_class.all_functions
-
-
-def _is_annotation_standalone(annotation: Annotation) -> bool:
-    return annotation.name in STANDALONE_ANNOTATIONS

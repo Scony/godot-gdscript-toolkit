@@ -8,6 +8,7 @@ func b():
 func d():
 	@warning_ignore("unused_variable") @warning_ignore("unused_variable") var x: Array[int] = [ 1, 2, ]
 
+@warning_ignore("unused_parameter")
 func e():
 	@warning_ignore("unused_variable")
 	@warning_ignore("unused_variable")

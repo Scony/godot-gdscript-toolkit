@@ -8,13 +8,15 @@ from .context import Context, ExpressionContext
 from .expression import format_concrete_expression
 from .expression_to_str import expression_to_str
 
-STANDALONE_ANNOTATIONS = [
+_STANDALONE_ANNOTATIONS = [
     "export_category",
     "export_group",
     "export_subgroup",
     "icon",
     "tool",
-    "warning_ignore",
+]
+_NON_STANDALONE_WARNING_IGNORES = [
+    "unused_parameter",
 ]
 
 
@@ -22,7 +24,14 @@ def is_non_standalone_annotation(statement: Tree) -> bool:
     if statement.data != "annotation":
         return False
     name = statement.children[0].value
-    return name not in STANDALONE_ANNOTATIONS
+    if name in _STANDALONE_ANNOTATIONS:
+        return False
+    if name != "warning_ignore":
+        return True
+    ignoree = statement.children[1].children[0].children[0].value.strip('"')
+    if ignoree in _NON_STANDALONE_WARNING_IGNORES:
+        return True
+    return False
 
 
 def prepend_annotations_to_formatted_line(
@@ -78,8 +87,8 @@ def _annotations_have_standalone_comments(
     return any(
         comment is not None
         for comment in standalone_comments[
-            get_line(annotations[0]) : last_line
-            if last_line is not None
-            else get_end_line(annotations[-1])
+            get_line(annotations[0]) : (
+                last_line if last_line is not None else get_end_line(annotations[-1])
+            )
         ]
     )

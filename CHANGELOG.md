@@ -4,6 +4,7 @@
 
 ### Changed
  - Fixed linter problem reports when global scope is used
+ - Fixed formatting of certain `@warning_ignore` annotations
 
 ## [4.3.3] 2024-11-02
 
