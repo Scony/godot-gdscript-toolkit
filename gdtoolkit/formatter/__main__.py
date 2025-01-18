@@ -25,31 +25,32 @@ Options:
 Examples:
   echo 'pass' | gdformat -   # reads from STDIN
 """
-import sys
-import os
-import logging
-import pathlib
+
 import difflib
-from typing import List, Tuple, Optional
+import logging
+import os
+import pathlib
+import sys
 from types import MappingProxyType
-import pkg_resources
+from typing import List, Optional, Tuple
 
-from docopt import docopt
 import lark
+import pkg_resources
 import yaml
+from docopt import docopt
 
-from gdtoolkit.formatter import format_code, check_formatting_safety, DEFAULT_CONFIG
+from gdtoolkit.common.exceptions import (
+    lark_unexpected_input_to_str,
+    lark_unexpected_token_to_str,
+)
+from gdtoolkit.common.utils import find_gd_files_from_paths
+from gdtoolkit.formatter import DEFAULT_CONFIG, check_formatting_safety, format_code
 from gdtoolkit.formatter.exceptions import (
-    TreeInvariantViolation,
-    FormattingStabilityViolation,
     CommentPersistenceViolation,
+    FormattingStabilityViolation,
+    TreeInvariantViolation,
 )
 from gdtoolkit.parser import parser
-from gdtoolkit.common.utils import find_gd_files_from_paths
-from gdtoolkit.common.exceptions import (
-    lark_unexpected_token_to_str,
-    lark_unexpected_input_to_str,
-)
 
 CONFIG_FILE_NAME = "gdformatrc"
 
@@ -69,14 +70,6 @@ def main():
     if arguments["--diff"]:
         arguments["--check"] = True
 
-    line_length = int(arguments["--line-length"])
-    spaces_for_indent = (
-        int(arguments["--use-spaces"])
-        if arguments["--use-spaces"] is not None
-        else None
-    )
-    safety_checks = not arguments["--fast"]
-
     config_file_path = _find_config_file()
     config = _load_config_file_or_default(config_file_path)
     _log_config_entries(config)
@@ -84,6 +77,24 @@ def main():
 
     files: List[str] = find_gd_files_from_paths(
         arguments["<path>"], excluded_directories=set(config["excluded_directories"])
+    )
+
+    line_length = (
+        int(arguments["--line-length"])
+        if arguments["--line-length"]
+        else config.get("line_length", 80)
+    )
+
+    spaces_for_indent = (
+        int(arguments["--use-spaces"])
+        if arguments["--use-spaces"]
+        else config.get("use_spaces", None)
+    )
+
+    safety_checks = (
+        not arguments["--fast"]
+        if arguments.get("--fast")
+        else config.get("safety_checks", True)
     )
 
     if files == ["-"]:
