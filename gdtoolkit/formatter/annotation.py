@@ -15,8 +15,98 @@ _STANDALONE_ANNOTATIONS = [
     "icon",
     "tool",
 ]
+
+"""
+Source: https://github.com/godotengine/godot/blob/master/modules/gdscript/gdscript_warning.h
+Source last updated: 2025-01-09
+
+Unused because not applicable to functions:
+- "unused_variable"
+- "unused_local_constant"
+- "shadowed_variable"
+- "shadowed_variable_base_class"
+- "missing_tool"
+- "empty_file"
+- "unused_private_class_variable"
+- "unused_signal"
+- "redundant_static_unload"
+- "get_node_default_without_onready"
+- "onready_with_export"
+
+Unused because deprecated:
+- "property_used_as_function"
+- "constant_used_as_function"
+- "function_used_as_property"
+"""
 _NON_STANDALONE_WARNING_IGNORES = [
+    # Variable used but never assigned.
+    "unassigned_variable",
+    # Variable never assigned but used in an assignment operation (+=, *=, etc).
+    "unassigned_variable_op_assign",
+    # Function parameter is never used.
     "unused_parameter",
+    # A global class or function has the same name as variable.
+    "shadowed_global_identifier",
+    # Code after a return statement.
+    "unreachable_code",
+    # Pattern in a match statement after a catch all pattern (wildcard or bind).
+    "unreachable_pattern",
+    # Expression not assigned to a variable.
+    "standalone_expression",
+    # Return value of ternary expression is discarded.
+    "standalone_ternary",
+    # Possible values of a ternary if are not mutually compatible.
+    "incompatible_ternary",
+    # Variable/parameter/function has no static type, explicitly specified or implicitly inferred.
+    "untyped_declaration",
+    # Variable/constant/parameter has an implicitly inferred static type.
+    "inferred_declaration",
+    # Property not found in the detected type (but can be in subtypes).
+    "unsafe_property_access",
+    # Function not found in the detected type (but can be in subtypes).
+    "unsafe_method_access",
+    # Casting a `variant` value to non-`variant`.
+    "unsafe_cast",
+    # Function call argument is of a supertype of the required type.
+    "unsafe_call_argument",
+    # Function returns void but returned a call to a function that can't be type checked.
+    "unsafe_void_return",
+    # Function call returns something but the value isn't used.
+    "return_value_discarded",
+    # A static method was called on an instance of a class instead of on the class itself.
+    "static_called_on_instance",
+    # Await is used but expression is synchronous (not a signal nor a coroutine).
+    "redundant_await",
+    # Expression for assert argument is always true.
+    "assert_always_true",
+    # Expression for assert argument is always false.
+    "assert_always_false",
+    # Integer divide by integer, decimal part is discarded.
+    "integer_division",
+    # Float value into an integer slot, precision is lost.
+    "narrowing_conversion",
+    # An integer value was used as an enum value without casting.
+    "int_as_enum_without_cast",
+    # An integer value was used as an enum value without matching enum member.
+    "int_as_enum_without_match",
+    # A variable with an enum type does not have a default value. the default will be set to `0`
+    # instead of the first enum value.
+    "enum_variable_without_default",
+    # The keyword is deprecated and should be replaced.
+    "deprecated_keyword",
+    # The identifier contains misleading characters that can be confused. e.g. "usеr"
+    # (has cyrillic "е" instead of latin "e").
+    "confusable_identifier",
+    # The parent block declares an identifier with the same name below.
+    "confusable_local_declaration",
+    # The identifier will be shadowed below in the block.
+    "confusable_local_usage",
+    # Reassigning lambda capture does not modify the outer local variable.
+    "confusable_capture_reassignment",
+    # The declaration uses type inference but the value is typed as variant.
+    "inference_on_variant",
+    # The script method overrides a native one, this may not work as intended.
+    "native_method_override",
 ]
 
 
