@@ -1,15 +1,15 @@
-from types import MappingProxyType
 from typing import Optional
 
+from types import MappingProxyType
 from lark import Tree
 
 from ..parser import parser
 from .formatter import format_code  # noqa: F401
-from .safety_checks import LoosenTreeTransformer  # noqa: F401
-from .safety_checks import (
-    check_comment_persistence,
-    check_formatting_stability,
+from .safety_checks import (  # noqa: F401
     check_tree_invariant,
+    check_formatting_stability,
+    check_comment_persistence,
+    LoosenTreeTransformer,
 )
 
 DEFAULT_CONFIG = MappingProxyType(

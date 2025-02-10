@@ -26,31 +26,31 @@ Examples:
   echo 'pass' | gdformat -   # reads from STDIN
 """
 
-import difflib
-import logging
-import os
-import pathlib
 import sys
+import os
+import logging
+import pathlib
+import difflib
+from typing import List, Tuple, Optional
 from types import MappingProxyType
-from typing import List, Optional, Tuple
-
-import lark
 import pkg_resources
-import yaml
-from docopt import docopt
 
-from gdtoolkit.common.exceptions import (
-    lark_unexpected_input_to_str,
-    lark_unexpected_token_to_str,
-)
-from gdtoolkit.common.utils import find_gd_files_from_paths
-from gdtoolkit.formatter import DEFAULT_CONFIG, check_formatting_safety, format_code
+from docopt import docopt
+import lark
+import yaml
+
+from gdtoolkit.formatter import format_code, check_formatting_safety, DEFAULT_CONFIG
 from gdtoolkit.formatter.exceptions import (
-    CommentPersistenceViolation,
-    FormattingStabilityViolation,
     TreeInvariantViolation,
+    FormattingStabilityViolation,
+    CommentPersistenceViolation,
 )
 from gdtoolkit.parser import parser
+from gdtoolkit.common.utils import find_gd_files_from_paths
+from gdtoolkit.common.exceptions import (
+    lark_unexpected_token_to_str,
+    lark_unexpected_input_to_str,
+)
 
 CONFIG_FILE_NAME = "gdformatrc"
 
