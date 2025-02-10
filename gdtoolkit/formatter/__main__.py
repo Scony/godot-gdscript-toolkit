@@ -82,19 +82,19 @@ def main():
     line_length = (
         int(arguments["--line-length"])
         if arguments["--line-length"]
-        else config.get("line_length", 80)
+        else config.get("line_length", DEFAULT_CONFIG["line_length"])
     )
 
     spaces_for_indent = (
         int(arguments["--use-spaces"])
         if arguments["--use-spaces"]
-        else config.get("use_spaces", None)
+        else config.get("use_spaces", DEFAULT_CONFIG["use_spaces"])
     )
 
     safety_checks = (
         not arguments["--fast"]
         if arguments.get("--fast")
-        else config.get("safety_checks", True)
+        else config.get("safety_checks", DEFAULT_CONFIG["safety_checks"])
     )
 
     if files == ["-"]:
