@@ -166,6 +166,34 @@ jobs:
 
 See the discussion in https://github.com/Scony/godot-gdscript-toolkit/issues/239 for more details.
 
+## Using gdtookit in pre-commit
+
+To add gdtookit as a pre-commit hook check the latest GitHub version (eg `4.2.2`) and add the followingto your `pre-commit-config.yaml` with the latest version.
+
+```Yaml
+repos:
+  # GDScript Toolkit
+  - repo: https://github.com/Scony/godot-gdscript-toolkit
+    rev: 4.2.2
+    hooks:
+      - id: gdlint
+        name: gdlint
+        description: "gdlint - linter for GDScript"
+        entry: gdlint
+        language: python
+        language_version: python3
+        require_serial: true
+        types: [gdscript]
+      - id: gdformat
+        name: gdformat
+        description: "gdformat - formatter for GDScript"
+        entry: gdformat
+        language: python
+        language_version: python3
+        require_serial: true
+        types: [gdscript]
+```
+
 ## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
 
 Everyone is free to fix bugs or introduce new features. For that, however, please refer to existing issue or create one before starting implementation.
