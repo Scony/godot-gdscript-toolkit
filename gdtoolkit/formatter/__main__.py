@@ -25,6 +25,7 @@ Options:
 Examples:
   echo 'pass' | gdformat -   # reads from STDIN
 """
+
 import sys
 import os
 import logging
@@ -69,14 +70,6 @@ def main():
     if arguments["--diff"]:
         arguments["--check"] = True
 
-    line_length = int(arguments["--line-length"])
-    spaces_for_indent = (
-        int(arguments["--use-spaces"])
-        if arguments["--use-spaces"] is not None
-        else None
-    )
-    safety_checks = not arguments["--fast"]
-
     config_file_path = _find_config_file()
     config = _load_config_file_or_default(config_file_path)
     _log_config_entries(config)
@@ -84,6 +77,24 @@ def main():
 
     files: List[str] = find_gd_files_from_paths(
         arguments["<path>"], excluded_directories=set(config["excluded_directories"])
+    )
+
+    line_length = (
+        int(arguments["--line-length"])
+        if arguments["--line-length"]
+        else config.get("line_length", DEFAULT_CONFIG["line_length"])
+    )
+
+    spaces_for_indent = (
+        int(arguments["--use-spaces"])
+        if arguments["--use-spaces"]
+        else config.get("use_spaces", DEFAULT_CONFIG["use_spaces"])
+    )
+
+    safety_checks = (
+        not arguments["--fast"]
+        if arguments.get("--fast")
+        else config.get("safety_checks", DEFAULT_CONFIG["safety_checks"])
     )
 
     if files == ["-"]:
