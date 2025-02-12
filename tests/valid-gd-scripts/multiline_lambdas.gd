@@ -1,4 +1,14 @@
 func foo():
+	stack(func():
+		print("foo")
+		if source == 1:
+			var x: = 1
+			pass)
+	stack(func():
+		if true:
+			pass
+		if false:
+			pass)
 	var f0 = func bar():
 		pass
 	var f1 = func():

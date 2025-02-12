@@ -9,6 +9,7 @@ class GDScriptIndenter(Indenter):
     NL_type = "_NL"
     OPEN_PAREN_types = ["LPAR", "LSQB", "LBRACE"]
     CLOSE_PAREN_types = ["RPAR", "RSQB", "RBRACE"]
+    LAMBDA_LINE_EXTENSION_types = ["IF", "WHILE", "FOR", "MATCH"]
     LAMBDA_SEPARATOR_types = ["COMMA"]
     INDENT_type = "_INDENT"
     DEDENT_type = "_DEDENT"
@@ -42,6 +43,7 @@ class GDScriptIndenter(Indenter):
         self.processed_tokens = []
         self.undedented_lambdas_at_paren_level = defaultdict(int)
 
+        had_newline = False
         for produced_token in super()._process(self._record_stream(stream)):
             if (
                 produced_token.type in self.CLOSE_PAREN_types
@@ -49,7 +51,9 @@ class GDScriptIndenter(Indenter):
             ):
                 # dedenting all undedented lambas (more than one if nested) at current paren level
                 while self.undedented_lambdas_at_paren_level[self.paren_level] > 0:
-                    yield from self._dedent_lambda_at_token(produced_token)
+                    yield from self._dedent_lambda_at_token(had_newline, produced_token)
+                    had_newline = False
+            had_newline = produced_token.type == self.NL_type
             yield produced_token
 
     def _record_stream(self, stream):
@@ -57,36 +61,42 @@ class GDScriptIndenter(Indenter):
             self.processed_tokens.append(token)
             yield token
 
+    def _in_multiline_lambda(self):
+        return self.undedented_lambdas_at_paren_level[self.paren_level] > 0
+
     # pylint: disable=invalid-name
     def _handle_NL_in_parens(self, token: Token):
+        # Adapted from lark/indendeter.py as that normally disables line handling
+        # when paren_level > 0.
+        # NOTE: we never raise DedentError here as it doesn't make sense in parens
         indent_str = token.rsplit("\n", 1)[1]  # tabs and spaces
         indent = indent_str.count(" ") + indent_str.count("\t") * self.tab_len
 
-        if (
+        if indent > self.indent_level[-1] and (
             self._current_token_is_just_after_lambda_header()
-            and indent > self.indent_level[-1]
+            or self._in_multiline_lambda()
         ):
             self.indent_level.append(indent)
             self.undedented_lambdas_at_paren_level[self.paren_level] += 1
             yield token
             yield Token.new_borrow_pos(self.INDENT_type, indent_str, token)
-        elif (
-            indent <= self.indent_level[-1]
-            and self.undedented_lambdas_at_paren_level[self.paren_level] > 0
-        ):
+        elif indent <= self.indent_level[-1] and self._in_multiline_lambda():
             yield token
-
-            while indent < self.indent_level[-1]:
+            while indent < self.indent_level[-1] and self._in_multiline_lambda():
                 self.indent_level.pop()
                 self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-                yield Token.new_borrow_pos(self.DEDENT_type, indent_str, token)
+                yield Token(self.DEDENT_type, None, None, token.line, None, token.line)
+                # If we are still in a situation that can handle newlines, emit an extra
+                # one with the same rationale as above
+                if self._in_multiline_lambda():
+                    yield token
+            # Otherwise do nothing as other expressions don't handle newlines
 
-            # never raising DedentError here as it doesn't make sense in parens
-
-    def _dedent_lambda_at_token(self, token: Token):
+    def _dedent_lambda_at_token(self, had_newline: bool, token: Token):
         self.indent_level.pop()
         self.undedented_lambdas_at_paren_level[self.paren_level] -= 1
-        yield Token.new_borrow_pos(self.NL_type, "N/A", token)
+        if not had_newline:
+            yield Token.new_borrow_pos(self.NL_type, "N/A", token)
         yield Token.new_borrow_pos(self.DEDENT_type, "N/A", token)
 
     def _current_token_is_just_after_lambda_header(self):
