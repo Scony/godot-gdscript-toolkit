@@ -16,7 +16,6 @@ Options:
                              (implies --check).
   -f --fast                  Skip safety checks.
   -l --line-length=<int>     How many characters per line to allow.
-                             [default: 100]
   -s --use-spaces=<int>      Use spaces for indent instead of tabs.
   -h --help                  Show this screen.
   --version                  Show version.
