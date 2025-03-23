@@ -158,3 +158,46 @@ def test_valid_unformatted_file_indentation_using_spaces(tmp_path):
     ]
     assert len(new_pass_lines) == 1
     assert "       pass" in new_pass_lines[0]
+
+
+def test_not_formatting_with_default_line_length(tmp_path):
+    # pylint: disable=line-too-long
+    dummy_file = write_file(
+        tmp_path,
+        "script.gd",
+        "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
+    )
+    outcome = subprocess.run(
+        ["gdformat", "--check", dummy_file], check=False, capture_output=True
+    )
+    assert outcome.returncode == 0
+    assert len(outcome.stdout.decode().splitlines()) == 1
+    assert len(outcome.stderr.decode().splitlines()) == 0
+
+
+def test_formatting_with_default_line_length(tmp_path):
+    # pylint: disable=line-too-long
+    dummy_file = write_file(
+        tmp_path,
+        "script.gd",
+        "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
+    )
+    outcome = subprocess.run(
+        ["gdformat", "--check", dummy_file], check=False, capture_output=True
+    )
+    assert outcome.returncode == 1
+
+
+def test_formatting_with_line_length_passed_as_argument(tmp_path):
+    # pylint: disable=line-too-long
+    dummy_file = write_file(
+        tmp_path,
+        "script.gd",
+        "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
+    )
+    outcome = subprocess.run(
+        ["gdformat", "--check", "--line-length=80", dummy_file],
+        check=False,
+        capture_output=True,
+    )
+    assert outcome.returncode == 1
