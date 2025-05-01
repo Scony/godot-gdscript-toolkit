@@ -23,7 +23,6 @@ Source last updated: 2025-01-09
 Unused because not applicable to functions:
 - "unused_variable"
 - "unused_local_constant"
-- "shadowed_variable"
 - "shadowed_variable_base_class"
 - "missing_tool"
 - "empty_file"
@@ -39,6 +38,8 @@ Unused because deprecated:
 - "function_used_as_property"
 """
 _NON_STANDALONE_WARNING_IGNORES = [
+    # Variable name matches existing name in enclosing scope
+    "shadowed_variable",
     # Variable used but never assigned.
     "unassigned_variable",
     # Variable never assigned but used in an assignment operation (+=, *=, etc).
