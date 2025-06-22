@@ -17,7 +17,7 @@ Examples:
   gd2py ./addons/gut/gut.gd | radon cc -s -
 """
 import sys
-import pkg_resources
+from importlib.metadata import version as pkg_version
 
 from docopt import docopt
 
@@ -28,7 +28,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     arguments = docopt(
         __doc__,
-        version="gd2py {}".format(pkg_resources.get_distribution("gdtoolkit").version),
+        version="gd2py {}".format(pkg_version("gdtoolkit")),
     )
     with open(arguments["<path>"], "r", encoding="utf-8") as handle:
         print(convert_code(handle.read()))

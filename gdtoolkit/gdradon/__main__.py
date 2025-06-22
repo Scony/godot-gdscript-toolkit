@@ -14,7 +14,7 @@ Examples:
 """
 import sys
 from typing import List
-import pkg_resources
+from importlib.metadata import version as pkg_version
 
 from docopt import docopt
 from radon.complexity import cc_rank, cc_visit
@@ -31,9 +31,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     arguments = docopt(
         __doc__,
-        version="gdradon {}".format(
-            pkg_resources.get_distribution("gdtoolkit").version
-        ),
+        version="gdradon {}".format(pkg_version("gdtoolkit")),
     )
 
     files: List[Path] = find_gd_files_from_paths(arguments["<path>"])
