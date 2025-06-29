@@ -1,2 +1,0 @@
-include gdtoolkit/parser/gdscript.lark
-include gdtoolkit/parser/comments.lark
