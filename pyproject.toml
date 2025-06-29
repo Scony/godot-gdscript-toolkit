@@ -26,7 +26,6 @@ dependencies = [
     "docopt-ng==0.9.0",
     "pyyaml>=5.1",
     "radon==6.0.1",
-    "setuptools",
 ]
 
 [project.scripts]
