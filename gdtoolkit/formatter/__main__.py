@@ -32,7 +32,7 @@ import pathlib
 import difflib
 from typing import List, Tuple, Optional
 from types import MappingProxyType
-import pkg_resources
+from importlib.metadata import version as pkg_version
 
 from docopt import docopt
 import lark
@@ -58,9 +58,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     arguments = docopt(
         __doc__,
-        version="gdformat {}".format(
-            pkg_resources.get_distribution("gdtoolkit").version
-        ),
+        version="gdformat {}".format(pkg_version("gdtoolkit")),
     )
 
     if arguments["--dump-default-config"]:
