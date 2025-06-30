@@ -41,6 +41,33 @@ pip3 install git+https://github.com/Scony/godot-gdscript-toolkit.git
 pipx install git+https://github.com/Scony/godot-gdscript-toolkit.git
 ```
 
+### Using Nix
+
+If you have [Nix](https://nixos.org/) installed, you can run gdtoolkit tools without installing them:
+
+```bash
+# Show available commands and usage help
+nix run github:Scony/godot-gdscript-toolkit
+
+# Run specific tools
+nix run github:Scony/godot-gdscript-toolkit#gdformat -- --help
+nix run github:Scony/godot-gdscript-toolkit#gdlint -- myfile.gd
+nix run github:Scony/godot-gdscript-toolkit#gdparse -- myfile.gd -p
+nix run github:Scony/godot-gdscript-toolkit#gdradon -- cc myfile.gd
+```
+
+Available commands:
+- `gdformat` - Code formatter
+- `gdlint` - Static analysis linter
+- `gdparse` - Parser for debugging/educational purposes
+- `gdradon` - Cyclomatic complexity calculator
+
+Or enter a development shell with all tools available:
+
+```bash
+nix develop github:Scony/godot-gdscript-toolkit
+```
+
 ## Linting with gdlint [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/3.-Linter)
 
 To run a linter you need to execute `gdlint` command like:
