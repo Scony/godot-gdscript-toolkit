@@ -111,6 +111,16 @@ _NON_STANDALONE_WARNING_IGNORES = [
 ]
 
 
+def is_abstract_annotation_for_statement(statement: Tree, next_statement: Tree) -> bool:
+    """Check if this is an @abstract annotation that should be combined with the next statement."""
+    if statement.data != "annotation":
+        return False
+    name = statement.children[0].value
+    if name != "abstract":
+        return False
+    return next_statement.data in ["abstract_func_def", "classname_stmt", "class_def"]
+
+
 def is_non_standalone_annotation(statement: Tree) -> bool:
     if statement.data != "annotation":
         return False
@@ -136,9 +146,26 @@ def prepend_annotations_to_formatted_line(
     single_line_length = (
         context.indent + len(annotations_string) + len(whitelineless_line)
     )
-    standalone_formatting_enforced = whitelineless_line.startswith(
-        "func"
-    ) or whitelineless_line.startswith("static func")
+    # Check if this is an abstract function or class_name annotation
+    is_abstract_func = (
+        len(context.annotations) == 1 and
+        context.annotations[0].children[0].value == "abstract" and
+        whitelineless_line.startswith("func")
+    )
+    is_abstract_class_name = (
+        len(context.annotations) == 1 and
+        context.annotations[0].children[0].value == "abstract" and
+        whitelineless_line.startswith("class_name")
+    )
+    is_abstract_class = (
+        len(context.annotations) == 1 and
+        context.annotations[0].children[0].value == "abstract" and
+        whitelineless_line.startswith("class ")
+    )
+    standalone_formatting_enforced = (
+        whitelineless_line.startswith("func") or 
+        whitelineless_line.startswith("static func")
+    ) and not is_abstract_func and not is_abstract_class_name
     if (
         not _annotations_have_standalone_comments(
             context.annotations, context.standalone_comments, line_to_prepend_to[0]

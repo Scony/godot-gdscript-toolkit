@@ -1,12 +1,22 @@
-@abstract class_name BaseClass
+@abstract
+class_name BaseClass
 
-@abstract func simple_abstract()
+@abstract
+class TestClass:
+	@abstract
+	func test_func()
 
-@abstract func abstract_with_params(param1: String, param2: int)
+@abstract
+func simple_abstract()
 
-@abstract func abstract_with_return_type() -> String
+@abstract
+func abstract_with_params(param1: String, param2: int)
 
-@abstract func abstract_with_params_and_return(input: String) -> int
+@abstract
+func abstract_with_return_type() -> String
+
+@abstract
+func abstract_with_params_and_return(input: String) -> int
 
 func concrete_method():
 	pass
