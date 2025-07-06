@@ -31,10 +31,10 @@ def format_block(
         # Check if this is an abstract annotation followed by an abstract function or class_name
         next_statement = statements[i + 1] if i + 1 < len(statements) else None
         is_abstract_for_statement = (
-            next_statement is not None and
-            is_abstract_annotation_for_statement(statement, next_statement)
+            next_statement is not None
+            and is_abstract_annotation_for_statement(statement, next_statement)
         )
-        
+
         if is_non_standalone_annotation(statement) or is_abstract_for_statement:
             context.annotations.append(statement)
             is_first_annotation = len(context.annotations) == 1
@@ -55,7 +55,9 @@ def format_block(
                 blank_lines, statement.data, surrounding_empty_lines_table
             )
         is_first_annotation = len(context.annotations) == 1
-        if (is_non_standalone_annotation(statement) or is_abstract_for_statement) and is_first_annotation:
+        if (
+            is_non_standalone_annotation(statement) or is_abstract_for_statement
+        ) and is_first_annotation:
             formatted_lines += blank_lines
             continue
         if len(context.annotations) == 0:

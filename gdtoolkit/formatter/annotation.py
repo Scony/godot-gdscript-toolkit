@@ -148,24 +148,28 @@ def prepend_annotations_to_formatted_line(
     )
     # Check if this is an abstract function or class_name annotation
     is_abstract_func = (
-        len(context.annotations) == 1 and
-        context.annotations[0].children[0].value == "abstract" and
-        whitelineless_line.startswith("func")
+        len(context.annotations) == 1
+        and context.annotations[0].children[0].value == "abstract"
+        and whitelineless_line.startswith("func")
     )
     is_abstract_class_name = (
-        len(context.annotations) == 1 and
-        context.annotations[0].children[0].value == "abstract" and
-        whitelineless_line.startswith("class_name")
+        len(context.annotations) == 1
+        and context.annotations[0].children[0].value == "abstract"
+        and whitelineless_line.startswith("class_name")
     )
     is_abstract_class = (
-        len(context.annotations) == 1 and
-        context.annotations[0].children[0].value == "abstract" and
-        whitelineless_line.startswith("class ")
+        len(context.annotations) == 1
+        and context.annotations[0].children[0].value == "abstract"
+        and whitelineless_line.startswith("class ")
     )
     standalone_formatting_enforced = (
-        whitelineless_line.startswith("func") or 
-        whitelineless_line.startswith("static func")
-    ) and not is_abstract_func and not is_abstract_class_name
+        (
+            whitelineless_line.startswith("func")
+            or whitelineless_line.startswith("static func")
+        )
+        and not is_abstract_func
+        and not is_abstract_class_name
+    )
     if (
         not _annotations_have_standalone_comments(
             context.annotations, context.standalone_comments, line_to_prepend_to[0]
