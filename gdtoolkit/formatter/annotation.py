@@ -9,6 +9,7 @@ from .expression import format_concrete_expression
 from .expression_to_str import expression_to_str
 
 _STANDALONE_ANNOTATIONS = [
+    "abstract",
     "export_category",
     "export_group",
     "export_subgroup",

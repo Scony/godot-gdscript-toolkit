@@ -18,6 +18,7 @@ _simple_class_stmt: annotation* single_class_stmt (";" annotation* single_class_
                     | property_body_def
                     | func_def
                     | "static" func_def -> static_func_def
+                    | abstract_func_def
 annotation: "@" NAME [annotation_args]
 annotation_args: "(" [test_expr ("," test_expr)* [trailing_comma]] ")"
 
@@ -71,7 +72,9 @@ _property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
 property_custom_getter_args: "(" ")"
 
 func_def: func_header _func_suite
+abstract_func_def: abstract_func_header
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
+abstract_func_header: "func" NAME func_args ["->" TYPE_HINT]
 func_args: "(" [func_arg ("," func_arg)* [trailing_comma]] ")"
 ?func_arg: func_arg_regular
          | func_arg_inf
