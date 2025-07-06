@@ -157,11 +157,6 @@ def prepend_annotations_to_formatted_line(
         and context.annotations[0].children[0].value == "abstract"
         and whitelineless_line.startswith("class_name")
     )
-    is_abstract_class = (
-        len(context.annotations) == 1
-        and context.annotations[0].children[0].value == "abstract"
-        and whitelineless_line.startswith("class ")
-    )
     standalone_formatting_enforced = (
         (
             whitelineless_line.startswith("func")

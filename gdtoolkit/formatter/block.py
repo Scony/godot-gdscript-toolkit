@@ -27,6 +27,7 @@ def format_block(
     previous_statement_name = None
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
+
     for i, statement in enumerate(statements):
         # Check if this is an abstract annotation followed by an abstract function or class_name
         next_statement = statements[i + 1] if i + 1 < len(statements) else None
@@ -37,9 +38,9 @@ def format_block(
 
         if is_non_standalone_annotation(statement) or is_abstract_for_statement:
             context.annotations.append(statement)
-            is_first_annotation = len(context.annotations) == 1
-            if not is_first_annotation:
+            if len(context.annotations) > 1:
                 continue
+
         blank_lines = reconstruct_blank_lines_in_range(
             previously_processed_line_number, get_line(statement), context
         )
@@ -54,14 +55,17 @@ def format_block(
             blank_lines = _add_extra_blanks_due_to_next_statement(
                 blank_lines, statement.data, surrounding_empty_lines_table
             )
-        is_first_annotation = len(context.annotations) == 1
+
+        # Handle first annotation case
         if (
             is_non_standalone_annotation(statement) or is_abstract_for_statement
-        ) and is_first_annotation:
+        ) and len(context.annotations) == 1:
             formatted_lines += blank_lines
             continue
+
         if len(context.annotations) == 0:
             formatted_lines += blank_lines
+
         lines, previously_processed_line_number = statement_formatter(
             statement, context
         )
@@ -69,16 +73,17 @@ def format_block(
             lines = prepend_annotations_to_formatted_line(lines[0], context) + lines[1:]
         formatted_lines += lines
         previous_statement_name = statement.data
+
+    # Handle end of block
     dedent_line_number = _find_dedent_line_number(
         previously_processed_line_number, context
     )
-    lines_at_the_end = reconstruct_blank_lines_in_range(
-        previously_processed_line_number, dedent_line_number, context
+    formatted_lines += _remove_empty_strings_from_end(
+        reconstruct_blank_lines_in_range(
+            previously_processed_line_number, dedent_line_number, context
+        )
     )
-    lines_at_the_end = _remove_empty_strings_from_end(lines_at_the_end)
-    formatted_lines += lines_at_the_end
-    previously_processed_line_number = dedent_line_number - 1
-    return (formatted_lines, previously_processed_line_number)
+    return (formatted_lines, dedent_line_number - 1)
 
 
 def reconstruct_blank_lines_in_range(
