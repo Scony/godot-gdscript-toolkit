@@ -15,6 +15,8 @@ _STANDALONE_ANNOTATIONS = [
     "export_subgroup",
     "icon",
     "tool",
+    "warning_ignore_start",
+    "warning_ignore_restore",
 ]
 
 """

@@ -5,6 +5,9 @@
 ### Added
  - Added support for @abstract functions
 
+### Changed
+ - Fixed formatting of `@warning_ignore_start` and `@warning_ignore_restore`
+
 ## [4.3.4] 2025-06-29
 
 ### Changed

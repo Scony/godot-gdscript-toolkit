@@ -44,6 +44,7 @@ func f():
 
 
 func g():
+	pass
 	@warning_ignore("unused_variable")
 
 
@@ -225,3 +226,14 @@ func k32():
 @warning_ignore("native_method_override")
 func k33():
 	pass
+
+
+func format_time_csec(centiseconds: int) -> String:
+	centiseconds = abs(centiseconds)
+	@warning_ignore_start("integer_division")
+	var minutes := int(centiseconds / (100 * 60))
+	var seconds := int((centiseconds / 100) % 60)
+	var remainder := int(centiseconds % 100)
+	@warning_ignore_restore("integer_division")
+	var foo = 1
+	return "%02d:%02d.%02d" % [minutes, seconds, remainder]
