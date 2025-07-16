@@ -122,6 +122,8 @@ def _map_statement_to_section(statement: Statement) -> str:
         return "others"
     if statement.kind == "static_func_def":
         return "others"
+    if statement.kind == "abstract_func_def":
+        return "others"
     if statement.kind == "docstr_stmt":
         return "docstrings"
     if statement.kind == "static_class_var_stmt":

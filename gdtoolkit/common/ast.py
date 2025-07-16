@@ -39,6 +39,9 @@ class Statement:
             raise NotImplementedError
         if self.kind in ["func_def", "static_func_def"]:
             self.sub_statements = [Statement(n) for n in self.lark_node.children[1:]]
+        elif self.kind == "abstract_func_def":
+            # Abstract functions don't have a body, so no sub-statements
+            pass
         elif self.kind == "if_stmt":
             for branch in self.lark_node.children:
                 if branch.data in ["if_branch", "elif_branch"]:
@@ -138,6 +141,10 @@ class Class:
                 self.all_sub_classes += [sub_class] + sub_class.all_sub_classes
                 self.all_functions += sub_class.all_functions
             if stmt.data == "func_def":
+                function = Function(stmt)
+                self.functions.append(function)
+                self.all_functions.append(function)
+            if stmt.data == "abstract_func_def":
                 function = Function(stmt)
                 self.functions.append(function)
                 self.all_functions.append(function)

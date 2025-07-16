@@ -40,6 +40,7 @@ def format_class_statement(statement: Tree, context: Context) -> Outcome:
         "static_func_def": lambda s, c: _format_func_statement(
             s.children[0], c, "static "
         ),
+        "abstract_func_def": _format_abstract_func_statement,
         "annotation": format_standalone_annotation,
         "property_body_def": format_property_body,
     }  # type: Dict[str, Callable]
@@ -203,3 +204,21 @@ def _format_enum_statement(statement: Tree, context: Context) -> Outcome:
     )
     enum_body = actual_enum.children[-1]
     return format_concrete_expression(enum_body, expression_context, context)
+
+
+def _format_abstract_func_statement(statement: Tree, context: Context) -> Outcome:
+    abstract_func_header = statement.children[0]
+    return _format_abstract_func_header(abstract_func_header, context)
+
+
+def _format_abstract_func_header(statement: Tree, context: Context) -> Outcome:
+    name = statement.children[0].value
+    has_return_type = len(statement.children) > 2
+    expression_context = ExpressionContext(
+        f"func {name}",
+        get_line(statement),
+        f" -> {statement.children[2].value}" if has_return_type else "",
+        get_end_line(statement),
+    )
+    func_args = statement.children[1]
+    return format_concrete_expression(func_args, expression_context, context)
