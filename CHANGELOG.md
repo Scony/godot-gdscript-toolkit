@@ -1,5 +1,10 @@
 # Changelog
 
+## [master]
+
+### Added
+ - Added support for @abstract functions
+
 ## [4.3.4] 2025-06-29
 
 ### Changed
