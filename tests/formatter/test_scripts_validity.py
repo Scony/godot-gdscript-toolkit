@@ -12,6 +12,7 @@ EXCEPTIONS = set(
     [
         # Godot bugs:
         "bug_326_multistatement_lambda_corner_case.out.gd",
+        "bug_339_multiline_lambda.out.gd",
         # cases where Godot does more than just parsing
         "inline_lambdas_w_comments.in.gd",
         "inline_lambdas_w_comments.out.gd",

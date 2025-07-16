@@ -1,4 +1,6 @@
-func foo():
+func stack(x):
+	pass
+func foo(source):
 	stack(func():
 		print("foo")
 		if source == 1:
@@ -37,6 +39,7 @@ func foo():
 			pass
 		pass
 	var f16 = func():
+		pass
 		@warning_ignore("unused_variable")
 	var f17 = func():
 		@warning_ignore("unused_variable")

@@ -20,6 +20,7 @@ func f():
 		var x: Array[int] = [ 1, 2, ]
 
 func g():
+	pass
 	@warning_ignore("unused_variable")
 
 func h():
