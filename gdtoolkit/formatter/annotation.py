@@ -26,8 +26,6 @@ Source last updated: 2025-01-09
 Unused because not applicable to functions:
 - "unused_variable"
 - "unused_local_constant"
-- "shadowed_variable"
-- "shadowed_variable_base_class"
 - "missing_tool"
 - "empty_file"
 - "unused_private_class_variable"
@@ -50,6 +48,10 @@ _NON_STANDALONE_WARNING_IGNORES = [
     "unused_parameter",
     # A global class or function has the same name as variable.
     "shadowed_global_identifier",
+    # Variable name matches existing name in enclosing scope.
+    "shadowed_variable",
+    # Variable name matches existing name in base class.
+    "shadowed_variable_base_class",
     # Code after a return statement.
     "unreachable_code",
     # Pattern in a match statement after a catch all pattern (wildcard or bind).

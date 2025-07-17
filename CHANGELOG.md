@@ -7,6 +7,7 @@
 
 ### Changed
  - Fixed formatting of `@warning_ignore_start` and `@warning_ignore_restore`
+ - Fixed formatting of `shadowed_variable*` ignore annotations
 
 ## [4.3.4] 2025-06-29
 
