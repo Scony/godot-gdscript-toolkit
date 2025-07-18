@@ -1,0 +1,43 @@
+[project]
+name = "gdtoolkit"
+version = "4.3.4"
+description = "Independent set of tools for working with GDScript - parser, linter and formatter"
+keywords = ["GODOT", "GDSCRIPT", "PARSER", "LINTER", "FORMATTER"]
+readme = "README.md"
+authors = [{ name = "Pawel Lampe", email = "pawel.lampe@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "lark[regex]==1.2.2",
+    "docopt-ng==0.9.0",
+    "pyyaml>=5.1",
+    "radon==6.0.1",
+]
+
+[project.scripts]
+gdparse = "gdtoolkit.parser.__main__:main"
+gdlint = "gdtoolkit.linter.__main__:main"
+gdformat = "gdtoolkit.formatter.__main__:main"
+gd2py = "gdtoolkit.gd2py.__main__:main"
+gdradon = "gdtoolkit.gdradon.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Scony/godot-gdscript-toolkit"
+
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
