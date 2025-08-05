@@ -437,15 +437,20 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     ) or (
         expression_context.prefix_string.endswith("[")
         and expression_context.suffix_string.startswith("]")
-    )
+    ) or expression_context.is_inside_list
     lpar = "" if inside_par else "("
     rpar = "" if inside_par else ")"
-    child_context = context.create_child_context(expression_context.prefix_line)
+    child_context = (
+        context
+        if expression_context.is_inside_list
+        else context.create_child_context(expression_context.prefix_line)
+    )
     child_expression_context = ExpressionContext(
         "",
         expression_context.prefix_line,
-        "",
+        "" if not expression_context.is_inside_list else expression_context.suffix_string,
         expression_context.suffix_line,
+        is_inside_list=inside_par,
     )
     fake_meta = Meta()
     fake_meta.line = expression_context.prefix_line
@@ -453,30 +458,34 @@ def _format_operator_chain_based_expression_to_multiple_lines(
     fake_expression = Tree(
         "contextless_operator_chain_based_expression", expression.children, fake_meta
     )
-    formatted_lines = [
-        (
-            expression_context.prefix_line,
-            "{}{}{}".format(
-                context.indent_string, expression_context.prefix_string, lpar
-            ),
+    formatted_lines = []  # type: FormattedLines
+    # left and right parentheses are added only if the expression is not inside of a list
+    if not expression_context.is_inside_list:
+        formatted_lines.append(
+            (
+                expression_context.prefix_line,
+                "{}{}{}".format(
+                    context.indent_string, expression_context.prefix_string, lpar
+                ),
+            )
         )
-    ]  # type: FormattedLines
     formatted_lines += _format_concrete_expression(
         fake_expression, child_expression_context, child_context
     )
-    formatted_lines.append(
-        (
-            get_end_line(expression.children[-1]),
-            "{}{}{}".format(
-                context.indent_string, rpar, expression_context.suffix_string
-            ),
+    if not expression_context.is_inside_list:
+        formatted_lines.append(
+            (
+                get_end_line(expression.children[-1]),
+                "{}{}{}".format(
+                    context.indent_string, rpar, expression_context.suffix_string
+                ),
+            )
         )
-    )
     return formatted_lines
 
 
 def _format_contextless_operator_chain_based_expression_to_multiple_lines(
-    expression: Tree, _: ExpressionContext, context: Context
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     formatted_lines = []  # type: FormattedLines
     value = expression.children[0]
@@ -491,7 +500,7 @@ def _format_contextless_operator_chain_based_expression_to_multiple_lines(
             ExpressionContext(
                 f"{expression_to_str(operator)} ",
                 get_line(child),
-                "",
+                expression_context.suffix_string,
                 get_end_line(child),
             ),
             context,
@@ -510,6 +519,7 @@ def _format_comma_separated_list_to_multiple_lines(
         expression_context.prefix_line,
         "",
         expression_context.suffix_line,
+        is_inside_list=True
     )
     fake_meta = Meta()
     fake_meta.line = expression_context.prefix_line
@@ -535,7 +545,7 @@ def _format_comma_separated_list_to_multiple_lines(
 
 
 def _format_contextless_comma_separated_list_to_multiple_lines(
-    expression: Tree, _: ExpressionContext, context: Context
+    expression: Tree, expression_context: ExpressionContext, context: Context
 ) -> FormattedLines:
     a_list = expression.children
     elements = [node for node in a_list if not is_any_comma(node)]
@@ -544,7 +554,11 @@ def _format_contextless_comma_separated_list_to_multiple_lines(
     for i, element in enumerate(elements):
         suffix = "," if i != len(elements) - 1 or trailing_comma_present else ""
         child_expression_context = ExpressionContext(
-            "", get_line(element), suffix, get_end_line(element)
+            "",
+            get_line(element),
+            suffix,
+            get_end_line(element),
+            is_inside_list=expression_context.is_inside_list
         )
         lines = _format_standalone_expression(
             element, child_expression_context, context
