@@ -13,6 +13,7 @@ from . import (
     format_checks,
     name_checks,
     misc_checks,
+    await_checks,
 )
 
 PASCAL_CASE = r"([A-Z][a-z0-9]*)+"
@@ -92,6 +93,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "excluded_directories": {".git"},
         "no-elif-return": None,
         "no-else-return": None,
+        "missing-cancellation-check": None,
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
         # consider-using-in
@@ -121,6 +123,7 @@ def lint_code(
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
     problems += misc_checks.lint(parse_tree, config)
+    problems += await_checks.lint(parse_tree, config)
 
     problems_to_lines_where_they_are_inactive = _fetch_problem_inactivity_lines(
         gdscript_code
