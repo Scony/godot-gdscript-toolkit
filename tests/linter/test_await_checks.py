@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 
 from .common import simple_ok_check, simple_nok_check
 
@@ -105,3 +105,55 @@ func baz(ct):
 ])
 def test_missing_cancellation_token_argument_nok(code, line):
     simple_nok_check(code, "missing-cancellation-token-argument", line=line, disable=["unused-argument", "missing-cancellation-check"])
+
+
+# Tests for gdlint ignore comments
+@pytest.mark.parametrize('code', [
+"""
+func test1(ct):
+    await method1(ct)  # gdlint: ignore=missing-cancellation-check
+""",
+"""
+func test2(ct):
+    # gdlint: ignore=missing-cancellation-check
+    await method2(ct)
+""",
+"""
+# gdlint: disable=missing-cancellation-check
+func test3(ct):
+    await method3(ct)
+
+func test4(ct):
+    await method4(ct)
+# gdlint: enable=missing-cancellation-check
+""",
+])
+def test_missing_cancellation_check_with_ignore_comments(code):
+    simple_ok_check(code, disable=["unused-argument", "missing-cancellation-token-argument"])
+
+
+@pytest.mark.parametrize('code', [
+"""
+func test1(ct):
+    # gdlint: ignore=missing-cancellation-token-argument
+    await some_method()
+    if ct.is_cancelled():
+        return
+""",
+"""
+func test2(ct):
+    await some_method()  # gdlint: ignore=missing-cancellation-token-argument
+    if ct.is_cancelled():
+        return
+""",
+"""
+# gdlint: disable=missing-cancellation-token-argument
+func test3(ct):
+    await some_method()
+    if ct.is_cancelled():
+        return
+# gdlint: enable=missing-cancellation-token-argument
+""",
+])
+def test_missing_cancellation_token_argument_with_ignore_comments(code):
+    simple_ok_check(code, disable=["unused-argument", "missing-cancellation-check"])
