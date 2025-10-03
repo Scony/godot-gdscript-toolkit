@@ -93,7 +93,9 @@ DEFAULT_CONFIG = MappingProxyType(
         "excluded_directories": {".git"},
         "no-elif-return": None,
         "no-else-return": None,
+        # await checks
         "missing-cancellation-check": None,
+        "missing-cancellation-token-argument": None,
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
         # consider-using-in
