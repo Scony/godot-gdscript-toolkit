@@ -9,3 +9,4 @@ build
 .hypothesis/
 .venv/
 .idea/
+.claude/
