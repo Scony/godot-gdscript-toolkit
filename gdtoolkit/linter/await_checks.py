@@ -199,14 +199,15 @@ def _get_cancellation_token_params(func_def: Tree) -> set:
                 if isinstance(header_child, Tree) and header_child.data == "func_args":
                     # Iterate through function arguments
                     for arg in header_child.children:
-                        if isinstance(arg, Tree) and arg.data == "func_arg_regular":
-                            # Get the argument name
+                        if isinstance(arg, Tree) and arg.data in ["func_arg_regular", "func_arg_typed"]:
+                            # Get the argument name (first NAME token)
                             for arg_child in arg.children:
                                 if isinstance(arg_child, Token) and arg_child.type == "NAME":
                                     param_name = arg_child.value
                                     # Check if it looks like a cancellation token
                                     if _is_cancellation_token_name(param_name):
                                         ct_params.add(param_name)
+                                    break  # Only get the first NAME (parameter name, not type)
 
     return ct_params
 
