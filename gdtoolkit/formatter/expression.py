@@ -155,6 +155,9 @@ def _format_foldable_to_multiple_lines(
         "lambda_header": _format_lambda_header_to_multiple_lines,
         # fake expressions:
         "func_args": _format_args_to_multiple_lines,
+        "func_arg_variadic": lambda e, ec, c: _append_to_expression_context_and_pass(
+            "...", e.children[0], ec, c
+        ),
         "func_arg_regular": _format_func_arg_to_multiple_lines,
         "func_arg_inf": _format_func_arg_to_multiple_lines,
         "func_arg_typed": _format_func_arg_to_multiple_lines,
@@ -332,12 +335,12 @@ def _format_func_arg_to_multiple_lines(
             expression.children[0], expression_context, context
         )
     if expression.data == "func_arg_typed" and len(expression.children) == 2:
-        return [
-            (
-                get_line(expression.children[1]),
-                f"{context.indent_string}{expression_to_str(expression)}",
-            )
-        ]
+        return _append_to_expression_context_and_pass(
+            f"{expression.children[0].value}: ",
+            expression.children[1],
+            expression_context,
+            context,
+        )
     template = {
         "func_arg_regular": "{} = ",
         "func_arg_inf": "{} := ",

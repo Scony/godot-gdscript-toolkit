@@ -92,6 +92,7 @@ def expression_to_str(expression: Node) -> str:
         "lambda_header": _lambda_header_to_str,
         # fake expressions:
         "func_args": _args_to_str,
+        "func_arg_variadic": lambda e: f"...{expression_to_str(e.children[0])}",
         "func_arg_regular": lambda e: "{}{}".format(
             e.children[0].value,
             " = {}".format(standalone_expression_to_str(e.children[1]))

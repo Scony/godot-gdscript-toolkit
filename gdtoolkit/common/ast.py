@@ -72,8 +72,13 @@ class Statement:
 class Parameter:
     """Abstract representation of function parameter"""
 
-    def __init__(self, node: Tree):
-        self.name = node.children[0].value
+    def __init__(self, parameter_node: Tree):
+        if parameter_node.data == "func_arg_variadic":
+            self.name = parameter_node.children[0].children[0].value
+            self.variadic = True
+        else:
+            self.name = parameter_node.children[0].value
+            self.variadic = False
 
 
 # pylint: disable-next=too-few-public-methods
