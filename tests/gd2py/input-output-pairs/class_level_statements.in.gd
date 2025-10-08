@@ -35,3 +35,7 @@ func foo():
 
 static func bar():
 	pass
+
+
+func baz(a,b,...c):
+	pass

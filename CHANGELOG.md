@@ -4,6 +4,7 @@
 
 ### Added
  - Added support for @abstract functions
+ - Added support for variadic functions
 
 ### Changed
  - Fixed formatting of `@warning_ignore_start` and `@warning_ignore_restore`

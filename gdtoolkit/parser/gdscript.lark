@@ -75,10 +75,13 @@ func_def: func_header _func_suite
 abstract_func_def: abstract_func_header
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
 abstract_func_header: "func" NAME func_args ["->" TYPE_HINT]
+// TODO: Accept func_arg_variadic as last one only.
 func_args: "(" [func_arg ("," func_arg)* [trailing_comma]] ")"
-?func_arg: func_arg_regular
+?func_arg: func_arg_variadic
+         | func_arg_regular
          | func_arg_inf
          | func_arg_typed
+func_arg_variadic: "..." (func_arg_regular | func_arg_typed)
 func_arg_regular: NAME ["=" expr]
 func_arg_inf: NAME ":" "=" expr
 func_arg_typed: NAME ":" TYPE_HINT ["=" expr]
