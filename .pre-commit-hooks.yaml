@@ -4,6 +4,7 @@
   entry: gdlint
   language: python
   language_version: python3
+  additional_dependencies: [setuptools]
   require_serial: true
   types: [gdscript]
 - id: gdformat
@@ -12,5 +13,6 @@
   entry: gdformat
   language: python
   language_version: python3
+  additional_dependencies: [setuptools]
   require_serial: true
   types: [gdscript]
