@@ -24,6 +24,16 @@ def format_block(
     context: Context,
     surrounding_empty_lines_table: MappingProxyType = DEFAULT_SURROUNDINGS_TABLE,
 ) -> Outcome:
+    def is_non_standalone_annotation_at_given_scope(statement):
+        if is_non_standalone_annotation(statement):
+            if (
+                statement_formatter.__name__ == "format_func_statement"
+                and statement.children[0].value == "warning_ignore"
+            ):
+                return False
+            return True
+        return False
+
     previous_statement_name = None
     formatted_lines = []  # type: FormattedLines
     previously_processed_line_number = context.previously_processed_line_number
@@ -36,7 +46,10 @@ def format_block(
             and is_abstract_annotation_for_statement(statement, next_statement)
         )
 
-        if is_non_standalone_annotation(statement) or is_abstract_for_statement:
+        if (
+            is_non_standalone_annotation_at_given_scope(statement)
+            or is_abstract_for_statement
+        ):
             context.annotations.append(statement)
             if len(context.annotations) > 1:
                 continue
@@ -58,7 +71,8 @@ def format_block(
 
         # Handle first annotation case
         if (
-            is_non_standalone_annotation(statement) or is_abstract_for_statement
+            is_non_standalone_annotation_at_given_scope(statement)
+            or is_abstract_for_statement
         ) and len(context.annotations) == 1:
             formatted_lines += blank_lines
             continue

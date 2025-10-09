@@ -177,3 +177,7 @@ func format_time_csec(centiseconds: int) -> String:
 	@warning_ignore_restore("integer_division")
 	var foo = 1
 	return "%02d:%02d.%02d" % [minutes, seconds, remainder]
+
+func k34(x):
+	@warning_ignore("integer_division")
+	return x / 2
