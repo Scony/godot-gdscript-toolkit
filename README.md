@@ -177,21 +177,7 @@ repos:
     rev: 4.2.2
     hooks:
       - id: gdlint
-        name: gdlint
-        description: "gdlint - linter for GDScript"
-        entry: gdlint
-        language: python
-        language_version: python3
-        require_serial: true
-        types: [gdscript]
       - id: gdformat
-        name: gdformat
-        description: "gdformat - formatter for GDScript"
-        entry: gdformat
-        language: python
-        language_version: python3
-        require_serial: true
-        types: [gdscript]
 ```
 
 ## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
