@@ -6,6 +6,7 @@ from lark import Tree
 from ..common.types import Node
 from ..parser import parser
 from ..formatter.context import Context
+from ..formatter.constants import GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
 
 
 def convert_code(gdscript_code: str) -> str:
@@ -17,6 +18,7 @@ def convert_code(gdscript_code: str) -> str:
         single_indent_string="\t",
         previously_processed_line_number=-1,
         max_line_length=-1,
+        surrounding_empty_lines_table=GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
         gdscript_code_lines=[],
         standalone_comments=[],
         inline_comments=[],

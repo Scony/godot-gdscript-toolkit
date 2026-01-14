@@ -9,7 +9,7 @@ from .types import Outcome, FormattedLines
 from .context import Context
 from .constants import (
     TAB_INDENT_SIZE,
-    DEFAULT_SURROUNDING_EMPTY_LINES_TABLE as DEFAULT_SURROUNDINGS_TABLE,
+    GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
 )
 from .annotation import (
     is_non_standalone_annotation,
@@ -22,7 +22,6 @@ def format_block(
     statements: List[Tree],
     statement_formatter: Callable,
     context: Context,
-    surrounding_empty_lines_table: MappingProxyType = DEFAULT_SURROUNDINGS_TABLE,
 ) -> Outcome:
     def is_non_standalone_annotation_at_given_scope(statement):
         if is_non_standalone_annotation(statement):
@@ -63,10 +62,10 @@ def format_block(
             blank_lines = _add_extra_blanks_due_to_previous_statement(
                 blank_lines,
                 previous_statement_name,  # type: ignore
-                surrounding_empty_lines_table,
+                context.surrounding_empty_lines_table,
             )
             blank_lines = _add_extra_blanks_due_to_next_statement(
-                blank_lines, statement.data, surrounding_empty_lines_table
+                blank_lines, statement.data, context.surrounding_empty_lines_table
             )
 
         # Handle first annotation case

@@ -1,5 +1,6 @@
 import re
 from typing import List, Optional
+from types import MappingProxyType
 
 from lark import Tree
 
@@ -25,6 +26,7 @@ def format_code(
     spaces_for_indent: Optional[int] = None,
     parse_tree: Optional[Tree] = None,
     comment_parse_tree: Optional[Tree] = None,
+    surrounding_empty_lines_table: Optional[MappingProxyType] = None,
 ) -> str:
     parse_tree = (
         parse_tree
@@ -35,6 +37,11 @@ def format_code(
         comment_parse_tree
         if comment_parse_tree is not None
         else parser.parse_comments(gdscript_code)
+    )
+    surrounding_empty_lines_table = (
+        surrounding_empty_lines_table
+        if surrounding_empty_lines_table is not None
+        else GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
     )
     gdscript_code_lines = [
         "",
@@ -52,6 +59,7 @@ def format_code(
         single_indent_string=single_indent_string,
         previously_processed_line_number=0,
         max_line_length=max_line_length,
+        surrounding_empty_lines_table=surrounding_empty_lines_table,
         gdscript_code_lines=gdscript_code_lines,
         standalone_comments=gather_standalone_comments(
             gdscript_code, comment_parse_tree
@@ -62,7 +70,6 @@ def format_code(
         parse_tree.children,
         format_class_statement,
         context,
-        GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
     )
     formatted_lines.append((None, ""))
     formatted_lines = _add_inline_comments(formatted_lines, context.inline_comments)

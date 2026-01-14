@@ -17,6 +17,7 @@ Options:
   -f --fast                  Skip safety checks.
   -l --line-length=<int>     How many characters per line to allow.
   -s --use-spaces=<int>      Use spaces for indent instead of tabs.
+  --single-blank-lines       Use single blank lines around all blocks
   -h --help                  Show this screen.
   --version                  Show version.
   --dump-default-config      Dump default config to 'gdformatrc' file.
@@ -49,6 +50,11 @@ from gdtoolkit.common.utils import find_gd_files_from_paths
 from gdtoolkit.common.exceptions import (
     lark_unexpected_token_to_str,
     lark_unexpected_input_to_str,
+)
+
+from .constants import (
+    GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
+    DEFAULT_SURROUNDING_EMPTY_LINES_TABLE,
 )
 
 CONFIG_FILE_NAME = "gdformatrc"
@@ -88,6 +94,13 @@ def main():
         else config.get("use_spaces", DEFAULT_CONFIG["use_spaces"])
     )
 
+    surrounding_empty_lines_table = (
+        DEFAULT_SURROUNDING_EMPTY_LINES_TABLE
+        if arguments["--single-blank-lines"] or
+            config.get("single_blank_lines", DEFAULT_CONFIG["single_blank_lines"])
+        else GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
+    )
+
     safety_checks = (
         not arguments["--fast"]
         if arguments.get("--fast")
@@ -95,13 +108,13 @@ def main():
     )
 
     if files == ["-"]:
-        _format_stdin(line_length, spaces_for_indent, safety_checks)
+        _format_stdin(line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table)
     elif arguments["--check"]:
         _check_files_formatting(
-            files, line_length, spaces_for_indent, arguments["--diff"], safety_checks
+            files, line_length, spaces_for_indent, arguments["--diff"], safety_checks, surrounding_empty_lines_table
         )
     else:
-        _format_files(files, line_length, spaces_for_indent, safety_checks)
+        _format_files(files, line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table)
 
 
 def _dump_default_config() -> None:
@@ -155,11 +168,11 @@ def _update_config_with_missing_entries_inplace(config: dict) -> None:
 
 
 def _format_stdin(
-    line_length: int, spaces_for_indent: Optional[int], safety_checks: bool
+    line_length: int, spaces_for_indent: Optional[int], safety_checks: bool, surrounding_empty_lines_table: MappingProxyType
 ) -> None:
     code = sys.stdin.read()
     success, _, formatted_code = _format_code(
-        code, line_length, spaces_for_indent, "STDIN", safety_checks
+        code, line_length, spaces_for_indent, "STDIN", safety_checks, surrounding_empty_lines_table
     )
     if not success:
         sys.exit(1)
@@ -173,6 +186,7 @@ def _check_files_formatting(
     spaces_for_indent: Optional[int],
     print_diff: bool,
     safety_checks: bool,
+    surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     formattable_files = set()
     failed_files = set()
@@ -181,7 +195,7 @@ def _check_files_formatting(
             with open(file_path, "r", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, spaces_for_indent, file_path, safety_checks
+                    code, line_length, spaces_for_indent, file_path, safety_checks, surrounding_empty_lines_table
                 )
                 if success and actually_formatted:
                     print(f"would reformat {file_path}", file=sys.stderr)
@@ -233,6 +247,7 @@ def _format_files(
     line_length: int,
     spaces_for_indent: Optional[int],
     safety_checks: bool,
+    surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     formatted_files = set()
     failed_files = set()
@@ -241,7 +256,7 @@ def _format_files(
             with open(file_path, "r+", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, spaces_for_indent, file_path, safety_checks
+                    code, line_length, spaces_for_indent, file_path, safety_checks, surrounding_empty_lines_table
                 )
                 if success and actually_formatted:
                     print(f"reformatted {file_path}")
@@ -276,6 +291,7 @@ def _format_code(
     spaces_for_indent: Optional[int],
     file_path: str,
     safety_checks: bool,
+    surrounding_empty_lines_table: MappingProxyType,
 ) -> Tuple[bool, bool, str]:
     success = True
     actually_formatted = False
@@ -290,6 +306,7 @@ def _format_code(
             spaces_for_indent=spaces_for_indent,
             parse_tree=code_parse_tree,
             comment_parse_tree=comment_parse_tree,
+            surrounding_empty_lines_table=surrounding_empty_lines_table,
         )
         if formatted_code != code:
             actually_formatted = True

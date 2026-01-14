@@ -1,5 +1,6 @@
 import re
 from typing import List, Optional
+from types import MappingProxyType
 from dataclasses import dataclass
 
 from lark import Tree
@@ -16,6 +17,7 @@ class Context:
         single_indent_size: int,
         single_indent_string: str,
         max_line_length: int,
+        surrounding_empty_lines_table: MappingProxyType,
         gdscript_code_lines: List[str],
         standalone_comments: List[Optional[str]],
         inline_comments: List[Optional[str]],
@@ -30,6 +32,7 @@ class Context:
         self.indent_regex = re.compile(f"^{self.single_indent_string[0]}+")
         self.previously_processed_line_number = previously_processed_line_number
         self.max_line_length = max_line_length
+        self.surrounding_empty_lines_table = surrounding_empty_lines_table
         self.gdscript_code_lines = gdscript_code_lines
         self.standalone_comments = standalone_comments
         self.inline_comments = inline_comments
@@ -41,6 +44,7 @@ class Context:
             single_indent_string=self.single_indent_string,
             previously_processed_line_number=previously_processed_line_number,
             max_line_length=self.max_line_length,
+            surrounding_empty_lines_table=self.surrounding_empty_lines_table,
             gdscript_code_lines=self.gdscript_code_lines,
             standalone_comments=self.standalone_comments,
             inline_comments=self.inline_comments,

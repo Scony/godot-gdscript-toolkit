@@ -17,6 +17,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "excluded_directories": {".git"},
         "safety_checks": None,
         "use_spaces": None,
+        "single_blank_lines": False,
         "line_length": 100,
     }
 )
