@@ -3,35 +3,62 @@ import subprocess
 from ..common import write_file
 
 
+def count_blank_lines_before(lines, pattern):
+    for i, line in enumerate(lines):
+        if pattern in line:
+            # Looks at 3 lines above since the current maximum blank lines is 2
+            start = max(0, i - 3)
+            return sum(1 for line in lines[start:i] if line.strip() == "")
+    return 0
+
+
+def format_and_read(file_path, extra_args=None, cwd=None):
+    cmd = ["gdformat", file_path]
+    if extra_args:
+        cmd.extend(extra_args)
+    outcome = subprocess.run(cmd, cwd=cwd, check=False, capture_output=True)
+    assert outcome.returncode == 0
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read().splitlines()
+
+
+def run_gdformat(
+    args, expected_returncode=0, expected_stdout_lines=None, expected_stderr_lines=None
+):
+    cmd = ["gdformat"] + args
+    outcome = subprocess.run(cmd, check=False, capture_output=True)
+    assert outcome.returncode == expected_returncode
+    if expected_stdout_lines is not None:
+        assert len(outcome.stdout.decode().splitlines()) == expected_stdout_lines
+    if expected_stderr_lines is not None:
+        assert len(outcome.stderr.decode().splitlines()) == expected_stderr_lines
+    return outcome
+
+
 def test_valid_file_formatting(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
-    outcome = subprocess.run(["gdformat", dummy_file], check=False, capture_output=True)
-    assert outcome.returncode == 0, outcome.stderr.decode()
-    assert len(outcome.stdout.decode().splitlines()) == 2
-    assert len(outcome.stderr.decode().splitlines()) == 0
+    outcome = run_gdformat(
+        [dummy_file], expected_stdout_lines=2, expected_stderr_lines=0
+    )
+    assert outcome.returncode == 0
 
 
 def test_valid_files_formatting(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file_2 = write_file(tmp_path, "script2.gd", "pass;pass")
-    outcome = subprocess.run(
-        ["gdformat", dummy_file, dummy_file_2], check=False, capture_output=True
+    run_gdformat(
+        [dummy_file, dummy_file_2], expected_stdout_lines=3, expected_stderr_lines=0
     )
-    assert outcome.returncode == 0
-    assert len(outcome.stdout.decode().splitlines()) == 3
-    assert len(outcome.stderr.decode().splitlines()) == 0
 
 
 def test_valid_files_formatting_with_nonexistent_one_keepgoing(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file_3 = write_file(tmp_path, "script3.gd", "pass;pass")
-    outcome = subprocess.run(
-        ["gdformat", dummy_file, "nonexistent.gd", dummy_file_3],
-        check=False,
-        capture_output=True,
+    outcome = run_gdformat(
+        [dummy_file, "nonexistent.gd", dummy_file_3],
+        expected_returncode=1,
+        expected_stdout_lines=3,
     )
-    assert outcome.returncode == 1
-    assert len(outcome.stdout.decode().splitlines()) == 3
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
 
@@ -40,48 +67,41 @@ def test_valid_files_formatting_with_invalid_one_keepgoing(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file_2 = write_file(tmp_path, "script2.gd", "pass x")  # invalid
     dummy_file_3 = write_file(tmp_path, "script3.gd", "pass;pass")
-    outcome = subprocess.run(
-        ["gdformat", dummy_file, dummy_file_2, dummy_file_3],
-        check=False,
-        capture_output=True,
+    outcome = run_gdformat(
+        [dummy_file, dummy_file_2, dummy_file_3],
+        expected_returncode=1,
+        expected_stdout_lines=3,
     )
-    assert outcome.returncode == 1
-    assert len(outcome.stdout.decode().splitlines()) == 3
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
 
 
 def test_valid_formatted_file_checking(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass\n")
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file], check=False, capture_output=True
+    run_gdformat(
+        ["--check", dummy_file], expected_stdout_lines=1, expected_stderr_lines=0
     )
-    assert outcome.returncode == 0
-    assert len(outcome.stdout.decode().splitlines()) == 1
-    assert len(outcome.stderr.decode().splitlines()) == 0
 
 
 def test_valid_unformatted_file_checking(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass;var x")
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file], check=False, capture_output=True
+    run_gdformat(
+        ["--check", dummy_file],
+        expected_returncode=1,
+        expected_stdout_lines=0,
+        expected_stderr_lines=2,
     )
-    assert outcome.returncode != 0
-    assert len(outcome.stdout.decode().splitlines()) == 0
-    assert len(outcome.stderr.decode().splitlines()) == 2
 
 
 def test_valid_unformatted_files_checking_with_invalid_one_keepgoing(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass")
     dummy_file_2 = write_file(tmp_path, "script2.gd", "pass x")  # invalid
     dummy_file_3 = write_file(tmp_path, "script3.gd", "pass;pass")
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file, dummy_file_2, dummy_file_3],
-        check=False,
-        capture_output=True,
+    outcome = run_gdformat(
+        ["--check", dummy_file, dummy_file_2, dummy_file_3],
+        expected_returncode=1,
+        expected_stdout_lines=0,
     )
-    assert outcome.returncode == 1
-    assert len(outcome.stdout.decode().splitlines()) == 0
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
 
@@ -89,13 +109,11 @@ def test_valid_unformatted_files_checking_with_invalid_one_keepgoing(tmp_path):
 def test_valid_formatted_files_checking_with_nonexistent_one_keepgoing(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass\n")
     dummy_file_3 = write_file(tmp_path, "script3.gd", "pass\n")
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file, "nonexistent.gd", dummy_file_3],
-        check=False,
-        capture_output=True,
+    outcome = run_gdformat(
+        ["--check", dummy_file, "nonexistent.gd", dummy_file_3],
+        expected_returncode=1,
+        expected_stdout_lines=1,
     )
-    assert outcome.returncode == 1
-    assert len(outcome.stdout.decode().splitlines()) == 1
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
 
@@ -104,13 +122,11 @@ def test_valid_formatted_files_checking_with_invalid_one_keepgoing(tmp_path):
     dummy_file = write_file(tmp_path, "script.gd", "pass\n")
     dummy_file_2 = write_file(tmp_path, "script2.gd", "pass x")  # invalid
     dummy_file_3 = write_file(tmp_path, "script3.gd", "pass\n")
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file, dummy_file_2, dummy_file_3],
-        check=False,
-        capture_output=True,
+    outcome = run_gdformat(
+        ["--check", dummy_file, dummy_file_2, dummy_file_3],
+        expected_returncode=1,
+        expected_stdout_lines=1,
     )
-    assert outcome.returncode == 1
-    assert len(outcome.stdout.decode().splitlines()) == 1
     assert len(outcome.stderr.decode().splitlines()) > 0
     assert "Traceback" not in outcome.stderr.decode()
 
@@ -167,12 +183,9 @@ def test_not_formatting_with_default_line_length(tmp_path):
         "script.gd",
         "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
     )
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file], check=False, capture_output=True
+    run_gdformat(
+        ["--check", dummy_file], expected_stdout_lines=1, expected_stderr_lines=0
     )
-    assert outcome.returncode == 0
-    assert len(outcome.stdout.decode().splitlines()) == 1
-    assert len(outcome.stderr.decode().splitlines()) == 0
 
 
 def test_formatting_with_default_line_length(tmp_path):
@@ -182,10 +195,7 @@ def test_formatting_with_default_line_length(tmp_path):
         "script.gd",
         "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
     )
-    outcome = subprocess.run(
-        ["gdformat", "--check", dummy_file], check=False, capture_output=True
-    )
-    assert outcome.returncode == 1
+    run_gdformat(["--check", dummy_file], expected_returncode=1)
 
 
 def test_formatting_with_line_length_passed_as_argument(tmp_path):
@@ -195,31 +205,7 @@ def test_formatting_with_line_length_passed_as_argument(tmp_path):
         "script.gd",
         "var x = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n",
     )
-    outcome = subprocess.run(
-        ["gdformat", "--check", "--line-length=80", dummy_file],
-        check=False,
-        capture_output=True,
-    )
-    assert outcome.returncode == 1
-
-
-def count_blank_lines_before(lines, pattern):
-    for i, line in enumerate(lines):
-        if pattern in line:
-            # Looks at 3 lines above since the current maximum blank lines is 2
-            start = max(0, i - 3)
-            return sum(1 for line in lines[start:i] if line.strip() == "")
-    return 0
-
-
-def format_and_read(file_path, extra_args=None, cwd=None):
-    cmd = ["gdformat", file_path]
-    if extra_args:
-        cmd.extend(extra_args)
-    outcome = subprocess.run(cmd, cwd=cwd, check=False, capture_output=True)
-    assert outcome.returncode == 0
-    with open(file_path, "r", encoding="utf-8") as f:
-        return f.read().splitlines()
+    run_gdformat(["--check", "--line-length=80", dummy_file], expected_returncode=1)
 
 
 def test_single_blank_lines_flag(tmp_path):
@@ -246,7 +232,9 @@ def test_single_blank_lines_flag(tmp_path):
     assert count_blank_lines_before(lines, "func method():") == 1
 
     single_line_dummy_file = write_file(tmp_path, "script_single.gd", test_code)
-    lines2 = format_and_read(single_line_dummy_file, extra_args=["--single-blank-lines"])
+    lines2 = format_and_read(
+        single_line_dummy_file, extra_args=["--single-blank-lines"]
+    )
     assert count_blank_lines_before(lines2, "func global_func():") == 1
     assert count_blank_lines_before(lines2, "func method():") == 1
 
