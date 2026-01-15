@@ -201,3 +201,73 @@ def test_formatting_with_line_length_passed_as_argument(tmp_path):
         capture_output=True,
     )
     assert outcome.returncode == 1
+
+
+def count_blank_lines_before(lines, pattern):
+    for i, line in enumerate(lines):
+        if pattern in line:
+            # Looks at 3 lines above since the current maximum blank lines is 2
+            start = max(0, i - 3)
+            return sum(1 for line in lines[start:i] if line.strip() == "")
+    return 0
+
+
+def format_and_read(file_path, extra_args=None, cwd=None):
+    cmd = ["gdformat", file_path]
+    if extra_args:
+        cmd.extend(extra_args)
+    outcome = subprocess.run(cmd, cwd=cwd, check=False, capture_output=True)
+    assert outcome.returncode == 0
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read().splitlines()
+
+
+def test_single_blank_lines_flag(tmp_path):
+    test_code = (
+        "class MyClass:\n"
+        "    func _init():\n"
+        "        pass\n"
+        "\n"
+        "    func method():\n"
+        "        pass\n"
+        "\n"
+        "\n"
+        "func global_func():\n"
+        "    pass\n"
+        "\n"
+        "\n"
+        "func another_global_func():\n"
+        "    pass\n"
+    )
+
+    double_line_dummy_file = write_file(tmp_path, "script_double.gd", test_code)
+    lines = format_and_read(double_line_dummy_file)
+    assert count_blank_lines_before(lines, "func global_func():") == 2
+    assert count_blank_lines_before(lines, "func method():") == 1
+
+    single_line_dummy_file = write_file(tmp_path, "script_single.gd", test_code)
+    lines2 = format_and_read(single_line_dummy_file, extra_args=["--single-blank-lines"])
+    assert count_blank_lines_before(lines2, "func global_func():") == 1
+    assert count_blank_lines_before(lines2, "func method():") == 1
+
+
+def test_single_blank_lines_config(tmp_path):
+    write_file(tmp_path, "gdformatrc", "single_blank_lines: true\n")
+
+    test_code = (
+        "class MyClass:\n"
+        "    func _init():\n"
+        "        pass\n"
+        "\n"
+        "    func method():\n"
+        "        pass\n"
+        "\n"
+        "\n"
+        "func global_func():\n"
+        "    pass\n"
+    )
+
+    dummy_file = write_file(tmp_path, "script.gd", test_code)
+    lines = format_and_read(dummy_file, cwd=tmp_path)
+    assert count_blank_lines_before(lines, "func global_func():") == 1
+    assert count_blank_lines_before(lines, "func method():") == 1
