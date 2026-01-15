@@ -20,6 +20,8 @@ from .comments import (
 )
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 def format_code(
     gdscript_code: str,
     max_line_length: int,

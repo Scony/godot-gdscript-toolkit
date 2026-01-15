@@ -96,8 +96,8 @@ def main():
 
     surrounding_empty_lines_table = (
         DEFAULT_SURROUNDING_EMPTY_LINES_TABLE
-        if arguments["--single-blank-lines"] or
-            config.get("single_blank_lines", DEFAULT_CONFIG["single_blank_lines"])
+        if arguments["--single-blank-lines"]
+        or config.get("single_blank_lines", DEFAULT_CONFIG["single_blank_lines"])
         else GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE
     )
 
@@ -108,13 +108,26 @@ def main():
     )
 
     if files == ["-"]:
-        _format_stdin(line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table)
+        _format_stdin(
+            line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table
+        )
     elif arguments["--check"]:
         _check_files_formatting(
-            files, line_length, spaces_for_indent, arguments["--diff"], safety_checks, surrounding_empty_lines_table
+            files,
+            line_length,
+            spaces_for_indent,
+            arguments["--diff"],
+            safety_checks,
+            surrounding_empty_lines_table,
         )
     else:
-        _format_files(files, line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table)
+        _format_files(
+            files,
+            line_length,
+            spaces_for_indent,
+            safety_checks,
+            surrounding_empty_lines_table,
+        )
 
 
 def _dump_default_config() -> None:
@@ -168,18 +181,28 @@ def _update_config_with_missing_entries_inplace(config: dict) -> None:
 
 
 def _format_stdin(
-    line_length: int, spaces_for_indent: Optional[int], safety_checks: bool, surrounding_empty_lines_table: MappingProxyType
+    line_length: int,
+    spaces_for_indent: Optional[int],
+    safety_checks: bool,
+    surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     code = sys.stdin.read()
     success, _, formatted_code = _format_code(
-        code, line_length, spaces_for_indent, "STDIN", safety_checks, surrounding_empty_lines_table
+        code,
+        line_length,
+        spaces_for_indent,
+        "STDIN",
+        safety_checks,
+        surrounding_empty_lines_table,
     )
     if not success:
         sys.exit(1)
     print(formatted_code, end="")
 
 
-# pylint: disable-next=too-many-locals
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-locals
 def _check_files_formatting(
     files: List[str],
     line_length: int,
@@ -195,7 +218,12 @@ def _check_files_formatting(
             with open(file_path, "r", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, spaces_for_indent, file_path, safety_checks, surrounding_empty_lines_table
+                    code,
+                    line_length,
+                    spaces_for_indent,
+                    file_path,
+                    safety_checks,
+                    surrounding_empty_lines_table,
                 )
                 if success and actually_formatted:
                     print(f"would reformat {file_path}", file=sys.stderr)
@@ -256,7 +284,12 @@ def _format_files(
             with open(file_path, "r+", encoding="utf-8") as handle:
                 code = handle.read()
                 success, actually_formatted, formatted_code = _format_code(
-                    code, line_length, spaces_for_indent, file_path, safety_checks, surrounding_empty_lines_table
+                    code,
+                    line_length,
+                    spaces_for_indent,
+                    file_path,
+                    safety_checks,
+                    surrounding_empty_lines_table,
                 )
                 if success and actually_formatted:
                     print(f"reformatted {file_path}")
@@ -285,6 +318,8 @@ def _format_files(
     sys.exit(0 if len(failed_files) == 0 else 1)
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
 def _format_code(
     code: str,
     line_length: int,

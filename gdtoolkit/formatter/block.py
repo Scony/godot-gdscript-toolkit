@@ -7,10 +7,7 @@ from lark import Tree
 from ..common.utils import get_line
 from .types import Outcome, FormattedLines
 from .context import Context
-from .constants import (
-    TAB_INDENT_SIZE,
-    GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
-)
+from .constants import TAB_INDENT_SIZE
 from .annotation import (
     is_non_standalone_annotation,
     prepend_annotations_to_formatted_line,
