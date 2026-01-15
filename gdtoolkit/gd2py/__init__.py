@@ -18,7 +18,7 @@ def convert_code(gdscript_code: str) -> str:
         single_indent_string="\t",
         previously_processed_line_number=-1,
         max_line_length=-1,
-        surrounding_empty_lines_table=GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
+        global_surrounding_empty_lines_table=GLOBAL_SCOPE_SURROUNDING_EMPTY_LINES_TABLE,
         gdscript_code_lines=[],
         standalone_comments=[],
         inline_comments=[],

@@ -94,7 +94,7 @@ def main():
         else config.get("use_spaces", DEFAULT_CONFIG["use_spaces"])
     )
 
-    surrounding_empty_lines_table = (
+    global_surrounding_empty_lines_table = (
         DEFAULT_SURROUNDING_EMPTY_LINES_TABLE
         if arguments["--single-blank-lines"]
         or config.get("single_blank_lines", DEFAULT_CONFIG["single_blank_lines"])
@@ -109,7 +109,10 @@ def main():
 
     if files == ["-"]:
         _format_stdin(
-            line_length, spaces_for_indent, safety_checks, surrounding_empty_lines_table
+            line_length,
+            spaces_for_indent,
+            safety_checks,
+            global_surrounding_empty_lines_table,
         )
     elif arguments["--check"]:
         _check_files_formatting(
@@ -118,7 +121,7 @@ def main():
             spaces_for_indent,
             arguments["--diff"],
             safety_checks,
-            surrounding_empty_lines_table,
+            global_surrounding_empty_lines_table,
         )
     else:
         _format_files(
@@ -126,7 +129,7 @@ def main():
             line_length,
             spaces_for_indent,
             safety_checks,
-            surrounding_empty_lines_table,
+            global_surrounding_empty_lines_table,
         )
 
 
@@ -184,7 +187,7 @@ def _format_stdin(
     line_length: int,
     spaces_for_indent: Optional[int],
     safety_checks: bool,
-    surrounding_empty_lines_table: MappingProxyType,
+    global_surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     code = sys.stdin.read()
     success, _, formatted_code = _format_code(
@@ -193,7 +196,7 @@ def _format_stdin(
         spaces_for_indent,
         "STDIN",
         safety_checks,
-        surrounding_empty_lines_table,
+        global_surrounding_empty_lines_table,
     )
     if not success:
         sys.exit(1)
@@ -209,7 +212,7 @@ def _check_files_formatting(
     spaces_for_indent: Optional[int],
     print_diff: bool,
     safety_checks: bool,
-    surrounding_empty_lines_table: MappingProxyType,
+    global_surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     formattable_files = set()
     failed_files = set()
@@ -223,7 +226,7 @@ def _check_files_formatting(
                     spaces_for_indent,
                     file_path,
                     safety_checks,
-                    surrounding_empty_lines_table,
+                    global_surrounding_empty_lines_table,
                 )
                 if success and actually_formatted:
                     print(f"would reformat {file_path}", file=sys.stderr)
@@ -275,7 +278,7 @@ def _format_files(
     line_length: int,
     spaces_for_indent: Optional[int],
     safety_checks: bool,
-    surrounding_empty_lines_table: MappingProxyType,
+    global_surrounding_empty_lines_table: MappingProxyType,
 ) -> None:
     formatted_files = set()
     failed_files = set()
@@ -289,7 +292,7 @@ def _format_files(
                     spaces_for_indent,
                     file_path,
                     safety_checks,
-                    surrounding_empty_lines_table,
+                    global_surrounding_empty_lines_table,
                 )
                 if success and actually_formatted:
                     print(f"reformatted {file_path}")
@@ -341,7 +344,7 @@ def _format_code(
             spaces_for_indent=spaces_for_indent,
             parse_tree=code_parse_tree,
             comment_parse_tree=comment_parse_tree,
-            surrounding_empty_lines_table=surrounding_empty_lines_table,
+            global_surrounding_empty_lines_table=surrounding_empty_lines_table,
         )
         if formatted_code != code:
             actually_formatted = True

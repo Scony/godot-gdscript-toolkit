@@ -59,10 +59,10 @@ def format_block(
             blank_lines = _add_extra_blanks_due_to_previous_statement(
                 blank_lines,
                 previous_statement_name,  # type: ignore
-                context.surrounding_empty_lines_table,
+                context.surrounding_empty_lines_for_scope(),
             )
             blank_lines = _add_extra_blanks_due_to_next_statement(
-                blank_lines, statement.data, context.surrounding_empty_lines_table
+                blank_lines, statement.data, context.surrounding_empty_lines_for_scope()
             )
 
         # Handle first annotation case
@@ -158,10 +158,12 @@ def _find_dedent_line_number(
 def _add_extra_blanks_due_to_previous_statement(
     blank_lines: FormattedLines,
     previous_statement_name: str,
-    surrounding_empty_lines_table: MappingProxyType,
+    global_surrounding_empty_lines_table: MappingProxyType,
 ) -> FormattedLines:
     # assumption: there is no sequence of empty lines longer than 1 (in blank lines)
-    forced_blanks_num = surrounding_empty_lines_table.get(previous_statement_name)
+    forced_blanks_num = global_surrounding_empty_lines_table.get(
+        previous_statement_name
+    )
     if forced_blanks_num is None:
         return blank_lines
     lines_to_prepend = forced_blanks_num
@@ -173,10 +175,10 @@ def _add_extra_blanks_due_to_previous_statement(
 def _add_extra_blanks_due_to_next_statement(
     blank_lines: FormattedLines,
     next_statement_name: str,
-    surrounding_empty_lines_table: MappingProxyType,
+    global_surrounding_empty_lines_table: MappingProxyType,
 ) -> FormattedLines:
     # assumption: there is no sequence of empty lines longer than 2 (in blank lines)
-    forced_blanks_num = surrounding_empty_lines_table.get(next_statement_name)
+    forced_blanks_num = global_surrounding_empty_lines_table.get(next_statement_name)
     if forced_blanks_num is None:
         return blank_lines
     first_empty_line_ix_from_end = _find_first_empty_line_ix_from_end(blank_lines)
