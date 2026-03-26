@@ -7,3 +7,6 @@ dist/
 /logs
 build
 .hypothesis/
+.venv/
+.idea/
+.claude/

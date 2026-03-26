@@ -194,6 +194,122 @@ repos:
         types: [gdscript]
 ```
 
+## Linter plugins
+
+gdlint supports external plugins for custom lint rules. A plugin is a Python module that exposes a `lint(parse_tree, config)` function and returns a list of `Problem` objects.
+
+### Example: creating a custom rule
+
+1. Create a plugin file `no_print_checks.py` in your project root:
+
+```python
+from types import MappingProxyType
+from typing import List
+
+from lark import Tree, Token
+from gdtoolkit.linter.problem import Problem
+from gdtoolkit.common.utils import get_line, get_column
+
+
+def lint(parse_tree: Tree, config: MappingProxyType) -> List[Problem]:
+    if "no-print-statement" in config.get("disable", []):
+        return []
+    problems = []
+    for call_node in parse_tree.find_data("standalone_call"):
+        for child in call_node.children:
+            if isinstance(child, Token) and child.value == "print":
+                problems.append(Problem(
+                    name="no-print-statement",
+                    description="Avoid using print() in production code",
+                    line=get_line(child),
+                    column=get_column(child),
+                ))
+            break
+    return problems
+```
+
+The `Problem` dataclass has four fields: `name` (rule identifier — this is what you use to disable the rule), `description` (human-readable message), `line`, and `column`.
+
+2. Add the plugin to your `gdlintrc` by module name (filename without `.py`). The `plugins` key sits alongside the same settings you already use:
+
+```yaml
+# gdlintrc
+class-name: '([A-Z][a-z0-9]*)+'
+constant-name: '[A-Z][A-Z0-9]*(_[A-Z0-9]+)*'
+max-line-length: 100
+disable: []
+plugins:
+  - no_print_checks
+```
+
+3. Run `gdlint` — the plugin rule works exactly like built-in rules:
+
+```
+$ gdlint my_script.gd
+my_script.gd:5: Error: Avoid using print() in production code (no-print-statement)
+```
+
+### How plugins are loaded
+
+Plugin names can be either **module names** or **relative paths**:
+
+```yaml
+plugins:
+  # module name — loaded via importlib, must be on sys.path
+  - no_print_checks
+  # relative path — loaded from file relative to cwd (no .py extension)
+  - ci/gdlint/no_print_checks
+```
+
+When plugins are configured, the current working directory is automatically added to `sys.path`, so local `.py` files are found by module name. For plugins in subdirectories, use the path form — forward slashes work on all platforms.
+
+Missing or failing plugins are logged as warnings and skipped — they won't crash the linter.
+
+### Distributing plugins as packages
+
+For sharing plugins across projects, structure your plugin as a pip-installable Python package with a `setup.py` or `pyproject.toml`:
+
+```
+my-gdlint-plugin/
+  my_gdlint_plugin/
+    __init__.py      # must contain lint(parse_tree, config)
+    some_check.py
+  setup.py
+```
+
+Then install and reference the module name in `gdlintrc`:
+
+```
+pip install my-gdlint-plugin
+```
+
+```yaml
+plugins:
+  - my_gdlint_plugin
+```
+
+### Using plugins with pre-commit
+
+pre-commit runs hooks in isolated virtualenvs, so neither local `.py` files nor globally installed packages are available. Use [`additional_dependencies`](https://pre-commit.com/#config-additional_dependencies) to install plugin packages into the hook's environment.
+
+`additional_dependencies` accepts anything pip can install — a PyPI package, a git URL, or a local path:
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/Scony/godot-gdscript-toolkit
+    rev: 4.2.2
+    hooks:
+      - id: gdlint
+        additional_dependencies:
+          # from PyPI:
+          - my-gdlint-plugin==1.0.0
+          # from a git repo:
+          - git+https://github.com/your-org/my-gdlint-plugin.git@main
+          # from a local directory (editable install):
+          - -e ./linter/my-gdlint-plugin
+```
+
 ## Development [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/5.-Development)
 
 Everyone is free to fix bugs or introduce new features. For that, however, please refer to existing issue or create one before starting implementation.

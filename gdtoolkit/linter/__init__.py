@@ -1,4 +1,9 @@
+import importlib
+import importlib.util
+import logging
+import os
 import re
+import sys
 from collections import defaultdict
 from types import MappingProxyType
 from typing import List, Dict, Set
@@ -48,13 +53,6 @@ DEFAULT_CONFIG = MappingProxyType(
         "unnecessary-pass": None,
         "unused-argument": None,
         "comparison-with-itself": None,
-        # not-in-loop (break/continue) # check in godot
-        # duplicate-argument-name # check in godot
-        # self-assigning-variable # check in godot
-        # comparison-with-callable
-        # duplicate-key # check in godot
-        # unreachable # check in godot
-        # using-constant-test # check in godot
         # class checks
         "class-definitions-order": [
             "tools",
@@ -72,15 +70,9 @@ DEFAULT_CONFIG = MappingProxyType(
             "onreadyprvvars",
             "others",
         ],
-        # useless-super-delegation
         # design checks
-        # max-locals
         "max-returns": 6,
-        # max-branches
-        # max-statements
-        # max-attributes
         "max-public-methods": 20,
-        # max-nested-blocks
         "function-arguments-number": 10,
         # format checks
         "max-file-lines": 1000,
@@ -92,6 +84,7 @@ DEFAULT_CONFIG = MappingProxyType(
         "excluded_directories": {".git"},
         "no-elif-return": None,
         "no-else-return": None,
+        "plugins": [],
         # never-returning-function # for non-void, typed functions
         # simplify-boolean-expression
         # consider-using-in
@@ -111,6 +104,22 @@ DEFAULT_CONFIG = MappingProxyType(
 )
 
 
+def _load_plugin(plugin_path: str):
+    if "/" in plugin_path or "\\" in plugin_path:
+        normalized = plugin_path.replace("\\", "/")
+        file_path = os.path.normpath(os.path.join(os.getcwd(), normalized + ".py"))
+        if not os.path.isfile(file_path):
+            raise ImportError(f"Plugin file not found: {file_path}")
+        module_name = os.path.basename(normalized)
+        spec = importlib.util.spec_from_file_location(module_name, file_path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Cannot load plugin from {file_path}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    return importlib.import_module(plugin_path)
+
+
 def lint_code(
     gdscript_code: str, config: MappingProxyType = DEFAULT_CONFIG
 ) -> List[Problem]:
@@ -121,6 +130,20 @@ def lint_code(
     problems += class_checks.lint(parse_tree, config)
     problems += basic_checks.lint(parse_tree, config)
     problems += misc_checks.lint(parse_tree, config)
+
+    plugin_paths = config.get("plugins", [])
+    if plugin_paths:
+        cwd = os.getcwd()
+        if cwd not in sys.path:
+            sys.path.insert(0, cwd)
+    for plugin_path in plugin_paths:
+        try:
+            module = _load_plugin(plugin_path)
+            problems += module.lint(parse_tree, config)
+        except ImportError as exc:
+            logging.warning("gdlint plugin '%s' not found - skipping (%s)", plugin_path, exc)
+        except Exception as exc:
+            logging.warning("gdlint plugin '%s' failed: %s", plugin_path, exc)
 
     problems_to_lines_where_they_are_inactive = _fetch_problem_inactivity_lines(
         gdscript_code
