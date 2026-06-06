@@ -1,5 +1,5 @@
 from functools import partial
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, NamedTuple, Tuple
 
 from lark import Tree
 
@@ -7,8 +7,22 @@ from ..common.types import Node
 from ..parser import parser
 from ..formatter.context import Context
 
+ConvertedLine = Tuple[str, "SourcePosition"]
+
+
+class SourcePosition(NamedTuple):
+    line: int
+    column: int
+
 
 def convert_code(gdscript_code: str) -> str:
+    converted_code, _line_mapping = convert_code_with_line_mapping(gdscript_code)
+    return converted_code
+
+
+def convert_code_with_line_mapping(
+    gdscript_code: str,
+) -> Tuple[str, List[SourcePosition]]:
     parse_tree = parser.parse(
         gdscript_code, gather_metadata=True
     )  # TODO: is metadata needed?
@@ -21,8 +35,11 @@ def convert_code(gdscript_code: str) -> str:
         standalone_comments=[],
         inline_comments=[],
     )  # TODO: create custom (small) context
-    converted_lines = _convert_block(parse_tree.children, context)
-    return "\n".join(converted_lines + [""])
+    converted_lines = _convert_block_with_line_mapping(parse_tree.children, context)
+    return (
+        "\n".join([line for line, _position in converted_lines] + [""]),
+        [position for _line, position in converted_lines],
+    )
 
 
 def _convert_block(statements: List[Tree], context: Context) -> List[str]:
@@ -119,6 +136,140 @@ def _convert_statement(statement: Tree, context: Context) -> List[str]:
         "guarded_match_branch": partial(_convert_branch_with_expression, "elif"),
     }  # type: Dict[str, Callable]
     return handlers[statement.data](statement, context)
+
+
+def _convert_block_with_line_mapping(
+    statements: List[Tree], context: Context
+) -> List[ConvertedLine]:
+    converted_lines = []  # type: List[ConvertedLine]
+    for statement in statements:
+        converted_lines += _convert_statement_with_line_mapping(statement, context)
+    return converted_lines
+
+
+def _convert_statement_with_line_mapping(
+    statement: Tree, context: Context
+) -> List[ConvertedLine]:
+    if statement.data in [
+        "class_var_stmt",
+        "static_class_var_stmt",
+        "func_var_stmt",
+        "expr_stmt",
+        "static_func_def",
+    ]:
+        return _convert_statement_with_line_mapping(statement.children[0], context)
+    if statement.data == "class_def":
+        return [
+            (
+                f"{context.indent_string}class {statement.children[0].value}:",
+                _source_position(statement),
+            )
+        ] + _convert_block_with_line_mapping(
+            statement.children[1:], context.create_child_context(-1)
+        )
+    if statement.data == "func_def":
+        return [
+            (
+                f"{context.indent_string}def {statement.children[0].children[0].value}():",
+                _source_position(statement),
+            )
+        ] + _convert_block_with_line_mapping(
+            statement.children[1:], context.create_child_context(-1)
+        )
+    if statement.data == "abstract_func_def":
+        return [
+            (
+                f"{context.indent_string}def {statement.children[0].children[0].value}():",
+                _source_position(statement),
+            ),
+            (
+                f"{context.indent_string}    raise NotImplementedError('Abstract method not implemented')",
+                _source_position(statement),
+            ),
+        ]
+    if statement.data == "if_stmt":
+        return _convert_block_with_line_mapping(statement.children, context)
+    if statement.data in ["if_branch", "elif_branch"]:
+        return _convert_branch_with_line_mapping(
+            statement.data.replace("_branch", ""), statement, context
+        )
+    if statement.data == "else_branch":
+        return [
+            (f"{context.indent_string}else:", _source_position(statement))
+        ] + _convert_block_with_line_mapping(
+            statement.children, context.create_child_context(-1)
+        )
+    if statement.data == "while_stmt":
+        return _convert_branch_with_line_mapping("while", statement, context)
+    if statement.data == "for_stmt":
+        return [
+            (
+                "{}for {} in {}:".format(
+                    context.indent_string,
+                    statement.children[0].value,
+                    _convert_expression_to_str(statement.children[1]),
+                ),
+                _source_position(statement),
+            )
+        ] + _convert_block_with_line_mapping(
+            statement.children[2:], context.create_child_context(-1)
+        )
+    if statement.data == "for_stmt_typed":
+        return [
+            (
+                "{}for {} in {}:".format(
+                    context.indent_string,
+                    statement.children[0].value,
+                    _convert_expression_to_str(statement.children[2]),
+                ),
+                _source_position(statement),
+            )
+        ] + _convert_block_with_line_mapping(
+            statement.children[3:], context.create_child_context(-2)
+        )
+    if statement.data == "match_stmt":
+        return [
+            (
+                "{}if {}:".format(
+                    context.indent_string,
+                    _convert_expression_to_str(statement.children[0]),
+                ),
+                _source_position(statement),
+            ),
+            (
+                f"{context.create_child_context(-1).indent_string}pass",
+                _source_position(statement),
+            ),
+        ] + _convert_block_with_line_mapping(statement.children[1:], context)
+    if statement.data in ["match_branch", "guarded_match_branch"]:
+        return _convert_branch_with_line_mapping("elif", statement, context)
+    if statement.data == "annotation":
+        return []
+    return [
+        (line, _source_position(statement))
+        for line in _convert_statement(statement, context)
+    ]
+
+
+def _convert_branch_with_line_mapping(
+    prefix: str, statement: Tree, context: Context
+) -> List[ConvertedLine]:
+    return [
+        (
+            "{}{} {}:".format(
+                context.indent_string,
+                prefix,
+                _convert_expression_to_str(statement.children[0]),
+            ),
+            _source_position(statement),
+        )
+    ] + _convert_block_with_line_mapping(
+        statement.children[1:], context.create_child_context(-1)
+    )
+
+
+def _source_position(statement: Tree) -> SourcePosition:
+    return SourcePosition(statement.meta.line, statement.meta.column - 1)
 
 
 def _ignore(_statement: Node, _context: Context) -> List[str]:

@@ -21,3 +21,25 @@ def test_cc_on_file_with_single_function_succeeds(tmp_path):
     assert outcome.returncode == 0
     assert len(outcome.stdout.decode().splitlines()) == 2
     assert len(outcome.stderr.decode().splitlines()) == 0
+
+
+def test_cc_reports_original_gdscript_line(tmp_path):
+    dummy_file = write_file(
+        tmp_path,
+        "script.gd",
+        (
+            "extends Node3D\n"
+            "\n"
+            '@export var name = "World"\n'
+            "\n"
+            "func _ready():\n"
+            '\tprint("Hello, %s!" % name)\n'
+        ),
+    )
+    outcome = subprocess.run(
+        ["gdradon", "cc", dummy_file], check=False, capture_output=True
+    )
+
+    assert outcome.returncode == 0
+    assert outcome.stdout.decode().splitlines()[1] == "    F 5:0 _ready - A (1)"
+    assert len(outcome.stderr.decode().splitlines()) == 0
