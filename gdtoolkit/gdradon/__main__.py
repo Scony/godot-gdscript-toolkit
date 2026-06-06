@@ -22,7 +22,7 @@ from radon.visitors import Function
 from radon.cli.colors import LETTERS_COLORS, RANKS_COLORS, RESET
 
 from gdtoolkit.common.utils import find_gd_files_from_paths
-from gdtoolkit.gd2py import convert_code
+from gdtoolkit.gd2py import convert_code_with_line_mapping
 
 Path = str
 
@@ -42,7 +42,7 @@ def main():
 def _cc(file_path: str) -> None:
     try:
         with open(file_path, "r", encoding="utf-8") as handle:
-            python_code = convert_code(handle.read())
+            python_code, line_mapping = convert_code_with_line_mapping(handle.read())
             results = cc_visit(python_code)
             if not results:
                 return
@@ -50,14 +50,15 @@ def _cc(file_path: str) -> None:
             for result in results:
                 letter = "F" if isinstance(result, Function) else "C"
                 rank = cc_rank(result.complexity)
+                position = line_mapping[result.lineno - 1]
                 # pylint: disable=duplicate-string-formatting-argument
                 print(
                     "    {}{}{} {}:{} {} - {}{} ({}){}".format(
                         LETTERS_COLORS[letter],
                         letter,
                         RESET,
-                        result.lineno,
-                        result.col_offset,
+                        position.line,
+                        position.column,
                         result.name,
                         RANKS_COLORS[rank],
                         rank,
