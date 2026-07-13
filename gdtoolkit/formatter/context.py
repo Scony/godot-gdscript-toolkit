@@ -54,3 +54,4 @@ class ExpressionContext:
     prefix_line: int  # earliest line number of prefix string
     suffix_string: str
     suffix_line: int  # earliest line number of suffix string
+    is_inside_list: bool = False
