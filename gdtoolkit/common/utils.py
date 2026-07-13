@@ -27,7 +27,7 @@ def find_gd_files_from_paths(
 
 def find_name_token_among_children(tree: Tree) -> Optional[Token]:
     for child in tree.children:
-        if isinstance(child, Token) and child.type == "NAME":
+        if isinstance(child, Token) and child.type in ["NAME", "GET", "SET"]:
             return child
     return None
 

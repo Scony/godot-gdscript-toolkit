@@ -289,6 +289,10 @@ func foo():
 func foo():
     var y : int
 """,
+"""
+func foo() -> void:
+    var y: float = get("bar")
+""",
 ])
 def test_function_variable_name_ok(code):
     simple_ok_check(code)
