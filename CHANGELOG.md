@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+ - Added `--format gitlab` option to `gdlint` for emitting GitLab Code Quality reports
+
 ## [4.5.0] 2025-10-09
 
 ### Added

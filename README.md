@@ -56,6 +56,15 @@ misc/MarkovianPCG.gd:96: Error: Function argument name "aOrigin" is not valid (f
 misc/MarkovianPCG.gd:96: Error: Function argument name "aPos" is not valid (function-argument-name)
 ```
 
+By default problems are printed in the human-readable format shown above. Passing
+`--format gitlab` instead prints a [GitLab Code Quality](https://docs.gitlab.com/ee/ci/testing/code_quality.html)
+report as JSON on standard output, which can be used directly as a `codequality`
+artifact in a CI pipeline:
+
+```
+$ gdlint --format gitlab source/ > gl-code-quality-report.json
+```
+
 ## Formatting with gdformat [(more)](https://github.com/Scony/godot-gdscript-toolkit/wiki/4.-Formatter)
 
 **Formatting may lead to data loss, so it's highly recommended to use it along with Version Control System (VCS) e.g. `git`**
