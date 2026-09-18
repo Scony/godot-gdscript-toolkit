@@ -72,7 +72,7 @@ _property_delegates: property_delegate_set ["," [_NL] property_delegate_get]
 property_custom_getter_args: "(" ")"
 
 func_def: func_header _func_suite
-abstract_func_def: abstract_func_header
+abstract_func_def: abstract_func_header [";"]
 func_header: "func" NAME func_args ["->" TYPE_HINT] ":"
 abstract_func_header: "func" NAME func_args ["->" TYPE_HINT]
 // TODO: Accept func_arg_variadic as last one only.
