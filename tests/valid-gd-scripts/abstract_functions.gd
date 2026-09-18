@@ -15,3 +15,16 @@ extends Node
 
 @abstract
 func bal() -> void
+
+@abstract func bam();
+
+@abstract func bay() -> void;
+
+@abstract
+func bag();
+
+@abstract func chained_a(); @abstract func chained_b() -> void;
+
+@abstract class Inner:
+	@abstract func inner_fn();
+	@abstract func inner_typed() -> int;
