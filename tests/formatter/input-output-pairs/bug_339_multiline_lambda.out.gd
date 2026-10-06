@@ -5,6 +5,5 @@ func _ready():
 		. map(func(a): return a)
 		. filter(
 			func(has_underscore):
-				return has_underscore.begins_with("a") or has_underscore.begins_with("b")
-		)
+				return has_underscore.begins_with("a") or has_underscore.begins_with("b"))
 	)

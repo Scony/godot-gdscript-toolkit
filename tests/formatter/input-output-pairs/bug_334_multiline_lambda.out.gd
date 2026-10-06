@@ -13,5 +13,4 @@ func foo():
 				test_instance.free()
 				return is_needed_class)
 			. call()
-		)
-	)
+		))

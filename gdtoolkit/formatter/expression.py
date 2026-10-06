@@ -528,12 +528,30 @@ def _format_comma_separated_list_to_multiple_lines(
         formatted_lines += _format_concrete_expression(
             fake_expression, child_expression_context, child_context
         )
-    formatted_lines.append(
-        (
-            expression_context.suffix_line,
-            f"{context.indent_string}{expression_context.suffix_string}",
+    # Godot's parser rejects closing-paren lines dedented to an intermediate
+    # level after a multiline lambda body ("Unindent doesn't match the previous
+    # indentation level"). When the last element contains a lambda, absorb the
+    # suffix into the last content line instead of emitting a dedented closer.
+    elements = [node for node in a_list if not is_any_comma(node)]
+    last_line_content = formatted_lines[-1][1]
+    if (
+        len(elements) > 0
+        and expression_context.suffix_string != ""
+        and not is_trailing_comma(a_list[-1])
+        and expression_contains_lambda(elements[-1])
+        and not last_line_content.lstrip().startswith("#")
+    ):
+        formatted_lines[-1] = (
+            formatted_lines[-1][0],
+            f"{last_line_content}{expression_context.suffix_string}",
         )
-    )
+    else:
+        formatted_lines.append(
+            (
+                expression_context.suffix_line,
+                f"{context.indent_string}{expression_context.suffix_string}",
+            )
+        )
     return formatted_lines
 
 
