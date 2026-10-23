@@ -75,9 +75,7 @@ class Parser:
         cache_filepath: str = os.path.join(cache_dirpath, name) + ".pickle"
         grammar_filepath: str = os.path.join(self._directory, grammar_filename)
 
-        # TODO: catch IO exception
-        if not os.path.exists(cache_dirpath):
-            os.makedirs(cache_dirpath)
+        os.makedirs(cache_dirpath, exist_ok=True)
 
         # TODO: catch IO exception
         a_parser = Lark.open(
