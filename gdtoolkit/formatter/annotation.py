@@ -175,6 +175,11 @@ def prepend_annotations_to_formatted_line(
         )
         and single_line_length <= context.max_line_length
         and not standalone_formatting_enforced
+        # Godot requires @warning_ignore to remain on its own line.
+        and not any(
+            annotation.children[0].value == "warning_ignore"
+            for annotation in context.annotations
+        )
     ):
         single_line = "{}{} {}".format(
             context.indent_string, annotations_string, whitelineless_line
